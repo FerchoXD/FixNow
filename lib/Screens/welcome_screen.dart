@@ -37,7 +37,10 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Buscar un servicio',
               subtitle: 'Encuentra al profesional ideal para tu hogar.',
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/register_user');
+                Navigator.of(context).pushReplacementNamed(
+                  '/register_user',
+                  arguments: 'cliente',
+                  );
               },
             ),
             const SizedBox(height: 20),
@@ -46,7 +49,10 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Ofrecer un servicio',
               subtitle: 'Conecta con clientes y crece tu negocio.',
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/404');
+                Navigator.of(context).pushReplacementNamed(
+                  '/register_user', 
+                  arguments: 'proveedor',
+                  );
               },
             ),
             const Spacer(),

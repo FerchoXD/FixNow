@@ -42,6 +42,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
                 const TextField(
+                  cursorColor: Color(0xFF4C98E9),
                   decoration: InputDecoration(
                     hintText: 'Correo electrónico',
                     border: OutlineInputBorder(
@@ -66,6 +67,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 const TextField(
+                  cursorColor: Color(0xFF4C98E9),
                   decoration: InputDecoration(
                     hintText: 'Contraseña',
                     border: OutlineInputBorder(

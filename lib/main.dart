@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'Screens/index.dart';
 
 void main() => runApp(MyApp());
@@ -12,6 +11,13 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register_user': (context) => const RegisterUserScreen(),
         '/404': (context) => const Screen404(),
+        '/specialities' : (context) => const SpecialitiesScreen(),
+        '/basic_information' : (context) => const BasicInformationScreen(),
+        '/select_service' : (context) => const SelectServiceScreen(),
+        '/work_experience' : (context) => const WorkExperienceScreen(),
+        '/pricing' : (context) => const PricingScreen(),
+        '/schedules' : (context) => const SchedulesScreen(),
+        '/photo_gallery' : (context) => const PhotoGalleryScreen(),
       };
 
   @override
@@ -19,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FixNow',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/404',
+      initialRoute: '/',
       routes: _screens,
       onGenerateRoute: (settings) {
         return MaterialPageRoute(

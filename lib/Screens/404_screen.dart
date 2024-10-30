@@ -15,7 +15,7 @@ class _Screen404State extends State<Screen404> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               '404',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -24,7 +24,7 @@ class _Screen404State extends State<Screen404> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
+            const Text(
               '¡Upps!',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -32,7 +32,7 @@ class _Screen404State extends State<Screen404> {
                 fontSize: 36,
               ),
             ),
-            Text(
+            const Text(
               'Algo salió mal.',
               textAlign: TextAlign.center,
               style: TextStyle(
