@@ -31,24 +31,27 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
   Future<bool> _requestPermission() async {
     var status = await Permission.storage.status;
 
-    // Si ya tiene permiso
     if (status.isGranted) {
       return true;
-    } 
-    // Si el permiso está denegado o restringido, solicitamos permiso
-    else if (status.isDenied || status.isRestricted) {
-      status = await Permission.storage.request();
+    }
+    
+    else if (status.isDenied || status.isGranted) {
+      status = await Permission.camera.request();
 
       if (status.isGranted) {
         return true;
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Permiso denegado para acceder a la galería')),
+          const SnackBar(
+              content: Text('Permiso denegado para acceder a la galería')),
         );
         return false;
       }
-    } 
-    // Si el permiso está denegado permanentemente, sugerimos abrir configuración
+    } else if (status.isPermanentlyDenied) {
+      _showSettingsDialog();
+      return false;
+    }
     else if (status.isPermanentlyDenied) {
       _showSettingsDialog();
       return false;
@@ -57,7 +60,6 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
     return false;
   }
 
-  // Abre la galería de imágenes
   Future<void> _openGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -67,12 +69,12 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
     }
   }
 
-  // Redirige al usuario a la configuración de la app para habilitar permisos
   void _showSettingsDialog() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text(
             'Permiso denegado permanentemente. Habilítalo en Configuración.'),
+             
         action: SnackBarAction(
           label: 'Abrir Configuración',
           onPressed: () async {
@@ -144,7 +146,8 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                   onPressed: _pickImage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 25),
                   ),
                 ),
               ),
@@ -154,7 +157,8 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                   : GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
@@ -188,42 +192,43 @@ class _PhotoGalleryScreenState extends State<PhotoGalleryScreen> {
                       },
                     ),
               const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    // Verifica si el botón está deshabilitado y muestra el SnackBar
-                    if (_images.length < 2) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Ingresa al menos 2 imágenes de tu trabajo para continuar')),
-                      );
-                    }
-                  },
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+              GestureDetector(
+                onTap: () {
+                  // Verifica si el botón está deshabilitado y muestra el SnackBar
+                  if (_images.length < 2) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Ingresa al menos 2 imágenes de tu trabajo para continuar')),
+                    );
+                  }
+                },
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      onPressed: _images.length < 2
-                          ? null
-                          : () {
-                              // Acción para continuar
-                            },
-                      child: const Text(
-                        'Continuar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                    ),
+                    onPressed: _images.length < 2
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, '/chat');
+                          },
+                    child: const Text(
+                      'Continuar',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-
+              ),
             ],
           ),
         ),

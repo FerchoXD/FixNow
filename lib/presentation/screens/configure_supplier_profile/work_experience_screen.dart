@@ -93,7 +93,7 @@ class WorkExperienceScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // Acción para continuar
+                    Navigator.pushNamed(context, '/pricing');
                   },
                   child: const Text(
                     'Continuar',

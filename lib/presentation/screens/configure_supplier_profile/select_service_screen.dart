@@ -105,10 +105,8 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
                 ),
                 onPressed: selectedServices.length >= 1 && selectedServices.length <= 3
                     ? () {
-                        // Aquí puedes manejar la acción del botón
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Continuando...')),
-                        );
+                          Navigator.pushNamed(context, '/work_experience');
+                        
                       }
                     : null, // Desactiva el botón si no se cumple el rango de selección
                 child: const Text('Continuar'),

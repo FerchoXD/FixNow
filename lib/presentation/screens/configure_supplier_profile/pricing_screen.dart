@@ -154,7 +154,7 @@ class PricingScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // Acción para continuar
+                    Navigator.pushNamed(context, '/schedules');
                   },
                   child: const Text(
                     'Continuar',

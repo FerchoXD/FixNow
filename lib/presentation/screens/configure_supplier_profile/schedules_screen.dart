@@ -68,6 +68,20 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.03),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: LinearProgressIndicator(
+                      value: 0.70,
+                      backgroundColor: Color.fromARGB(255, 124, 204, 250),
+                      color: Color.fromARGB(255, 23, 109, 201),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text("70%", style: TextStyle(fontSize: 14)),
+                ],
+              ),
               SizedBox(
                 height: screenHeight * 0.5,
                 child: ListView.builder(
@@ -177,7 +191,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                     ),
                   ),
                   onPressed: () {
-                    // Acción para continuar
+                    Navigator.pushNamed(context, '/photo_gallery');
                   },
                   child: Text(
                     'Continuar',

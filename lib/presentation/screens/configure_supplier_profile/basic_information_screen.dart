@@ -196,7 +196,7 @@ class BasicInformationScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // Acción para continuar
+                    Navigator.of(context).pushNamed('/select_service');
                   },
                   child: const Text(
                     'Continuar',

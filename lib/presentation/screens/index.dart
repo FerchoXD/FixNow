@@ -1,0 +1,13 @@
+export 'package:fixnow/presentation/screens/errors/404_screen.dart';
+export 'package:fixnow/presentation/screens/login_screen.dart';
+export 'package:fixnow/presentation/screens/welcome_screen.dart';
+export 'package:fixnow/presentation/screens/register_user_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/specialities_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/basic_information_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/select_service_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/work_experience_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/pricing_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/schedules_screen.dart';
+export 'package:fixnow/presentation/screens/configure_supplier_profile/photo_gallery_screen.dart';
+export 'package:fixnow/presentation/screens/home_screen.dart';
+export 'package:fixnow/presentation/screens/chat_screen.dart';
