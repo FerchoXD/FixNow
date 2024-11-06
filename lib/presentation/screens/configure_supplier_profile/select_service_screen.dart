@@ -1,3 +1,5 @@
+import 'package:fixnow/presentation/widgets/configure_supplier_profile/select_service/select_service_build_service_tag.dart';
+import 'package:fixnow/presentation/widgets/configure_supplier_profile/select_service/select_service_continue_button.dart';
 import 'package:flutter/material.dart';
 
 class SelectServiceScreen extends StatefulWidget {
@@ -56,18 +58,18 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
               ),
               const SizedBox(height: 20),
               // Barra de progreso (perfil general)
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: LinearProgressIndicator(
                       value: 0.10, // Cambia el valor según el progreso del perfil
-                      backgroundColor: Color.fromARGB(255, 124, 204, 250),
-                      color: Color.fromARGB(255, 23, 109, 201),
+                      backgroundColor: const Color.fromARGB(255, 124, 204, 250),
+                      color: const Color.fromARGB(255, 23, 109, 201),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text("10%", style: TextStyle(fontSize: 14)),
+                  const SizedBox(width: 10),
+                  const Text("10%", style: TextStyle(fontSize: 14)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -85,83 +87,28 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
               Wrap(
                 spacing: 10.0,
                 runSpacing: 10.0,
-                children: services.map((service) => _buildServiceTag(service)).toList(),
+                children: services.map((service) => 
+                  BuildServiceTag(
+                    service,
+                    isSelected: selectedServices.contains(service),
+                    onSelected: (isSelected) {
+                      setState(() {
+                        if (isSelected) {
+                          selectedServices.remove(service);
+                        } else if (selectedServices.length < 3) {
+                          selectedServices.add(service);
+                        }
+                      });
+                    },
+                  )
+                ).toList(),
               ),
               const SizedBox(height: 20),
               // "Continuar" button
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 76, 152, 233),
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 5,
-                ),
-                onPressed: selectedServices.length >= 1 && selectedServices.length <= 3
-                    ? () {
-                          Navigator.pushNamed(context, '/work_experience');
-                        
-                      }
-                    : null, // Desactiva el botón si no se cumple el rango de selección
-                child: const Text('Continuar'),
-              ),
+              SelectServiceContinueButton(selectedServices: selectedServices), 
               const SizedBox(height: 20),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServiceTag(String title) {
-    final isSelected = selectedServices.contains(title);
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isSelected) {
-            selectedServices.remove(title);
-          } else if (selectedServices.length < 3) {
-            selectedServices.add(title);
-          }
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue[100] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-                maxLines: 2, // Allow text to wrap to a second line if needed
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (isSelected)
-              const Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Icon(
-                  Icons.check,
-                  color: Colors.blue,
-                  size: 20,
-                ),
-              ),
-          ],
         ),
       ),
     );

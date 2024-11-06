@@ -6,7 +6,7 @@ class CustomizedInputs extends StatelessWidget {
   final double fontSize;
   final bool obscureText;
 
-  const CustomizedInputs({
+  const CustomizedInputs( {
     super.key,
     this.fontSize = 14.0, 
     required this.scaleFactor, 

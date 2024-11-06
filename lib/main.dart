@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FixNow',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/register',
+      initialRoute: '/select_service',
       routes: AppRoutes.screens,
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );

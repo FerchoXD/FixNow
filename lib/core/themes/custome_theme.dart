@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:fixnow/core/themes/custom_text_styles.dart';
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
