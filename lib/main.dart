@@ -1,31 +1,24 @@
+import 'package:fixnow/config/router/app_router.dart';
+import 'package:fixnow/config/themes/light_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'Screens/index.dart';
-
-void main() => runApp(MyApp());
+void main() {
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
-
-  final _screens = {
-        '/': (context) => const WelcomeScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register_user': (context) => const RegisterUserScreen(),
-        '/404': (context) => const Screen404(),
-      };
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FixNow',
+    return MaterialApp.router(
+      routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/404',
-      routes: _screens,
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(
-          builder: (context) => const Screen404(),
-        );
-      },
+      theme: lightTheme,
+
     );
   }
 }

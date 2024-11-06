@@ -11,8 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
+  go_router: ^14.4.1
+  formz: ^0.8.0
+  google_nav_bar: ^5.0.7
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +29,14 @@ flutter:
   assets:
     - assets/images/google.png
     - assets/images/facebook.png
+    - assets/images/carpinteria.png
+    - assets/images/electricidad.png
+    - assets/images/plomeria.png
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Light.ttf
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf

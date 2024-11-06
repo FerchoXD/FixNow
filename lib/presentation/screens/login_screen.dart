@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -23,7 +24,7 @@ class LoginScreen extends StatelessWidget {
                     'Bienvenido',
                     style: TextStyle(
                       color: Color(0xFF4C98E9),
-                      fontSize: 32,
+                      fontSize: 42,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -104,7 +105,7 @@ class LoginScreen extends StatelessWidget {
                     elevation: 5,
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
+                    context.push('/home');
                   },
                   child: const Text('Inicio de sesión'),
                 ),
@@ -166,7 +167,7 @@ class LoginScreen extends StatelessWidget {
                 const SizedBox(height: 90),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/');
+                    context.go('/register');
                   },
                   child: const Text(
                     '¿No tienes cuenta? Regístrate',

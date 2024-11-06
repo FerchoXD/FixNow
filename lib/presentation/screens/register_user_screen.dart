@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterUserScreen extends StatelessWidget {
   const RegisterUserScreen({super.key});
@@ -21,7 +22,7 @@ class RegisterUserScreen extends StatelessWidget {
                     'Únete',
                     style: TextStyle(
                       color: Color(0xFF4C98E9),
-                      fontSize: 32,
+                      fontSize: 42,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -210,7 +211,7 @@ class RegisterUserScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/');
+                    context.go('/');
                   },
                   child: const Text(
                     'Volver al inicio',

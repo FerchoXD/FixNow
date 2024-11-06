@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -5,20 +6,21 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1A73E8),
+      backgroundColor: colors.primary,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Spacer(),
             const Text(
               'FixNow',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 40,
+                fontSize: 42,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -28,7 +30,7 @@ class WelcomeScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white70,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 40),
@@ -37,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Buscar un servicio',
               subtitle: 'Encuentra al profesional ideal para tu hogar.',
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/register_user');
+                context.push('/register');
               },
             ),
             const SizedBox(height: 20),
@@ -46,21 +48,22 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Ofrecer un servicio',
               subtitle: 'Conecta con clientes y crece tu negocio.',
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/404');
+                context.push('/register');
               },
             ),
-            const Spacer(),
+            const SizedBox(
+              height: 50,
+            ),
             TextButton(
               onPressed: () {
-                // Acción para ir a la pantalla de inicio de sesión
-                Navigator.of(context).pushNamed('/login');
-
+                // Acción para ir a la pantalla de inicio de sesJión
+                context.push('/login');
               },
               child: const Text(
                 '¿Ya tienes cuenta? Inicia sesión',
                 style: TextStyle(
                   color: Colors.white,
-                  decoration: TextDecoration.underline,
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -93,7 +96,7 @@ class ActionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(20),
       ),
       onPressed: onPressed,
       child: Row(
