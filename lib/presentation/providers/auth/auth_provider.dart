@@ -1,98 +1,105 @@
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fixnow/domain/entities/user.dart';
+import 'package:fixnow/infrastructure/datasources/auth_user.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// enum AuthStatus { checking, authenticated, notAuthenticated, newUserRegistred }
+enum AuthStatus { checking, authenticated, notAuthenticated, newUserRegistred, accountActivated}
 
-// class AuthState {
-//   final AuthStatus authStatus;
-//   final User? user;
-//   final String message;
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  final authUser = AuthUser();
+  // final keyValueStorage = KeyValueStorage();
 
-//   AuthState(
-//       {this.authStatus = AuthStatus.checking, this.user, this.message = ''});
+  return AuthNotifier(authUser: authUser);
+});
 
-//   AuthState copyWith({
-//     AuthStatus? authStatus,
-//     User? user,
-//     String? message,
-//   }) =>
-//       AuthState(
-//         authStatus: authStatus ?? this.authStatus,
-//         user: user ?? this.user,
-//         message: message ?? this.message,
-//       );
-// }
+class AuthState {
+  final AuthStatus authStatus;
+  final User? contact;
+  final String message;
 
-// class AuthNotifier extends StateNotifier<AuthState> {
-//   final AuthUser authUser;
-//   final KeyValueStorage keyValueStorage;
+  AuthState(
+      {this.authStatus = AuthStatus.checking, this.contact, this.message = ''});
 
-//   AuthNotifier({required this.authUser, required this.keyValueStorage})
-//       : super(AuthState()) {
-//     checkAuthStatus();
-//   }
+  AuthState copyWith({
+    AuthStatus? authStatus,
+    User? contact,
+    String? message,
+  }) =>
+      AuthState(
+        authStatus: authStatus ?? this.authStatus,
+        contact: contact ?? this.contact,
+        message: message ?? this.message,
+      );
+}
 
-//   Future<void> loginUser(String identifier, String password) async {
-//     try {
-//       final user = await authUser.login(identifier, password);
-//       _setLoggedUser(user);
-//     } on AuthError catch (error) {
-//       logout(error.message);
-//     } catch (error) {
-//       logout('Algó malo pasó');
-//     }
-//   }
+class AuthNotifier extends StateNotifier<AuthState> {
+  final AuthUser authUser;
+  // final KeyValueStorage keyValueStorage;
 
-//   void registerUser(String name, String lastName, String studentEnrollment,
-//       String email, String password) async {
-//     try {
-//       final userRegistred =
-//           await authUser.register(name, lastName, studentEnrollment,  email, password);
-//       state = state.copyWith(
-//           message: userRegistred, authStatus: AuthStatus.newUserRegistred);
-//     } on AuthError catch (error) {
-//       logout(error.message);
-//     } catch (error) {
-//       logout('Algo malo pasó');
-//     }
-//     state = state.copyWith(authStatus: AuthStatus.checking);
-//   }
+  AuthNotifier({required this.authUser}) : super(AuthState()) {
+    // checkAuthStatus();
+  }
 
-//   void checkAuthStatus() async {
-//     final token = await keyValueStorage.getValue<String>('token');
+  // Future<void> loginUser(String identifier, String password) async {
+  //   try {
+  //     final user = await authUser.login(identifier, password);
+  //     _setLoggedUser(user);
+  //   } on AuthError catch (error) {
+  //     logout(error.message);
+  //   } catch (error) {
+  //     logout('Algó malo pasó');
+  //   }
+  // }
 
-//     if (token == null) return logout();
+  void registerUser(String name, String lastName, String email,
+      String phoneNumber, String password, String role) async {
+    try {
+      await authUser.register(name, lastName, email, phoneNumber, password, role);
+      state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
+    } on Error catch (error) {
+      print(error);
+      // logout(error);
+    } catch (error) {
+      print(error); // logout('Algo malo pasó');
+    }
+    // state = state.copyWith(authStatus: AuthStatus.checking);
+  }
 
-//     try {
-//       final user = await authUser.checkAuthStatus(token);
-//       _setLoggedUser(user);
-//     } catch (error) {
-//       logout();
-//     }
-//   }
+  void activateAccount(String code) async {
+    try {
+      await authUser.activateAccount(code);
+      state = state.copyWith(authStatus: AuthStatus.accountActivated);
+    } catch (e) {
+      print(e);
+    }
+  }
 
-//   _setLoggedUser(User user) async {
-//     await keyValueStorage.setValueKey('token', user.token);
+  // void checkAuthStatus() async {
+  //   final token = await keyValueStorage.getValue<String>('token');
+  //   if (token == null) return logout();
+  //   try {
+  //     final user = await authUser.checkAuthStatus(token);
+  //     _setLoggedUser(user);
+  //   } catch (error) {
+  //     logout();
+  //   }
+  // }
 
-//     state = state.copyWith(
-//       user: user,
-//       authStatus: AuthStatus.authenticated,
-//       message: '',
-//     );
-//   }
+  // _setLoggedUser(User user) async {
+  //   await keyValueStorage.setValueKey('token', user.token);
 
-//   Future<void> logout([String? errorMessage]) async {
-//     await keyValueStorage.removeKey('token');
+  //   state = state.copyWith(
+  //     user: user,
+  //     authStatus: AuthStatus.authenticated,
+  //     message: '',
+  //   );
+  // }
 
-//     state = state.copyWith(
-//         authStatus: AuthStatus.notAuthenticated,
-//         user: null,
-//         message: errorMessage);
-//   }
-// }
+  // Future<void> logout([String? errorMessage]) async {
+  //   await keyValueStorage.removeKey('token');
 
-// final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-//   final authUser = AuthUser();
-//   final keyValueStorage = KeyValueStorage();
-
-//   return AuthNotifier(authUser: authUser, keyValueStorage: keyValueStorage);
-// });
+  //   state = state.copyWith(
+  //       authStatus: AuthStatus.notAuthenticated,
+  //       user: null,
+  //       message: errorMessage);
+  // }
+}

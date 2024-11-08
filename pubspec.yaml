@@ -17,6 +17,8 @@ dependencies:
   go_router: ^14.4.1
   formz: ^0.8.0
   google_nav_bar: ^5.0.7
+  flutter_dotenv: ^5.2.1
+  dio: ^5.7.0
 
 dev_dependencies:
   flutter_test:
@@ -32,6 +34,8 @@ flutter:
     - assets/images/carpinteria.png
     - assets/images/electricidad.png
     - assets/images/plomeria.png
+
+    - .env
 
   fonts:
     - family: Poppins

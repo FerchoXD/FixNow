@@ -1,6 +1,23 @@
+import 'package:fixnow/presentation/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fixnow/infrastructure/inputs.dart';
 import 'package:formz/formz.dart';
+
+final registerFormProvider =
+    StateNotifierProvider<RegisterFormNotifier, RegisterFormState>(
+  (ref) {
+
+    final registerCallback = ref.watch(authProvider.notifier).registerUser;
+
+    ref.listen(codeProvider, (previous, next) {
+      if (next.codeStatus == CodeStatus.valid) {
+        print('Cambiando al login');
+      }
+    });
+
+    return RegisterFormNotifier(registerCallbak: registerCallback);
+  },
+);
 
 class RegisterFormState {
   final bool isPosting;
@@ -11,19 +28,20 @@ class RegisterFormState {
   final LastName lastName;
   final Email email;
   final PhoneNumber phoneNumber;
+  final String role;
   final Password password;
 
-  RegisterFormState({
-    this.isPosting = false,
-    this.isFormPosted = false,
-    this.isValid = false,
-    this.userRegistred = false,
-    this.name = const Name.pure(),
-    this.lastName = const LastName.pure(),
-    this.email = const Email.pure(),
-    this.phoneNumber = const PhoneNumber.pure(),
-    this.password = const Password.pure(),
-  });
+  RegisterFormState(
+      {this.isPosting = false,
+      this.isFormPosted = false,
+      this.isValid = false,
+      this.userRegistred = false,
+      this.name = const Name.pure(),
+      this.lastName = const LastName.pure(),
+      this.email = const Email.pure(),
+      this.phoneNumber = const PhoneNumber.pure(),
+      this.role = '',
+      this.password = const Password.pure()});
 
   RegisterFormState copyWith({
     bool? isPosting,
@@ -33,6 +51,7 @@ class RegisterFormState {
     LastName? lastName,
     Email? email,
     PhoneNumber? phoneNumber,
+    String? role,
     Password? password,
     bool? userRegistred,
   }) =>
@@ -44,17 +63,18 @@ class RegisterFormState {
         lastName: lastName ?? this.lastName,
         email: email ?? this.email,
         phoneNumber: phoneNumber ?? this.phoneNumber,
+        role: role ?? this.role,
         password: password ?? this.password,
         userRegistred: userRegistred ?? this.userRegistred,
       );
 }
 
 class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
-  // final Function(String, String, String, String, String) registerCallback;
-
-  RegisterFormNotifier() : super(RegisterFormState());
+  final Function(String, String, String, String, String, String) registerCallbak;
+  RegisterFormNotifier({ required this.registerCallbak}) : super(RegisterFormState());
 
   onNameChange(String value) {
+    print(value);
     final newName = Name.dirty(value);
     state = state.copyWith(
         name: newName,
@@ -80,7 +100,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         ]));
   }
 
-  onPhoneNumber(String value) {
+  onPhoneNumberChange(String value) {
     final newPhoneNumber = PhoneNumber.dirty(value);
     state = state.copyWith(
         phoneNumber: newPhoneNumber,
@@ -99,6 +119,11 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         email: newEmail, isValid: Formz.validate([newEmail, state.password]));
   }
 
+  onRoleChange(String value) {
+    print(value);
+    state = state.copyWith(role: value);
+  }
+
   onPasswordChange(String value) {
     final newPassword = Password.dirty(value);
     state = state.copyWith(
@@ -112,9 +137,17 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
 
     state = state.copyWith(isPosting: true);
 
-    // await registerCallback(state.name.value, state.lastName.value,
-        // state.studentEnrollment.value, state.email.value, state.password.value);
-
+    try {
+      await registerCallbak(
+          state.name.value,
+          state.lastName.value,
+          state.email.value,
+          state.phoneNumber.value,
+          state.password.value,
+          state.role);
+    } catch (e) {
+      state = state.copyWith(isPosting: false);
+    }
     state = state.copyWith(isPosting: false);
   }
 
@@ -131,14 +164,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
         name: name,
         lastName: lastName,
         phoneNumber: phoneNumber,
-        isValid: Formz.validate([email, password, name, lastName, phoneNumber]));
+        isValid:
+            Formz.validate([email, password, name, lastName, phoneNumber]));
   }
 }
-
-// final registerFormProvider =
-//     StateNotifierProvider.autoDispose<RegisterFormNotifier, RegisterFormState>(
-//         (ref) {
-//   final registerCallback = ref.watch(authProvider.notifier).registerUser;
-
-//   return RegisterFormNotifier(registerCallback: registerCallback);
-// });

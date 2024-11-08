@@ -1,11 +1,13 @@
+import 'package:fixnow/presentation/providers/auth/register_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -39,6 +41,7 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Buscar un servicio',
               subtitle: 'Encuentra al profesional ideal para tu hogar.',
               onPressed: () {
+                ref.read(registerFormProvider.notifier).onRoleChange('client');
                 context.push('/register');
               },
             ),
@@ -48,6 +51,7 @@ class WelcomeScreen extends StatelessWidget {
               title: 'Ofrecer un servicio',
               subtitle: 'Conecta con clientes y crece tu negocio.',
               onPressed: () {
+                ref.read(registerFormProvider.notifier).onRoleChange('suplier');
                 context.push('/register');
               },
             ),

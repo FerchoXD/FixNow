@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
             color: colors.secondary,
             iconSize: 24,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-            tabs: [
+            tabs: const [
               GButton(
                 icon: Icons.home,
                 text: 'Inicio',

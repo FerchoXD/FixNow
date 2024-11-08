@@ -5,37 +5,32 @@ enum PasswordError { empty, length, format }
 
 // Extend FormzInput and provide the input type and error type.
 class Password extends FormzInput<String, PasswordError> {
-
-
-  static final RegExp passwordRegExp = RegExp(
-    r'(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$',
-  );
+  static final RegExp passwordRegExp =
+      RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#\$&*~])[A-Za-z\d!@#\$&*~]{8,}$');
 
   // Call super.pure to represent an unmodified form input.
   const Password.pure() : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const Password.dirty( String value ) : super.dirty(value);
-
+  const Password.dirty(String value) : super.dirty(value);
 
   String? get errorMessage {
-    if ( isValid || isPure ) return null;
+    if (isValid || isPure) return null;
 
-    if ( displayError == PasswordError.empty ) return 'El campo es requerido';
-    if ( displayError == PasswordError.length ) return 'Mínimo 8 caracteres';
-    if ( displayError == PasswordError.format ) return 'Debe de tener Mayúscula, letras y un número';
+    if (displayError == PasswordError.empty) return 'El campo es requerido';
+    if (displayError == PasswordError.length) return 'Mínimo 8 caracteres';
+    if (displayError == PasswordError.format)
+      return 'Un número y un carácter especial.';
 
     return null;
   }
 
-
   // Override validator to handle validating a given input value.
   @override
   PasswordError? validator(String value) {
-
-    if ( value.isEmpty || value.trim().isEmpty ) return PasswordError.empty;
-    if ( value.length < 8 ) return PasswordError.length;
-    if ( !passwordRegExp.hasMatch(value) ) return PasswordError.format;
+    if (value.isEmpty || value.trim().isEmpty) return PasswordError.empty;
+    if (value.length < 8 && value.length > 10) return PasswordError.length;
+    if (!passwordRegExp.hasMatch(value)) return PasswordError.format;
 
     return null;
   }
