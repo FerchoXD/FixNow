@@ -22,15 +22,15 @@ class ActivateScreenView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final codeState = ref.watch(codeProvider);
-    final registerState = ref.watch(registerFormProvider);
+    // final registerState = ref.watch(registerFormProvider);
 
-    ref.listen(authProvider, (previous, next) {
-      if (next.authStatus == AuthStatus.accountActivated) {
-        if (registerState.role == 'suplier') {
-          context.go('/login');
-        }
-      }
-    });
+    // ref.listen(authProvider, (previous, next) {
+    //   if (next.authStatus == AuthStatus.accountActivated) {
+    //     // if (registerState.role == 'suplier') {
+    //       context.go('/home');
+    //     // }
+    //   }
+    // });
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),

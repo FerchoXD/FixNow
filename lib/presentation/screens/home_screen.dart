@@ -9,15 +9,16 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
+      endDrawer: SideMenu(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
             onPressed: () {}, icon: const Icon(Icons.light_mode_rounded)),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
-        ],
+        // actions: [
+        //   IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
+        // ],
       ),
-      body: HomeView(),
+      body: const HomeView(),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: GNav(

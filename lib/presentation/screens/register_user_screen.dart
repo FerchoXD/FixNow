@@ -1,5 +1,4 @@
-import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
-import 'package:fixnow/presentation/providers/auth/register_provider.dart';
+import 'package:fixnow/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,11 +12,11 @@ class RegisterUserScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final registerState = ref.watch(registerFormProvider);
 
-    ref.listen(authProvider, (previous, next) {
-      if (next.authStatus == AuthStatus.newUserRegistred) {
-        context.go('/activate');
-      }
-    });
+    // ref.listen(authProvider, (previous, next) {
+    //   if (next.authStatus == AuthStatus.newUserRegistred) {
+    //     context.go('/activate');
+    //   }
+    // });
 
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),

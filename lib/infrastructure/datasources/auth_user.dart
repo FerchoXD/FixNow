@@ -30,10 +30,38 @@ class AuthUser {
   Future<void> activateAccount(String code) async {
     try {
       final response = await dio.put('/users/$code/activate');
-      print(response.data.reponse);
+      print(response.data);
     } catch (e) {
       print(e);
       throw Error();
+    }
+  }
+
+  Future login(String email, String password) async {
+    try {
+      final response = await dio.post('/users/auth/login', data: {
+        "email": email,
+        "password": password,
+      });
+      print(response.data);
+      return response.data;
+    } catch (e) {
+      print(e);
+      throw Error();
+    }
+  }
+
+  Future logout(String email) async {
+    try {
+      final response =
+          await dio.post('/users/auth/logout', data: {"email": email});
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

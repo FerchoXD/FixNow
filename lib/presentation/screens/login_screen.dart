@@ -1,17 +1,31 @@
+import 'package:fixnow/presentation/providers.dart';
+import 'package:fixnow/presentation/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = Theme.of(context).colorScheme;
+    final loginState = ref.watch(loginFormProvider);
+
+    // ref.listen(authProvider, (previous, next) {
+    //   if (next.authStatus == AuthStatus.authenticated) {
+    //     context.go('/home');
+    //   }
+    // });
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      body: Center( // Centrar toda la columna
-        child: SingleChildScrollView( // Scroll para evitar overflow con teclado
+      body: Center(
+        // Centrar toda la columna
+        child: SingleChildScrollView(
+          // Scroll para evitar overflow con teclado
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
             width: double.infinity, // Para ocupar todo el ancho disponible
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -42,72 +56,41 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40),
-                const TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Correo electrónico',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                    hintStyle: TextStyle(
-                      color: Color.fromARGB(113, 48, 48, 48),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(113, 48, 48, 48),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 76, 152, 233),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                  ),
+                CustomTextField(
+                  label: 'Correo eletrónico',
+                  onChanged:
+                      ref.read(loginFormProvider.notifier).onEmailChanged,
                 ),
                 const SizedBox(height: 20),
-                const TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Contraseña',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                    hintStyle: TextStyle(
-                      color: Color.fromARGB(113, 48, 48, 48),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(113, 48, 48, 48),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 76, 152, 233),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                  ),
+                CustomTextField(
+                  label: 'Contraseña',
+                  isObscureText: true,
+                  onChanged:
+                      ref.read(loginFormProvider.notifier).onPasswordChanged,
                 ),
                 const SizedBox(height: 40),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 76, 152, 233),
-                    foregroundColor: Colors.white,
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 5,
-                  ),
-                  onPressed: () {
-                    context.push('/home');
-                  },
-                  child: const Text('Inicio de sesión'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                      ),
+                      onPressed: loginState.isPosting
+                          ? null
+                          : () {
+                              ref
+                                  .read(loginFormProvider.notifier)
+                                  .onFormSubmit();
+                            },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 17),
+                        child: Text(
+                          'Inicio de sesión',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )),
                 ),
                 const SizedBox(height: 60),
                 const Text(
@@ -124,7 +107,8 @@ class LoginScreen extends StatelessWidget {
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
                       child: Row(
                         children: [
                           Image.asset(
@@ -146,7 +130,8 @@ class LoginScreen extends StatelessWidget {
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
                       child: Row(
                         children: [
                           Image.asset(

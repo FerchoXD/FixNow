@@ -1,59 +1,73 @@
 import 'package:fixnow/domain/entities/user.dart';
 import 'package:fixnow/infrastructure/datasources/auth_user.dart';
+import 'package:fixnow/infrastructure/services/key_value_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum AuthStatus { checking, authenticated, notAuthenticated, newUserRegistred, accountActivated}
+enum AuthStatus {
+  checking,
+  authenticated,
+  notAuthenticated,
+  newUserRegistred,
+  accountActivated
+}
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authUser = AuthUser();
-  // final keyValueStorage = KeyValueStorage();
+  final keyValueStorage = KeyValueStorage();
 
-  return AuthNotifier(authUser: authUser);
+  return AuthNotifier(authUser: authUser, keyValueStorage: keyValueStorage);
 });
 
 class AuthState {
   final AuthStatus authStatus;
-  final User? contact;
+  final User? user;
   final String message;
+  final List userTemp;
 
   AuthState(
-      {this.authStatus = AuthStatus.checking, this.contact, this.message = ''});
+      {this.authStatus = AuthStatus.checking,
+      this.user,
+      this.message = '',
+      this.userTemp = const []});
 
   AuthState copyWith({
     AuthStatus? authStatus,
-    User? contact,
+    User? user,
     String? message,
+    List? userTemp,
   }) =>
       AuthState(
         authStatus: authStatus ?? this.authStatus,
-        contact: contact ?? this.contact,
+        user: user ?? this.user,
         message: message ?? this.message,
+        userTemp: userTemp ?? this.userTemp,
       );
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthUser authUser;
-  // final KeyValueStorage keyValueStorage;
+  final KeyValueStorage keyValueStorage;
 
-  AuthNotifier({required this.authUser}) : super(AuthState()) {
+  AuthNotifier({required this.authUser, required this.keyValueStorage})
+      : super(AuthState()) {
     // checkAuthStatus();
   }
 
-  // Future<void> loginUser(String identifier, String password) async {
-  //   try {
-  //     final user = await authUser.login(identifier, password);
-  //     _setLoggedUser(user);
-  //   } on AuthError catch (error) {
-  //     logout(error.message);
-  //   } catch (error) {
-  //     logout('Algó malo pasó');
-  //   }
-  // }
+  Future<void> loginUser(String email, String password) async {
+    try {
+      final userTemp = await authUser.login(email, password);
+      // print(userTemp);
+      _setLoggedUser(userTemp);
+    } catch (error) {
+      logout();
+    }
+  }
 
   void registerUser(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      await authUser.register(name, lastName, email, phoneNumber, password, role);
+      await authUser.register(
+          name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
     } on Error catch (error) {
       print(error);
@@ -84,22 +98,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
   //   }
   // }
 
-  // _setLoggedUser(User user) async {
-  //   await keyValueStorage.setValueKey('token', user.token);
+  _setLoggedUser(userTemp) async {
+    await keyValueStorage.setValueKey('token', userTemp['token']);
+    state = state.copyWith(
+      // user: user,
+      // userTemp: userTemp,
+      authStatus: AuthStatus.authenticated,
+      message: '',
+    );
+  }
 
-  //   state = state.copyWith(
-  //     user: user,
-  //     authStatus: AuthStatus.authenticated,
-  //     message: '',
-  //   );
-  // }
+  Future<void> logout() async {
+    // await authUser.logout(email);
+    await keyValueStorage.removeKey('token');
 
-  // Future<void> logout([String? errorMessage]) async {
-  //   await keyValueStorage.removeKey('token');
-
-  //   state = state.copyWith(
-  //       authStatus: AuthStatus.notAuthenticated,
-  //       user: null,
-  //       message: errorMessage);
-  // }
+    state = state.copyWith(
+      authStatus: AuthStatus.notAuthenticated,
+      user: null,
+      // message: message);
+    );
+  }
 }
