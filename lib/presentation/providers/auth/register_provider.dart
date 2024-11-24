@@ -9,12 +9,6 @@ final registerFormProvider =
 
     final registerCallback = ref.watch(authProvider.notifier).registerUser;
 
-    ref.listen(codeProvider, (previous, next) {
-      if (next.codeStatus == CodeStatus.valid) {
-        print('Cambiando al login');
-      }
-    });
-
     return RegisterFormNotifier(registerCallbak: registerCallback);
   },
 );

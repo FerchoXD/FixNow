@@ -53,8 +53,7 @@ class AuthUser {
 
   Future logout(String email) async {
     try {
-      final response =
-          await dio.post('/users/auth/logout', data: {"email": email});
+      final response = await dio.post('/users/auth/logout', data: {"email": email});
       if (response.statusCode == 200) {
         return true;
       } else {

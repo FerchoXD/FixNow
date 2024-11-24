@@ -66,8 +66,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void registerUser(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      await authUser.register(
-          name, lastName, email, phoneNumber, password, role);
+      await authUser.register(name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
     } on Error catch (error) {
       print(error);

@@ -32,15 +32,41 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const ActivateScreen(),
       ),
       GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
+        path: '/home/:page',
+        builder: (context, state) {
+          final pageIndex = state.pathParameters['page'] ?? '0';
+          return HomeScreen(pageIndex: int.parse(pageIndex));
+        },
+      ),
+      GoRoute(
+        path: '/chat',
+        builder: (context, state) => const ChatScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: '/schedule',
+        builder: (context, state) => const ScheduleService(),
+      ),
+      GoRoute(path: '/user/select', 
+      builder: (context, state) => const UserSelect()),
+      
+      GoRoute(
+        path: '/supplier/profile',
+        builder: (context, state) => const ProfileSuplier(),
+      ),
+      GoRoute(
+        path: '/schedule/2',
+        builder: (context, state) => const ScheduleServiceTwo(),
       ),
     ],
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
 
-     if (isGoingTo == '/' && authStatus == AuthStatus.checking) {
+      if (isGoingTo == '/' && authStatus == AuthStatus.checking) {
         return null;
       }
 
@@ -51,23 +77,29 @@ final goRouterProvider = Provider((ref) {
       }
 
       if (authStatus == AuthStatus.authenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/') {
-          return '/home';
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/') {
+          return '/home/0';
         }
       }
 
-      if(authStatus == AuthStatus.newUserRegistred) {
-        if(isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/' ) {
+      if (authStatus == AuthStatus.newUserRegistred) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/') {
           return '/activate';
         }
       }
 
-      if(authStatus == AuthStatus.accountActivated) {
-         if(isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/' || isGoingTo == '/activate' ) {
-          return '/home';
+      if (authStatus == AuthStatus.accountActivated) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/' ||
+            isGoingTo == '/activate') {
+          return '/home/0';
         }
       }
-
 
       return null;
     },

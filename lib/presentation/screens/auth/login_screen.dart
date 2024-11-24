@@ -12,46 +12,38 @@ class LoginScreen extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final loginState = ref.watch(loginFormProvider);
 
-    // ref.listen(authProvider, (previous, next) {
-    //   if (next.authStatus == AuthStatus.authenticated) {
-    //     context.go('/home');
-    //   }
-    // });
-
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: colors.surface,
       body: Center(
-        // Centrar toda la columna
         child: SingleChildScrollView(
-          // Scroll para evitar overflow con teclado
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            width: double.infinity, // Para ocupar todo el ancho disponible
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            width: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 60),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Bienvenido',
                     style: TextStyle(
-                      color: Color(0xFF4C98E9),
+                      color: colors.primary,
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Por favor ingresa tus datos.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Color.fromARGB(255, 114, 114, 114),
-                      fontSize: 14,
+                      color: colors.onSurfaceVariant,
+                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -68,7 +60,7 @@ class LoginScreen extends ConsumerWidget {
                   onChanged:
                       ref.read(loginFormProvider.notifier).onPasswordChanged,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -87,17 +79,17 @@ class LoginScreen extends ConsumerWidget {
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 17),
                         child: Text(
-                          'Inicio de sesión',
+                          'Continuar',
                           style: TextStyle(color: Colors.white),
                         ),
                       )),
                 ),
-                const SizedBox(height: 60),
-                const Text(
+                const SizedBox(height: 30),
+                Text(
                   'O conéctate con',
-                  style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  style: TextStyle(color: colors.onSurface, fontSize: 16),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -152,11 +144,27 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 90),
                 TextButton(
                   onPressed: () {
-                    context.go('/register');
+                    context.push('/user/select');
                   },
-                  child: const Text(
-                    '¿No tienes cuenta? Regístrate',
-                    style: TextStyle(color: Color.fromARGB(255, 81, 113, 218)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '¿No tienes cuenta? ',
+                        style: TextStyle(
+                            color: colors.onSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      Text(
+                        'Regístrate',
+                        style: TextStyle(
+                            color: colors.primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ],
                   ),
                 ),
               ],

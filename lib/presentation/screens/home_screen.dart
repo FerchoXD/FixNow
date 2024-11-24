@@ -1,53 +1,41 @@
+import 'package:fixnow/presentation/screens.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final int pageIndex;
+  HomeScreen({super.key, required this.pageIndex});
+
+  final viewRoutes = <Widget>[
+    const HomeView(),
+    const CommunityScreen(),
+    const AssistantScreen(),
+    const FinanceScreen(),
+    const PrivateProfileSuplier()
+  ];
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      endDrawer: SideMenu(),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-            onPressed: () {}, icon: const Icon(Icons.light_mode_rounded)),
-        // actions: [
-        //   IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
-        // ],
-      ),
-      body: const HomeView(),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GNav(
-            tabActiveBorder: Border.all(color: Colors.black, width: 0.1),
-            gap: 8,
-            activeColor: colors.primary,
-            color: colors.secondary,
-            iconSize: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-            tabs: const [
-              GButton(
-                icon: Icons.home,
-                text: 'Inicio',
-              ),
-              GButton(
-                icon: Icons.comment,
-                text: 'Comunidad',
-              ),
-              GButton(
-                icon: Icons.assistant,
-                text: 'Asistente',
-              ),
-              GButton(
-                icon: Icons.person,
-                text: 'Perfil',
-              )
-            ]),
-      ),
-    );
+        backgroundColor: colors.surface,
+        drawer: const SideMenu(),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  context.push('/history');
+                },
+                icon: Icon(Icons.history))
+          ],
+          backgroundColor: colors.surface,
+        ),
+        body: IndexedStack(
+          index: pageIndex,
+          children: viewRoutes,
+        ),
+        bottomNavigationBar: CustomBottomNavigation(currentIndex: pageIndex));
   }
 }
 
@@ -71,11 +59,11 @@ class HomeView extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: colors.secondary),
+                    color: colors.onSurface),
               ),
               Text(
                 "Alan Gómez",
-                style: TextStyle(fontSize: 18, color: colors.secondary),
+                style: TextStyle(fontSize: 18, color: colors.onSurfaceVariant),
               ),
             ],
           ),
@@ -91,20 +79,23 @@ class HomeView extends StatelessWidget {
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: Colors.grey[200],
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              fillColor: Colors.grey[100],
+              // contentPadding:
+              //     const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             ),
           ),
           const SizedBox(
             height: 30,
           ),
-          const Text('Servicios'),
-          const SizedBox(
-            height: 30,
+          Text(
+            'Servicios',
+            style: TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
           ),
-          ServicesSection(),
-          ProvidersSection(),
+          const SizedBox(
+            height: 20,
+          ),
+          const ServicesSection(),
+          const ProvidersSection(),
         ],
       ),
     );
@@ -156,25 +147,40 @@ class ProvidersSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        ProviderCard(
-          name: 'Fernando Daniel',
-          profession: 'Carpintero',
-          price: 350,
-          rating: 4,
+        GestureDetector(
+          onTap: () {
+            context.push('/supplier/profile');
+          },
+          child: ProviderCard(
+            name: 'Fernando Daniel',
+            profession: 'Carpintero',
+            price: 350,
+            rating: 4,
+          ),
         ),
-        ProviderCard(
-          name: 'Fernando Daniel',
-          profession: 'Fontanero',
-          price: 350,
-          rating: 3,
+        GestureDetector(
+          onTap: () {
+            context.push('/supplier/profile');
+          },
+          child: ProviderCard(
+            name: 'Fernando Daniel',
+            profession: 'Fontanero',
+            price: 350,
+            rating: 3,
+          ),
         ),
-        ProviderCard(
-          name: 'Fernando Daniel',
-          profession: 'Electricista',
-          price: 350,
-          rating: 5,
+        GestureDetector(
+          onTap: () {
+            context.push('/supplier/profile');
+          },
+          child: ProviderCard(
+            name: 'Fernando Daniel',
+            profession: 'Electricista',
+            price: 350,
+            rating: 5,
+          ),
         ),
       ],
     );

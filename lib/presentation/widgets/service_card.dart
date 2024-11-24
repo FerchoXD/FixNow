@@ -11,9 +11,9 @@ class ServiceCard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-          height: 60,
-          width: 60,
+          margin: const EdgeInsets.symmetric(horizontal: 15,),
+          height: 80,
+          width: 120,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.0),
             image: DecorationImage(
@@ -22,7 +22,6 @@ class ServiceCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 4),
         Text(label),
       ],
     );

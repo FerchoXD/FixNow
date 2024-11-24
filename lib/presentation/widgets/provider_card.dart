@@ -16,8 +16,16 @@ class ProviderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius:
+            BorderRadius.circular(15), 
+            
+     
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -36,15 +44,19 @@ class ProviderCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: colors.onSurface, fontWeight: FontWeight.w500),
                 ),
-                Text(profession),
+                Text(
+                  profession,
+                  style: TextStyle(color: colors.onSurfaceVariant),
+                ),
                 Row(
                   children: List.generate(
                     5,
                     (index) => Icon(
-                      index < rating ? Icons.star : Icons.star_border,
-                      color: Colors.blue,
+                      index < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                      color: colors.primary,
                       size: 16,
                     ),
                   ),
@@ -55,10 +67,16 @@ class ProviderCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const Text("A partir de"),
+                Text(
+                  "A partir de",
+                  style: TextStyle(color: colors.onSurface),
+                ),
                 Text(
                   '\$ $price',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurface,
+                      fontSize: 20),
                 ),
               ],
             ),
@@ -68,4 +86,3 @@ class ProviderCard extends StatelessWidget {
     );
   }
 }
-

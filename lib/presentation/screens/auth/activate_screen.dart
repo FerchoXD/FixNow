@@ -2,15 +2,16 @@ import 'package:fixnow/presentation/providers.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ActivateScreen extends StatelessWidget {
   const ActivateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: ActivateScreenView(),
+    final colors = Theme.of(context).colorScheme;
+    return  Scaffold(
+      backgroundColor: colors.surface,
+      body: const ActivateScreenView(),
     );
   }
 }
@@ -22,15 +23,6 @@ class ActivateScreenView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final codeState = ref.watch(codeProvider);
-    // final registerState = ref.watch(registerFormProvider);
-
-    // ref.listen(authProvider, (previous, next) {
-    //   if (next.authStatus == AuthStatus.accountActivated) {
-    //     // if (registerState.role == 'suplier') {
-    //       context.go('/home');
-    //     // }
-    //   }
-    // });
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -47,8 +39,8 @@ class ActivateScreenView extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-              'Hemos enviado un código de verificación a tu correo, por favor ingresa el codigo para continuar'),
+           Text(
+              'Hemos enviado un código de verificación a tu correo, por favor ingresa el codigo para continuar', style: TextStyle(color: colors.onSurfaceVariant, fontSize: 16),),
           const SizedBox(height: 40),
           CustomTextField(
             label: 'Código',

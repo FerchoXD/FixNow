@@ -3,9 +3,12 @@ import 'package:fixnow/config/router/app_router.dart';
 import 'package:fixnow/config/themes/light_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 void main() async {
   await Environment.initEnvironment();
+  await initializeDateFormatting('es');
   runApp(const ProviderScope(
     child: MyApp(),
   ));
