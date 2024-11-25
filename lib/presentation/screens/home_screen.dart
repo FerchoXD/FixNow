@@ -11,13 +11,14 @@ class HomeScreen extends StatelessWidget {
     const HomeView(),
     const CommunityScreen(),
     const AssistantScreen(),
-    const FinanceScreen(),
+    const NotificationsScreen(),
     const PrivateProfileSuplier()
   ];
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
         backgroundColor: colors.surface,
         drawer: const SideMenu(),

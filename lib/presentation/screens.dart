@@ -15,3 +15,4 @@ export './screens/schedule_service_two.dart';
 export './screens/community_screen.dart';
 export './screens/assistan_screen.dart';
 export './screens/finances_screen.dart';
+export './screens/notifications_screen.dart';
