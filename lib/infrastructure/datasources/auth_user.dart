@@ -8,9 +8,8 @@ class AuthUser {
 
   Future<User> register(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
-    print({name, lastName, email, phoneNumber, password, role});
     try {
-      final response = await dio.post("/users/", data: {
+      final response = await dio.post("/", data: {
         "firstname": name,
         "lastname": lastName,
         "email": email,
@@ -18,42 +17,50 @@ class AuthUser {
         "password": password,
         "role": role,
       });
-
       final user = UserMapper.contactJsonToEntity(response.data);
       return user;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
 
-  Future<void> activateAccount(String code) async {
+  Future<User> activateAccount(String code) async {
     try {
-      final response = await dio.put('/users/$code/activate');
-      print(response.data);
+      final response = await dio.put('/$code/activate');
+      final user = UserMapper.contactJsonToEntity(response.data['response']);
+      return user;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
 
   Future login(String email, String password) async {
     try {
-      final response = await dio.post('/users/auth/login', data: {
+      final response = await dio.post('/auth/login', data: {
         "email": email,
         "password": password,
       });
-      print(response.data);
       return response.data;
     } catch (e) {
-      print(e);
+      throw Error();
+    }
+  }
+
+  Future<User> getUser(String token) async {
+    try {
+      final response = await dio.get('/get/data',
+          options: Options(headers: {'Authorization': token}));
+      final user = UserMapper.contactJsonToEntity(response.data);
+      return user;
+    } catch (e) {
       throw Error();
     }
   }
 
   Future logout(String email) async {
     try {
-      final response = await dio.post('/users/auth/logout', data: {"email": email});
+      final response =
+          await dio.post('/users/auth/logout', data: {"email": email});
       if (response.statusCode == 200) {
         return true;
       } else {

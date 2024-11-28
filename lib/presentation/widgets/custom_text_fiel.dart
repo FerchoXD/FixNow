@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final bool enabled;
   final TextInputType keyboardType;
+  final int maxLines;
 
   const CustomTextField({
     super.key,
@@ -28,6 +29,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.enabled = true,
     this.keyboardType = TextInputType.text,
+    this.maxLines = 1
   });
 
   @override
@@ -48,11 +50,14 @@ class CustomTextField extends StatelessWidget {
         keyboardType: keyboardType,
         onTap: onTap,
         readOnly: readOnly,
+        maxLines: maxLines,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         cursorColor: colors.primary,
         decoration: InputDecoration(
+          alignLabelWithHint: true,
           floatingLabelStyle: TextStyle(
             color: colors.primary,
+            
           ),
           border: InputBorder.none,
           hintText: hint,

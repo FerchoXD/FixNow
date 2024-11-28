@@ -11,7 +11,6 @@ class LoginScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final loginState = ref.watch(loginFormProvider);
-
     return Scaffold(
       backgroundColor: colors.surface,
       body: Center(
@@ -50,8 +49,10 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 40),
                 CustomTextField(
                   label: 'Correo eletrónico',
-                  onChanged:
-                      ref.read(loginFormProvider.notifier).onEmailChanged,
+                  onChanged: ref.read(loginFormProvider.notifier).onEmailChanged,
+                  errorMessage: loginState.isFormPosted
+                      ? loginState.email.errorMessage
+                      : null,
                 ),
                 const SizedBox(height: 20),
                 CustomTextField(
@@ -59,6 +60,9 @@ class LoginScreen extends ConsumerWidget {
                   isObscureText: true,
                   onChanged:
                       ref.read(loginFormProvider.notifier).onPasswordChanged,
+                  errorMessage: loginState.isFormPosted
+                      ? loginState.password.errorMessage
+                      : null,
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -93,7 +97,6 @@ class LoginScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Botón de Google
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),

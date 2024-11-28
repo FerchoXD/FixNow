@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fixnow/infrastructure/inputs.dart';
 import 'package:formz/formz.dart';
 
-final loginFormProvider =
-    StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
+final loginFormProvider = StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
   final loginUserCallBack = ref.watch(authProvider.notifier).loginUser;
 
   return LoginFormNotifier(loginUserCallback: loginUserCallBack);
@@ -49,8 +48,7 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
 
   onEmailChanged(String value) {
     final newValue = Email.dirty(value);
-    state = state.copyWith(
-        email: newValue, isValid: Formz.validate([newValue, state.password]));
+    state = state.copyWith( email: newValue, isValid: Formz.validate([newValue, state.password]));
   }
 
   onPasswordChanged(String value) {

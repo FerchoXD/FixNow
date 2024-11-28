@@ -1,8 +1,10 @@
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:go_router/go_router.dart';
 
-class CustomBottomNavigation extends StatelessWidget {
+class CustomBottomNavigation extends ConsumerWidget {
   final int currentIndex;
   const CustomBottomNavigation({super.key, required this.currentIndex});
 
@@ -27,8 +29,9 @@ class CustomBottomNavigation extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GNav(
@@ -53,8 +56,8 @@ class CustomBottomNavigation extends StatelessWidget {
             text: 'Asistente',
           ),
           GButton(
-            icon: Icons.attach_money_rounded,
-            text: 'Finanzas',
+            icon: authState.user!.role == 'CUSTOMER' ? Icons.notifications : Icons.attach_money_rounded,
+            text: 'Notificaciones',
           ),
           GButton(
             icon: Icons.person,
@@ -69,3 +72,4 @@ class CustomBottomNavigation extends StatelessWidget {
     );
   }
 }
+

@@ -50,14 +50,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   AuthNotifier({required this.authUser, required this.keyValueStorage})
       : super(AuthState()) {
-    // checkAuthStatus();
+    checkAuthStatus();
   }
 
   Future<void> loginUser(String email, String password) async {
     try {
       final userTemp = await authUser.login(email, password);
-      // print(userTemp);
-      _setLoggedUser(userTemp);
+      final token = userTemp['token'];
+      _setLoggedUser(token);
     } catch (error) {
       logout();
     }
@@ -68,49 +68,57 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await authUser.register(name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
-    } on Error catch (error) {
-      print(error);
-      // logout(error);
     } catch (error) {
-      print(error); // logout('Algo malo pasó');
+      logout();
     }
-    // state = state.copyWith(authStatus: AuthStatus.checking);
+    state = state.copyWith(authStatus: AuthStatus.checking);
   }
 
   void activateAccount(String code) async {
     try {
-      await authUser.activateAccount(code);
-      state = state.copyWith(authStatus: AuthStatus.accountActivated);
+      final user = await authUser.activateAccount(code);
+      state =
+          state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
     } catch (e) {
-      print(e);
+      throw Error();
     }
   }
 
-  // void checkAuthStatus() async {
-  //   final token = await keyValueStorage.getValue<String>('token');
-  //   if (token == null) return logout();
-  //   try {
-  //     final user = await authUser.checkAuthStatus(token);
-  //     _setLoggedUser(user);
-  //   } catch (error) {
-  //     logout();
-  //   }
-  // }
+  void checkAuthStatus() async {
+    final token = await keyValueStorage.getValue('token');
+    if (token == null) return logout();
+    try {
+      await _setLoggedUser(token);
+    } catch (error) {
+      logout();
+    }
+  }
 
-  _setLoggedUser(userTemp) async {
-    await keyValueStorage.setValueKey('token', userTemp['token']);
+  _setLoggedUser(String token) async {
+    await keyValueStorage.setValueKey('token', token);
+    final user = await _getUserProfile();
     state = state.copyWith(
-      // user: user,
-      // userTemp: userTemp,
+      user: user,
+      userTemp: null,
       authStatus: AuthStatus.authenticated,
       message: '',
     );
   }
+  
+  Future _getUserProfile() async {
+    try {
+      final token = await keyValueStorage.getValue('token');
+      if(token == null) return logout();
+      final user = await authUser.getUser(token);
+      return user;
+    } catch (e) {
+      logout();
+      throw Error();
+    }
+  }
 
   Future<void> logout() async {
-    // await authUser.logout(email);
     await keyValueStorage.removeKey('token');
-
     state = state.copyWith(
       authStatus: AuthStatus.notAuthenticated,
       user: null,
