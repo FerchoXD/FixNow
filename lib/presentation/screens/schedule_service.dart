@@ -25,8 +25,22 @@ class ScheduleService extends StatelessWidget {
 }
 
 class ScheduleServiceView extends ConsumerWidget {
-  const ScheduleServiceView({super.key});
+  ScheduleServiceView({super.key});
 
+  final Map<String, int> _months = {
+    'enero': 1,
+    'febrero': 2,
+    'marzo': 3,
+    'abril': 4,
+    'mayo': 5,
+    'junio': 6,
+    'julio': 7,
+    'agosto': 8,
+    'septiembre': 9,
+    'octubre': 10,
+    'noviembre': 11,
+    'diciembre': 12,
+  };
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
@@ -56,41 +70,45 @@ class ScheduleServiceView extends ConsumerWidget {
               'Selecciona la hora',
               style: TextStyle(fontSize: 16),
             ),
-           const  SizedBox(
+            const SizedBox(
               height: 30,
             ),
             const SelectTime(),
-            const  SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            scheduleServicesState.day != '' ? const Text(
-              'Tu servicio quedará agendado para el día',
-              style: TextStyle(fontSize: 16),
-            ) : const Text(''),
-            scheduleServicesState.day != '' ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${scheduleServicesState.day} de ${scheduleServicesState.month} de ${scheduleServicesState.year}',
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: colors.primary,
-                      fontWeight: FontWeight.w500),
-                ),
-                const Text(
-                  ' a las ',
-                  style: TextStyle(fontSize: 16),
-                ),
-                Text(
-                  scheduleServicesState.timeOfDay,
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: colors.primary,
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
-            ) : Text(''),
-           const  SizedBox(
+            scheduleServicesState.day != ''
+                ? const Text(
+                    'Tu servicio quedará agendado para el día',
+                    style: TextStyle(fontSize: 16),
+                  )
+                : const Text(''),
+            scheduleServicesState.day != ''
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${scheduleServicesState.day} de ${scheduleServicesState.month} de ${scheduleServicesState.year}',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: colors.primary,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      const Text(
+                        ' a las ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      Text(
+                        scheduleServicesState.timeOfDay,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: colors.primary,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  )
+                : Text(''),
+            const SizedBox(
               height: 30,
             ),
             SizedBox(
@@ -101,9 +119,78 @@ class ScheduleServiceView extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                   ),
-                  onPressed: () {
-                    context.push('/schedule/2');
-                  },
+                    onPressed: () {
+                      try {
+                        // Convertir el mes a su número correspondiente
+                        final month = _months[scheduleServicesState.month.toLowerCase()] ?? 1;
+
+                        // Combinar la fecha seleccionada
+                        final selectedDate = DateTime(
+                          int.parse(scheduleServicesState.year),
+                          month,
+                          int.parse(scheduleServicesState.day),
+                        );
+
+                        // Normalizar el formato de `timeOfDay`
+                        final normalizedTimeOfDay = scheduleServicesState.timeOfDay.replaceAll('\u202F', ' ');
+
+                        // Validar el formato de `timeOfDay`
+                        if (!normalizedTimeOfDay.contains(' ')) {
+                          throw FormatException('Formato de tiempo inválido: $normalizedTimeOfDay');
+                        }
+
+                        // Dividir `timeOfDay` en horas y período
+                        final timeParts = normalizedTimeOfDay.split(' ');
+                        if (timeParts.length != 2) {
+                          throw FormatException('Formato de tiempo inesperado: $normalizedTimeOfDay');
+                        }
+
+                        final time = timeParts[0].split(':'); // Divide horas y minutos.
+                        if (time.length != 2) {
+                          throw FormatException('Formato de hora inválido: ${timeParts[0]}');
+                        }
+
+                        final period = timeParts[1]; // AM o PM.
+                        int hour = int.parse(time[0]);
+                        final int minute = int.parse(time[1]);
+
+                        // Convertir hora a formato de 24 horas si es PM.
+                        if (period == 'PM' && hour != 12) {
+                          hour += 12;
+                        } else if (period == 'AM' && hour == 12) {
+                          hour = 0; // Medianoche en formato de 24 horas.
+                        }
+
+                        // Crear el objeto `DateTime` con la fecha y hora seleccionadas
+                        final selectedDateTime = DateTime(
+                          selectedDate.year,
+                          selectedDate.month,
+                          selectedDate.day,
+                          hour,
+                          minute,
+                        );
+
+                        print('Fecha y hora seleccionadas: $selectedDateTime');
+
+                        // Navegar con los datos
+                        context.push('/schedule/2', extra: {
+                          'selectedDateTime': selectedDateTime,
+                        });
+                      } catch (e) {
+                        // Mostrar error en la consola para depuración
+                        print('Error procesando la fecha y hora: $e');
+
+                        // Mostrar un mensaje de error al usuario
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error procesando la fecha y hora: $e'),
+                            backgroundColor: Theme.of(context).colorScheme.error,
+                          ),
+                        );
+                      }
+                    },
+     
+
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 17),
                     child: Text(
@@ -178,21 +265,27 @@ class SelectTimeState extends ConsumerState<SelectTime> {
       builder: (context, child) {
         final colors = Theme.of(context).colorScheme;
         return Theme(
-            data: Theme.of(context).copyWith(
-                timePickerTheme: TimePickerThemeData(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
               backgroundColor: colors.surface,
               hourMinuteColor: colors.surfaceContainer,
               dayPeriodTextColor: colors.primary,
               dayPeriodColor: colors.surfaceContainer,
               hourMinuteTextColor: colors.primary,
-            )),
-            child: child!);
+            ),
+          ),
+          child: child!,
+        );
       },
     ).then((value) {
-      setState(() {
-        _timeOfDay = value!;
-      });
-      ref.read(scheduleServiceProvider.notifier).onTimeOfDayChanged(_timeOfDay);
+      if (value != null) {
+        setState(() {
+          _timeOfDay = value;
+        });
+        ref
+            .read(scheduleServiceProvider.notifier)
+            .onTimeOfDayChanged(_timeOfDay);
+      }
     });
   }
 
@@ -202,16 +295,16 @@ class SelectTimeState extends ConsumerState<SelectTime> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colors.secondary,
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: colors.primary, width: 0.2),
-                borderRadius: BorderRadius.circular(15)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: colors.secondary,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: colors.primary, width: 0.2),
+            borderRadius: BorderRadius.circular(15),
           ),
-          onPressed: () {
-            _showTimePicker();
-          },
-          child: Text(_timeOfDay.format(context).toString())),
+        ),
+        onPressed: _showTimePicker,
+        child: Text(_timeOfDay.format(context).toString()),
+      ),
     );
   }
 }

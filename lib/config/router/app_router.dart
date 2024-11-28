@@ -8,7 +8,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/home/0',
+    initialLocation: '/schedule',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(

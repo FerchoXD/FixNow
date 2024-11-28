@@ -1,8 +1,39 @@
+import 'package:dio/dio.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleServiceTwo extends StatelessWidget {
   const ScheduleServiceTwo({super.key});
+
+  Future<void> _postServiceData(BuildContext context, DateTime agreedDate) async {
+    final dio = Dio();
+    const url = 'https://69fa-2806-262-3404-9c-7910-4ceb-d179-5618.ngrok-free.app/api/v1/history/create/service';
+
+    final payload = {
+      "userUuid": "1c63052d-6b63-4d48-a45c-75c956154326",
+      "title": "Mantenimiento general",
+      "description": "Revisión y reparación de equipos.",
+      "agreedPrice": 150.01,
+      "agreedDate": agreedDate.toUtc().toIso8601String(),
+    };
+
+    try {
+      final response = await dio.post(url, data: payload);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Servicio agendado con éxito.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.data['message']}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al agendar el servicio: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

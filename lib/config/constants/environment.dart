@@ -6,5 +6,5 @@ class Environment {
     await dotenv.load(fileName: ".env");
   }
 
-  static String apiUrl = dotenv.env['API_URL'] ?? 'API_URL not configured ';
+  static String apiUrl = dotenv.env['API_URL'] ?? 'http://127.0.0.1:3000/api/v1';
 }
