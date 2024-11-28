@@ -1,6 +1,7 @@
 import 'package:fixnow/config/router/app_router_notifier.dart';
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
+import 'package:fixnow/presentation/screens/supplier/configure_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,7 +9,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/home/0',
+    initialLocation: '/configure/information',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -50,58 +51,73 @@ final goRouterProvider = Provider((ref) {
         path: '/schedule',
         builder: (context, state) => const ScheduleService(),
       ),
-      GoRoute(path: '/user/select', 
-      builder: (context, state) => const UserSelect()),
-      
       GoRoute(
-        path: '/supplier/profile',
+          path: '/user/select',
+          builder: (context, state) => const UserSelect()),
+      GoRoute(
+        path: '/profile/supplier',
         builder: (context, state) => const ProfileSuplier(),
       ),
       GoRoute(
         path: '/schedule/2',
         builder: (context, state) => const ScheduleServiceTwo(),
       ),
+      GoRoute(
+        path: '/configure/information',
+        builder: (context, state) => const ConfigureProfileScreen(),
+      ),
+      GoRoute(
+        path: '/configure',
+        builder: (context, state) => const ScheduleServiceTwo(),
+      ),
+      
     ],
     redirect: (context, state) {
-      final isGoingTo = state.matchedLocation;
-      final authStatus = goRouterNotifier.authStatus;
+      // final isGoingTo = state.matchedLocation;
+      // final authStatus = goRouterNotifier.authStatus;
+      // final user = goRouterNotifier.user;
 
-      if (isGoingTo == '/' && authStatus == AuthStatus.checking) {
-        return null;
-      }
+      // if (isGoingTo == '/splash' && authStatus == AuthStatus.checking) {
+      //   return null;
+      // }
 
-      if (authStatus == AuthStatus.notAuthenticated) {
-        if (isGoingTo == '/login' || isGoingTo == '/register') return null;
+      // if (authStatus == AuthStatus.notAuthenticated) {
+      //   if (isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/user/select') return null;
 
-        return '/login';
-      }
+      //   return '/login';
+      // }
 
-      if (authStatus == AuthStatus.authenticated) {
-        if (isGoingTo == '/login' ||
-            isGoingTo == '/register' ||
-            isGoingTo == '/') {
-          return '/home/0';
-        }
-      }
+      // if (authStatus == AuthStatus.authenticated) {
+      //   if (isGoingTo == '/login' ||
+      //       isGoingTo == '/register' ||
+      //       isGoingTo == '/' || isGoingTo == '/splash') {
+      //     return '/home/0';
+      //   }
+      // }
 
-      if (authStatus == AuthStatus.newUserRegistred) {
-        if (isGoingTo == '/login' ||
-            isGoingTo == '/register' ||
-            isGoingTo == '/') {
-          return '/activate';
-        }
-      }
+      // if (authStatus == AuthStatus.newUserRegistred) {
+      //   if (isGoingTo == '/login' ||
+      //       isGoingTo == '/register' ||
+      //       isGoingTo == '/') {
+      //     return '/activate';
+      //   }
+      // }
 
-      if (authStatus == AuthStatus.accountActivated) {
-        if (isGoingTo == '/login' ||
-            isGoingTo == '/register' ||
-            isGoingTo == '/' ||
-            isGoingTo == '/activate') {
-          return '/home/0';
-        }
-      }
+      // if (authStatus == AuthStatus.accountActivated) {
+      //   if (isGoingTo == '/login' ||
+      //       isGoingTo == '/register' ||
+      //       isGoingTo == '/' ||
+      //       isGoingTo == '/activate') {
 
-      return null;
+      //         if(user != null && user.role == 'SUPPLIER' && isGoingTo == '/configure/information') {
+                
+      //         }
+
+      //     // return '/home/0';
+      //   }
+      // }
+
+      // return null;
     },
   );
 });

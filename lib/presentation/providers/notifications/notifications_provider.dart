@@ -1,8 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final notificationsProvider =
-    StateNotifierProvider<NotificationsNotifier, NotificationsState>((ref) {
+final notificationsProvider = StateNotifierProvider<NotificationsNotifier, NotificationsState>((ref) {
   return NotificationsNotifier();
 });
 
@@ -29,6 +29,12 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
   NotificationsNotifier() : super(NotificationsState()) {
     requestPermission();
     getFirebaseMessaginToken();
+    onForegroundMessage();
+  }
+
+  Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    await Firebase.initializeApp();
+    print("Handling a background message: ${message.messageId}");
   }
 
   void requestPermission() async {
@@ -56,5 +62,9 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     print('Message data: ${message.data}');
     if (message.notification == null) return;
     print('Message also contained a notification: ${message.notification}');
+  }
+
+  void onForegroundMessage() {
+    FirebaseMessaging.onMessage.listen(handleRemoteMessage);
   }
 }

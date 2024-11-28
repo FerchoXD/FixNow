@@ -2,6 +2,7 @@ class User {
   final String id;
   final String name;
   final String lastName;
+  final String fullname;
   final String phoneNumber;
   final String email;
   final String password;
@@ -10,9 +11,11 @@ class User {
   final String profilefileNames;
   final String address;
   final String workexperience;
-  final double standardrice;
+  final double standardprice;
+  final double quotation;
   final double hourlyrate;
   final List<String> selectedServices;
+  final double relevance;
   final String? token;
   final String activateToken;
   final String? verifiedAt;
@@ -23,6 +26,7 @@ class User {
     required this.id,
     required this.name,
     required this.lastName,
+    required this.fullname,
     required this.phoneNumber,
     required this.email,
     required this.password,
@@ -31,21 +35,16 @@ class User {
     required this.profilefileNames,
     required this.address,
     required this.workexperience,
-    required this.standardrice,
+    required this.standardprice,
+    required this.quotation,
     required this.hourlyrate,
     required this.selectedServices,
+    required this.relevance,
     this.token,
     required this.activateToken,
     this.verifiedAt,
     required this.createdAt,
     required this.updatedAt,
   });
-
-  bool get isSuplier {
-    return role.contains('suplier');
-  }
-
-  bool get isClient {
-    return role.contains('client');
-  }
 }
+

@@ -1,13 +1,23 @@
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   final int pageIndex;
   HomeScreen({super.key, required this.pageIndex});
 
-  final viewRoutes = <Widget>[
+  final viewRoutesCustomer = <Widget>[
+    const HomeView(),
+    const CommunityScreen(),
+    const AssistantScreen(),
+    const NotificationsScreen(),
+    const PrivateCustomerProfile()
+  ];
+
+  final viewRoutesSupplier = <Widget>[
     const HomeView(),
     const CommunityScreen(),
     const AssistantScreen(),
@@ -16,9 +26,9 @@ class HomeScreen extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-
+    final authState = ref.watch(authProvider);
     return Scaffold(
         backgroundColor: colors.surface,
         drawer: const SideMenu(),
@@ -28,76 +38,80 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () {
                   context.push('/history');
                 },
-                icon: Icon(Icons.history))
+                icon: const Icon(Icons.history))
           ],
           backgroundColor: colors.surface,
         ),
         body: IndexedStack(
           index: pageIndex,
-          children: viewRoutes,
+          children: authState.user!.role == 'CUSTOMER'
+              ? viewRoutesCustomer
+              : viewRoutesSupplier,
         ),
         bottomNavigationBar: CustomBottomNavigation(currentIndex: pageIndex));
   }
 }
 
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-
+    final authState = ref.watch(authProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                "Hola, ",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colors.onSurface),
-              ),
-              Text(
-                "Alan Gómez",
-                style: TextStyle(fontSize: 18, color: colors.onSurfaceVariant),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextField(
-            decoration: InputDecoration(
-              hintText: "Buscar...",
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Colors.grey[100],
-              // contentPadding:
-              //     const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  "Hola, ",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: colors.onSurface),
+                ),
+                Text(
+                  authState.user!.name,
+                  style: TextStyle(fontSize: 18, color: colors.onSurfaceVariant),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Text(
-            'Servicios',
-            style: TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const ServicesSection(),
-          const ProvidersSection(),
-        ],
+            const SizedBox(
+              height: 20,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Buscar...",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+                // contentPadding:
+                //     const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Text(
+              'Servicios',
+              style: TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const ServicesSection(),
+            const ProvidersSection(),
+          ],
+        ),
       ),
     );
   }

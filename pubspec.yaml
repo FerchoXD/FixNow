@@ -27,6 +27,7 @@ dependencies:
   fl_chart: ^0.69.1
   firebase_messaging: ^15.1.5
   firebase_core: ^3.8.0
+  percent_indicator: ^4.2.4
 
 dev_dependencies:
   flutter_test:
