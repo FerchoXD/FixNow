@@ -11,7 +11,7 @@ class InformationState {
 
   InformationState(
       {this.formStatus = FormStatus.checking,
-      this.section = 3,
+      this.section = 5,
       this.loadingBar = 0.0,
       this.percentageCompleted = 0,
       this.savedProgress = 0,});

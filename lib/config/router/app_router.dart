@@ -66,11 +66,7 @@ final goRouterProvider = Provider((ref) {
         path: '/configure/information',
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
-      GoRoute(
-        path: '/configure',
-        builder: (context, state) => const ScheduleServiceTwo(),
-      ),
-      
+
     ],
     redirect: (context, state) {
       // final isGoingTo = state.matchedLocation;

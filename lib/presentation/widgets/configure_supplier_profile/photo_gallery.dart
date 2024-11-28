@@ -1,6 +1,7 @@
 import 'package:fixnow/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
@@ -93,6 +94,16 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    void showToast(String message) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: colors.primary.withOpacity(0.1),
+        textColor: colors.primary,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -138,8 +149,8 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
                       right: 5,
                       child: GestureDetector(
                         onTap: () => _removeImage(index),
-                        child:  CircleAvatar(
-                          backgroundColor: colors.onErrorContainer,
+                        child: CircleAvatar(
+                          backgroundColor: Color(0xFFE05454),
                           child: Icon(
                             Icons.close,
                             color: Colors.white,
@@ -152,38 +163,30 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
               },
             ),
             const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                if (_images.length < 2) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text('Ingresa al menos 2 imágenes para continuar')),
-                  );
-                }
-              },
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  onPressed: _images.length < 2
-                      ? null
-                      : () {
-                          Navigator.pushNamed(context, '/chat');
-                        },
-                  child: const Text(
-                    'Guardar',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+                onPressed: () {
+                  if (_images.length < 2) {
+                    return showToast('Ingresa al menos 2 imágenes para continuar');
+                  }
+
+                  ref.read(imagesProvider.notifier).onFormSubmit("3041a985-593e-4356-9a9f-9e0831751ffb");
+
+                },
+                child: const Text(
+                  'Guardar',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),

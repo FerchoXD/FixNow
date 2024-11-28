@@ -51,7 +51,8 @@ class _TimeAvailabilityState extends ConsumerState<TimeAvailability> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-
+    final timeState = ref.watch(timeProvider);
+    final authState = ref.watch(authProvider);
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -174,7 +175,9 @@ class _TimeAvailabilityState extends ConsumerState<TimeAvailability> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)),
                   ),
-                  onPressed: () {},
+                  onPressed: timeState.isPosting ?  null : () {
+                    ref.read(timeProvider.notifier).onFormSubmit(authState.user!.id);
+                  },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 17),
                     child: Text(

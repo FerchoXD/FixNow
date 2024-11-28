@@ -1,7 +1,11 @@
+import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final timeProvider = StateNotifierProvider<TimeNotifier, TimeState>((ref) {
-  return TimeNotifier();
+  final supplierData = ProfileSupplierData();
+  return TimeNotifier(
+    supplierData: supplierData
+  );
 });
 
 class TimeState {
@@ -10,12 +14,11 @@ class TimeState {
   final bool isValid;
   final List<Map<String, dynamic>> schedule;
 
-  const TimeState({
-    this.isPosting = false,
-    this.isFormPosted = false,
-    this.isValid = false,
-    this.schedule = const []
-  });
+  const TimeState(
+      {this.isPosting = false,
+      this.isFormPosted = false,
+      this.isValid = false,
+      this.schedule = const []});
 
   TimeState copyWith({
     bool? isPosting,
@@ -31,16 +34,21 @@ class TimeState {
       );
 }
 
-
 class TimeNotifier extends StateNotifier<TimeState> {
-  TimeNotifier():super(const TimeState());
+  final ProfileSupplierData supplierData;
+  TimeNotifier({required this.supplierData}) : super(const TimeState());
 
-  onScheduleChanged(List<Map<String, dynamic>> schedule) { 
+  onScheduleChanged(List<Map<String, dynamic>> schedule) {
     state = state.copyWith(schedule: schedule);
   }
 
-  onFormSubmit() {
-    
+  onFormSubmit(String id) async {
+    try {
+      await supplierData.sendCalendar(id, state.schedule);
+    } catch (e) {
+      throw Error();
+    }
+    state = state.copyWith(isPosting: true);
+    state = state.copyWith(isPosting: false);
   }
-
 }

@@ -71,8 +71,8 @@ class RatesPrices extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
               ),
-              onPressed: () {
-                ref.read(pricesProvider.notifier).onFormSubmit(authState.user!.id);
+              onPressed: pricesState.isPosting ? null : () {
+                ref.read(pricesProvider.notifier).onFormSubmit("3041a985-593e-4356-9a9f-9e0831751ffb");
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 17),

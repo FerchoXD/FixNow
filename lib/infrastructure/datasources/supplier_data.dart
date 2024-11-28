@@ -67,8 +67,29 @@ class ProfileSupplierData {
           "hourlyrate": hourlyPrice
         }
       });
+      final supplier = SupplierMapper.supplierJsonToEntity(response.data['data']);
+    } catch (e) {
+      throw Error();
+    }
+  }
+
+  Future sendCalendar(String id, List<Map<String, dynamic>> calendar) async {
+    try {
+      final response = await dio
+          .put('/profile/suplier', data: {"uuid": id, "calendar": calendar});
       final supplier =
           SupplierMapper.supplierJsonToEntity(response.data['data']);
+    } catch (e) {
+      print(e);
+      throw Error();
+    }
+  }
+
+  Future sendImages(String id, List<String> images) async {
+    try {
+      final response = await dio
+          .put('/profile/suplier', data: {"uuid": id, "images": images});
+      final supplier = SupplierMapper.supplierJsonToEntity(response.data['data']);
       print(supplier);
     } catch (e) {
       print(e);
