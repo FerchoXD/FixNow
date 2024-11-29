@@ -6,5 +6,5 @@ class Environment {
     await dotenv.load(fileName: ".env");
   }
 
-  static String apiUrl = dotenv.env['API_URL'] ?? 'http://127.0.0.1:3000/api/v1';
+  static String apiUrl = dotenv.env['API_URL'] ?? 'https://f2db-2806-262-3404-9c-342b-4c1a-df3a-a5d1.ngrok-free.app/api/v1';
 }
