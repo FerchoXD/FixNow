@@ -1,4 +1,7 @@
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class PrivateProfileSuplier extends StatelessWidget {
   const PrivateProfileSuplier({super.key});
@@ -8,17 +11,19 @@ class PrivateProfileSuplier extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: colors.surface,
-      body: SupplierProfileView(),
+      body: const SupplierProfileView(),
     );
   }
 }
 
-class SupplierProfileView extends StatelessWidget {
+class SupplierProfileView extends ConsumerWidget {
   const SupplierProfileView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final userState = ref.watch(authProvider);
+    final rating = userState.user!.relevance;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
@@ -40,46 +45,61 @@ class SupplierProfileView extends StatelessWidget {
               height: 20,
             ),
             Text(
-              'Alan Manuel',
+              userState.user != null ? userState.user!.name : '',
               style: TextStyle(fontSize: 34, color: colors.onSurface),
             ),
             Text(
-              'Gómez Vázquez',
+              userState.user != null ? userState.user!.lastName : '',
               style: TextStyle(fontSize: 34, color: colors.onSurface),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: List.generate(
-                5,
-                (index) => Icon(
-                  index < 4 ? Icons.star_rounded : Icons.star_border_rounded,
-                  color: colors.primary,
-                  size: 32,
-                ),
-              ),
             ),
             const SizedBox(
               height: 10,
             ),
             Row(
               children: [
-                Container(
+                ...List.generate(
+                  5,
+                  (index) => Icon(
+                    index < rating
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: colors.primary,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '$rating',
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: List.generate(
+                userState.user != null
+                    ? userState.user!.selectedServices.length
+                    : 0,
+                (index) => Container(
                   decoration: BoxDecoration(
-                      color: colors.secondaryContainer,
-                      borderRadius: BorderRadius.circular(10)),
+                    color: colors.secondaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Electricista',
+                    userState.user != null
+                        ? userState.user!.selectedServices[index]
+                        : '', // Texto dinámico
                     style: TextStyle(
                       color: colors.onSecondaryContainer,
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                
-              ],
+              ),
             ),
             const SizedBox(
               height: 40,
@@ -121,7 +141,7 @@ class SupplierProfileView extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '961 477 55 63',
+                      userState.user != null ? userState.user!.phoneNumber : '',
                       style: TextStyle(fontSize: 16, color: colors.onSurface),
                     ),
                   ],
@@ -142,7 +162,7 @@ class SupplierProfileView extends StatelessWidget {
               height: 10,
             ),
             Text(
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+              userState.user != null ? userState.user!.workExperience : '',
               style: TextStyle(fontSize: 16, color: colors.onSurface),
             ),
             const SizedBox(
@@ -162,7 +182,8 @@ class SupplierProfileView extends StatelessWidget {
               children: [
                 Text('A partir de ',
                     style: TextStyle(fontSize: 16, color: colors.onSurface)),
-                Text('\$350',
+                Text(
+                    '\$ ${userState.user != null ? userState.user!.standardPrice : ''}',
                     style: TextStyle(
                         fontSize: 24,
                         color: colors.primary,
@@ -173,7 +194,8 @@ class SupplierProfileView extends StatelessWidget {
               children: [
                 Text('Tarifa por hora: ',
                     style: TextStyle(fontSize: 16, color: colors.onSurface)),
-                Text('\$100',
+                Text(
+                    '\$ ${userState.user != null ? userState.user!.hourlyRate : userState.user!.hourlyRate}',
                     style: TextStyle(
                         fontSize: 24,
                         color: colors.primary,
@@ -201,7 +223,7 @@ class SupplierProfileView extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            WorkSchedule()
+            const WorkSchedule()
           ],
         ),
       ),
@@ -209,29 +231,40 @@ class SupplierProfileView extends StatelessWidget {
   }
 }
 
-class WorkSchedule extends StatelessWidget {
+class WorkSchedule extends ConsumerWidget {
   const WorkSchedule({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+  String formatTime(String? time) {
+    if (time == null) {
+      return 'N/D'; // Devuelve "No Disponible" si el tiempo es nulo
+    }
+    final parsedTime = DateFormat("HH:mm:ss").parse(time);
+    return DateFormat("h a").format(parsedTime);
+  }
 
-    final days = [
-      {'day': 'Lunes', 'time': '8 Am - 5 Pm', 'isWorkingDay': true},
-      {'day': 'Martes', 'time': '8 Am - 5 Pm', 'isWorkingDay': true},
-      {'day': 'Miércoles', 'time': '8 Am - 5 Pm', 'isWorkingDay': true},
-      {'day': 'Jueves', 'time': 'No laboral', 'isWorkingDay': false},
-      {'day': 'Viernes', 'time': '8 Am - 5 Pm', 'isWorkingDay': true},
-      {'day': 'Sábado', 'time': '8 Am - 5 Pm', 'isWorkingDay': true},
-      {'day': 'Domingo', 'time': 'No laboral', 'isWorkingDay': false},
-    ];
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = Theme.of(context).colorScheme;
+    final userState = ref.watch(authProvider);
+
+    const dayOrder = {
+      'Lunes': 1,
+      'Martes': 2,
+      'Miércoles': 3,
+      'Jueves': 4,
+      'Viernes': 5,
+      'Sábado': 6,
+      'Domingo': 7,
+    };
+
+    final sortedCalendar = List.from(userState.user!.calendar)
+      ..sort((a, b) => (dayOrder[a.day] ?? 8).compareTo(dayOrder[b.day] ?? 8));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GridView.builder(
-          physics:
-              const NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -239,9 +272,13 @@ class WorkSchedule extends StatelessWidget {
             mainAxisSpacing: 16,
             childAspectRatio: 3,
           ),
-          itemCount: days.length,
+          itemCount: sortedCalendar.length,
           itemBuilder: (context, index) {
-            final day = days[index];
+            final day = sortedCalendar[index];
+            final scheduleText = day.active
+                ? '${formatTime(day.start)} - ${formatTime(day.end)}'
+                : 'No Disponible';
+
             return Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -254,9 +291,8 @@ class WorkSchedule extends StatelessWidget {
                     width: 5,
                     height: double.infinity,
                     decoration: BoxDecoration(
-                      color: day['isWorkingDay'] as bool
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
+                      color:
+                          day.active ? colors.primary : colors.onSurfaceVariant,
                       borderRadius: const BorderRadius.horizontal(
                           left: Radius.circular(8)),
                     ),
@@ -267,13 +303,13 @@ class WorkSchedule extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        day['day'] as String,
+                        day.day,
                         style: const TextStyle(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
-                        day['time'] as String,
+                        scheduleText,
                         style: TextStyle(
                           color: colors.onSurfaceVariant,
                         ),

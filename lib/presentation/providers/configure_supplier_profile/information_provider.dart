@@ -61,6 +61,7 @@ class InformationNotifier extends StateNotifier<InformationState> {
         formStatus: FormStatus.completed,
         loadingBar: 1,
         percentageCompleted: 100);
+
   }
 
   calcPercentage() {
@@ -81,8 +82,7 @@ class InformationNotifier extends StateNotifier<InformationState> {
   }
 }
 
-final informationProvider =
-    StateNotifierProvider<InformationNotifier, InformationState>((ref) {
+final informationProvider = StateNotifierProvider<InformationNotifier, InformationState>((ref) {
   final informationNotifier = InformationNotifier();
 
   ref.listen(providerBasicInfo, (previous, next) {

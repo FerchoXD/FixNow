@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:fixnow/config/config.dart';
+import 'package:fixnow/domain/entities/supplier.dart';
+import 'package:fixnow/domain/entities/user.dart';
+import 'package:fixnow/domain/mappers/contact_mapper.dart';
 import 'package:fixnow/domain/mappers/supplier_mapper.dart';
 
 class ProfileSupplierData {
@@ -72,7 +75,7 @@ class ProfileSupplierData {
     try {
       final response = await dio.put('/auth/profile/suplier',
           data: {"uuid": id, "calendar": calendar});
-      final supplier = response.data['data'];
+      final supplier = UserMapper.contactJsonToEntity(response.data['data']);
       return supplier;
     } catch (e) {
       throw Error();
@@ -81,11 +84,27 @@ class ProfileSupplierData {
 
   Future sendImages(String id, List<String> images) async {
     try {
-      final response = await dio.put('/auth/profile/suplier', data: {"uuid": id, "images": images});
-      final supplier = response.data['data'];
+      final response = await dio
+          .put('/auth/profile/suplier', data: {"uuid": id, "images": images});
+      final supplier = UserMapper.contactJsonToEntity(response.data['data']);
+
       return supplier;
     } catch (e) {
       throw Error();
     }
   }
+
+  // Future<Supplier> getSupplierInfo(String id, String token) async {
+  //   try {
+  //     final response = await dio.put('/auth/profile/suplier',
+  //         options: Options(headers: {'Authorization': token}),
+  //         data: {
+  //           "uuid": id,
+  //         });
+  //     final supplier = SupplierMapper.supplierJsonToEntity(response.data['data']);
+  //     return supplier;
+  //   } catch (e) {
+  //     throw Error();
+  //   }
+  // }
 }

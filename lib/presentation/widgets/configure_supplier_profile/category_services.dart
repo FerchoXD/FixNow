@@ -78,7 +78,7 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
                     borderRadius: BorderRadius.circular(15)),
               ),
               onPressed:  () {
-                ref.read(servicesProvider.notifier).onFormSubmit(authState.user!.id);
+                ref.read(servicesProvider.notifier).onFormSubmit(authState.userTemp!.uuid);
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 17),

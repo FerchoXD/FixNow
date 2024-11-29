@@ -1,29 +1,37 @@
+import 'package:fixnow/domain/entities/calendar_supplier.dart';
 import 'package:fixnow/domain/entities/user.dart';
+import 'package:fixnow/domain/mappers/calendar_mapper.dart';
 
 class UserMapper {
   static User contactJsonToEntity(Map<String, dynamic> json) => User(
-      id: json['uuid'] ?? '',
-      name: json['firstname'] ?? '',
-      lastName: json['lastname'] ?? '',
-      fullname: json['fullname'] ?? '${json['firstname'] ?? ''} ${json['lastname'] ?? ''}',
-      phoneNumber: json['phone'] ?? '',
-      email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      role: json['role'] ?? '',
-      profileUrl: json['profileurl'] ?? 'PENDING',
-      profilefileNames: json['profilefilenames'] ?? 'PENDING',
-      address: json['address'] ?? 'PENDING',
-      workexperience: json['workexperience'] ?? 'PENDING',
-      standardprice: (json['standardprice'] ?? 0).toDouble(),
-      quotation: (json['quotation'] ?? 0).toDouble(),
-      hourlyrate: (json['hourlyrate'] ?? 0).toDouble(),
-      selectedServices: json['selectedservices'] != null
-          ? List<String>.from(json['selectedservices'])
-          : [],
-      relevance: (json['relevance'] ?? 0).toDouble(),
-      token: json['token'],
-      activateToken: json['activationToken'] ?? '',
-      verifiedAt: json['verifiedAt'],
-      createdAt: json['createdAt'] ?? '',
-      updatedAt: json['updatedAt'] ?? '');
+        id: json['uuid'] as String,
+        name: json['firstname'] as String,
+        lastName: json['lastname'] as String,
+        fullname: json['fullname'] as String,
+        phoneNumber: json['phone'] as String,
+        email: json['email'] as String,
+        password: json['password'] as String,
+        role: json['role'] as String,
+        address: json['address'] as String,
+        workExperience: json['workexperience'] as String,
+        standardPrice: (json['standardprice'] as num).toDouble(),
+        quotation: (json['quotation'] as num).toDouble(),
+        hourlyRate: (json['hourlyrate'] as num).toDouble(),
+        selectedServices: List<String>.from(json['selectedservices']),
+        relevance: (json['relevance'] as num).toDouble(),
+        token: json['token'] as String?,
+        activationToken: json['activationToken'] as String,
+        verifiedAt: json['verifiedAt'] != null
+            ? DateTime.parse(json['verifiedAt'])
+            : null,
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+        profileImages: List<String>.from(
+          (json['images'] as List<dynamic>).map((image) => image['images']),
+        ),
+        calendar: List<CalendarSupplier>.from(
+          (json['calendar'] as List<dynamic>)
+              .map((c) => CalendarMapper.calendarJsonToEntity(c)),
+        ),
+      );
 }

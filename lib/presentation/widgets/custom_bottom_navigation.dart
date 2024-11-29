@@ -57,7 +57,7 @@ class CustomBottomNavigation extends ConsumerWidget {
           ),
           GButton(
             icon: authState.user!.role == 'CUSTOMER' ? Icons.notifications : Icons.attach_money_rounded,
-            text: 'Notificaciones',
+            text: authState.user!.role == 'CUSTOMER' ? 'Notificaciones' : 'Finanzas',
           ),
           GButton(
             icon: Icons.person,
