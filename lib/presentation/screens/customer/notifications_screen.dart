@@ -19,7 +19,7 @@ class NotificationsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsState = ref.watch(notificationsProvider);
+    // final notificationsState = ref.watch(notificationsProvider);
     return Container();
   }
 }
