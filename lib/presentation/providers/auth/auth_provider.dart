@@ -66,7 +66,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void registerUser(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      await authUser.register(name, lastName, email, phoneNumber, password, role);
+      await authUser.register(
+          name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
     } catch (error) {
       logout();
@@ -103,12 +104,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       message: '',
     );
   }
-  
+
   Future _getUserProfile() async {
     try {
       final token = await keyValueStorage.getValue('token');
-      if(token == null) return logout();
+      if (token == null) return logout();
       final user = await authUser.getUser(token);
+      print(user);
       return user;
     } catch (e) {
       logout();

@@ -50,7 +50,7 @@ class AuthUser {
     try {
       final response = await dio.get('/auth/get/data',
           options: Options(headers: {'Authorization': token}));
-      final user = UserMapper.contactJsonToEntity(response.data);
+      final user = UserMapper.contactJsonToEntity(response.data['data']);
       return user;
     } catch (e) {
       throw Error();

@@ -46,5 +46,32 @@ class User {
     required this.createdAt,
     required this.updatedAt,
   });
-}
 
+  @override
+  String toString() {
+    return '''
+User {
+  id: $id,
+  name: $name,
+  lastName: $lastName,
+  fullname: $fullname,
+  phoneNumber: $phoneNumber,
+  email: $email,
+  role: $role,
+  profileUrl: $profileUrl,
+  address: $address,
+  workexperience: $workexperience,
+  standardprice: $standardprice,
+  quotation: $quotation,
+  hourlyrate: $hourlyrate,
+  selectedServices: $selectedServices,
+  relevance: $relevance,
+  token: $token,
+  activateToken: $activateToken,
+  verifiedAt: $verifiedAt,
+  createdAt: $createdAt,
+  updatedAt: $updatedAt
+}
+''';
+  }
+}

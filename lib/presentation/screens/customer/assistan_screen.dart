@@ -1,12 +1,14 @@
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AssistantScreen extends StatelessWidget {
-  final String username = "Alan"; 
+class AssistantScreen extends ConsumerWidget {
   const AssistantScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -21,7 +23,7 @@ class AssistantScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Buen día, $username',
+              'Buen día, ${authState.user!.fullname}',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
