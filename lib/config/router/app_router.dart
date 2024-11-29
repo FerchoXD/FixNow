@@ -1,5 +1,4 @@
 import 'package:fixnow/config/router/app_router_notifier.dart';
-import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
 import 'package:fixnow/presentation/screens/supplier/configure_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -60,7 +59,9 @@ final goRouterProvider = Provider((ref) {
       ),
       GoRoute(
         path: '/schedule/2',
-        builder: (context, state) => const ScheduleServiceTwo(),
+      builder: (context, state) => ScheduleServiceTwo(
+        selectedDateTime: state.extra as String,
+      ),
       ),
       GoRoute(
         path: '/configure/information',
