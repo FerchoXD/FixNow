@@ -1,3 +1,8 @@
+import 'package:fixnow/presentation/providers/configure_supplier_profile/basic_info_provider.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/experience_provider.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/prices_provider.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/services_provider.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/time_availability_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum FormStatus { checking, completed, notCompleted }
@@ -11,10 +16,10 @@ class InformationState {
 
   InformationState(
       {this.formStatus = FormStatus.checking,
-      this.section = 5,
+      this.section = 0,
       this.loadingBar = 0.0,
       this.percentageCompleted = 0,
-      this.savedProgress = 0,});
+      this.savedProgress = 0});
 
   InformationState copyWith({
     FormStatus? formStatus,
@@ -24,36 +29,16 @@ class InformationState {
     int? savedProgress,
   }) =>
       InformationState(
-          formStatus: formStatus ?? this.formStatus,
-          section: section ?? this.section,
-          loadingBar: loadingBar ?? this.loadingBar,
-          percentageCompleted: percentageCompleted ?? this.percentageCompleted,
-          savedProgress: savedProgress ?? this.savedProgress,);
+        formStatus: formStatus ?? this.formStatus,
+        section: section ?? this.section,
+        loadingBar: loadingBar ?? this.loadingBar,
+        percentageCompleted: percentageCompleted ?? this.percentageCompleted,
+        savedProgress: savedProgress ?? this.savedProgress,
+      );
 }
 
 class InformationNotifier extends StateNotifier<InformationState> {
-  // final FormStudent formStudent;
-  // final AuthState userData;
   InformationNotifier() : super(InformationState());
-
-  // getNumberSection(String section) {
-  //   switch (section) {
-  //     case 'none':
-  //       return 0;
-  //     case 'alumno':
-  //       return 2;
-  //     case 'contacto':
-  //       return 3;
-  //     case 'datos_medicos':
-  //       return 4;
-  //     case 'datos_academicos':
-  //       return 5;
-  //     case 'datos_socioeconomicos':
-  //       return 6;
-  //     case 'imagen':
-  //       return 7;
-  //   }
-  // }
 
   continueProgress() async {
     state = state.copyWith(section: state.savedProgress + 1);
@@ -63,10 +48,12 @@ class InformationNotifier extends StateNotifier<InformationState> {
   }
 
   changeSection() {
+    print('Cambiando la seccion');
     state = state.copyWith(section: state.section + 1);
     final percentage = calcPercentage();
     state = state.copyWith(
         loadingBar: percentage / 100, percentageCompleted: percentage);
+        print(state.section);
   }
 
   formCompleted() {
@@ -78,125 +65,80 @@ class InformationNotifier extends StateNotifier<InformationState> {
 
   calcPercentage() {
     switch (state.section) {
-      case 1:
+      case 0:
         return 0;
-      case 2:
+      case 1:
         return 20;
-      case 3:
+      case 2:
         return 40;
+      case 3:
+        return 60;
       case 4:
-        return 50;
-      case 5:
-        return 70;
-      case 6:
         return 80;
-      case 7:
-        return 90;
-      case 8:
+      case 5:
         return 100;
-      default:
     }
   }
-
 }
 
-final informationProvider = StateNotifierProvider<InformationNotifier, InformationState>((ref) {
-  return InformationNotifier();
- });
-//   final accessToken = ref.watch(authProvider).user?.token ?? '';
-//   final formStudent = FormStudent(accessToken: accessToken);
-//   final userData = ref.watch(authProvider);
+final informationProvider =
+    StateNotifierProvider<InformationNotifier, InformationState>((ref) {
+  final informationNotifier = InformationNotifier();
 
-//   final formNotifier =
-//       InformationNotifier(formStudent: formStudent, userData: userData);
+  ref.listen(providerBasicInfo, (previous, next) {
+    if (next) {
+      informationNotifier.changeSection();
+    }
+  });
 
-//   ref.listen(codeStatusProvider, (previous, next) {
-//     if (next == CodeStatus.valid) {
-//       formNotifier.continueProgress();
-//     }
-//   });
+  ref.listen(providerServicesInfo, (previous, next) {
+    if (next) {
+      informationNotifier.changeSection();
+    }
+  });
 
-//   ref.listen(firstSectionStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+  ref.listen(providerExperienceInfo, (previous, next) {
+    if (next) {
+      informationNotifier.changeSection();
+    }
+  });
 
-//   ref.listen(secondSectionStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+  ref.listen(providerPricesInfo, (previous, next) {
+    if (next) {
+      informationNotifier.changeSection();
+    }
+  });
 
-//   ref.listen(contactStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+  ref.listen(providerTimeInfo, (previous, next) {
+    if (next) {
+      informationNotifier.changeSection();
+    }
+  });
 
-//   ref.listen(medicalSectionStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+  return informationNotifier;
+});
 
-//   ref.listen(academicSectionStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+final providerBasicInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(basicInfoProvider);
+  return infoData.isCompleted;
+});
 
-//   ref.listen(socioEconomicSectionStateProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+final providerServicesInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(servicesProvider);
+  return infoData.isCompleted;
+});
 
-//   ref.listen(photoSectionProvider, (previous, next) {
-//     if (next) {
-//       formNotifier.changeSection();
-//     }
-//   });
+final providerExperienceInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(experienceProvider);
+  return infoData.isCompleted;
+});
 
-//   return formNotifier;
-// });
+final providerPricesInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(pricesProvider);
+  return infoData.isCompleted;
+});
 
-// final codeStatusProvider = Provider<CodeStatus>((ref) {
-//   final codeStatus = ref.watch(codeProvider);
-//   return codeStatus.codeStatus;
-// });
-
-// final firstSectionStateProvider = Provider<bool>((ref) {
-//   final firstSectionState = ref.watch(firstStudentDataProvider);
-//   return firstSectionState.isValid;
-// });
-
-// final secondSectionStateProvider = Provider<bool>((ref) {
-//   final secondSectionState = ref.watch(secondStudentDataProvider);
-//   return secondSectionState.isCompleted;
-// });
-
-// final contactStateProvider = Provider<bool>((ref) {
-//   final contactData = ref.watch(contactDataProvider);
-//   return contactData.isCompleted;
-// });
-
-// final medicalSectionStateProvider = Provider<bool>((ref) {
-//   final medicalData = ref.watch(medicalDataProvider);
-//   return medicalData.isCompleted;
-// });
-
-// final academicSectionStateProvider = Provider<bool>((ref) {
-//   final academicData = ref.watch(academicDataProvider);
-//   return academicData.isCompleted;
-// });
-
-// final socioEconomicSectionStateProvider = Provider<bool>((ref) {
-//   final socioeconomicData = ref.watch(socioeconomicDataProvider);
-//   return socioeconomicData.isCompleted;
-// });
-
-// final photoSectionProvider = Provider<bool>((ref) {
-//   final photoData = ref.watch(photoProvider);
-//   return photoData.isCompleted;
-// });
+final providerTimeInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(timeProvider);
+  return infoData.isCompleted;
+});

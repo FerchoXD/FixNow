@@ -9,7 +9,7 @@ class AuthUser {
   Future<User> register(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      final response = await dio.post("/auth/", data: {
+      final response = await dio.post("/auth", data: {
         "firstname": name,
         "lastname": lastName,
         "email": email,
@@ -26,7 +26,7 @@ class AuthUser {
 
   Future<User> activateAccount(String code) async {
     try {
-      final response = await dio.put('/$code/activate');
+      final response = await dio.put('/auth/$code/activate');
       final user = UserMapper.contactJsonToEntity(response.data['response']);
       return user;
     } catch (e) {
@@ -48,7 +48,7 @@ class AuthUser {
 
   Future<User> getUser(String token) async {
     try {
-      final response = await dio.get('/get/data',
+      final response = await dio.get('/auth/get/data',
           options: Options(headers: {'Authorization': token}));
       final user = UserMapper.contactJsonToEntity(response.data);
       return user;

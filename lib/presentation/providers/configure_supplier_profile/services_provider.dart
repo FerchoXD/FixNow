@@ -12,12 +12,14 @@ class ServicesState {
   final bool isFormPosted;
   final bool isValid;
   final List<String> services;
+  final bool isCompleted;
 
   const ServicesState({
     this.isPosting = false,
     this.isFormPosted = false,
     this.isValid = false,
     this.services = const [],
+    this.isCompleted = false,
   });
 
   ServicesState copyWith({
@@ -25,13 +27,14 @@ class ServicesState {
     bool? isFormPosted,
     bool? isValid,
     List<String>? services,
+    bool? isCompleted,
   }) =>
       ServicesState(
-        isPosting: isPosting ?? this.isPosting,
-        isFormPosted: isFormPosted ?? this.isFormPosted,
-        isValid: isValid ?? this.isValid,
-        services: services ?? this.services,
-      );
+          isPosting: isPosting ?? this.isPosting,
+          isFormPosted: isFormPosted ?? this.isFormPosted,
+          isValid: isValid ?? this.isValid,
+          services: services ?? this.services,
+          isCompleted: isCompleted ?? this.isCompleted);
 }
 
 class ServicesNotifier extends StateNotifier<ServicesState> {
@@ -47,10 +50,10 @@ class ServicesNotifier extends StateNotifier<ServicesState> {
 
     try {
       await supplierData.sendServicesData(id, state.services);
+      state = state.copyWith(isCompleted: true);
     } catch (e) {
       throw Error();
     }
-        state = state.copyWith(isPosting: false);
-
+    state = state.copyWith(isPosting: false);
   }
 }

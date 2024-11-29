@@ -33,7 +33,7 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
   }
 
   Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    await Firebase.initializeApp();
+    // await Firebase.initializeApp();
     print("Handling a background message: ${message.messageId}");
   }
 

@@ -45,6 +45,7 @@ class BasicInformation extends ConsumerWidget {
         ),
         CustomTextField(
           label: 'Telefono',
+          keyboardType: TextInputType.number,
           onChanged: ref.read(basicInfoProvider.notifier).onPhoneNumberChange,
           errorMessage: basicInfoState.isFormPosted
               ? basicInfoState.phoneNumber.errorMessage
@@ -73,6 +74,8 @@ class BasicInformation extends ConsumerWidget {
               ),
               onPressed: basicInfoState.isPosting ? null : () {
                 ref.read(basicInfoProvider.notifier).onFormSubmit(authState.user!.id);
+                print(basicInfoState.isCompleted);
+                
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 17),

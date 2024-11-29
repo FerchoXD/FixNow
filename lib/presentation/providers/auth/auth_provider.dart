@@ -71,7 +71,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (error) {
       logout();
     }
-    state = state.copyWith(authStatus: AuthStatus.checking);
   }
 
   void activateAccount(String code) async {

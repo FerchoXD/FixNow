@@ -14,12 +14,14 @@ class ExperienceState {
   final bool isPosting;
   final bool isFormPosted;
   final bool isValid;
+  final bool isCompleted;
 
   const ExperienceState({
     this.experience = const Experience.pure(),
     this.isPosting = false,
     this.isFormPosted = false,
     this.isValid = false,
+    this.isCompleted = false,
   });
 
   ExperienceState copyWith({
@@ -27,12 +29,14 @@ class ExperienceState {
     bool? isPosting,
     bool? isFormPosted,
     bool? isValid,
+    bool? isCompleted,
   }) =>
       ExperienceState(
         experience: experience ?? this.experience,
         isPosting: isPosting ?? this.isPosting,
         isFormPosted: isFormPosted ?? this.isFormPosted,
         isValid: isValid ?? this.isValid,
+        isCompleted: isCompleted ?? this.isCompleted,
       );
 }
 
@@ -53,6 +57,7 @@ class ExperienceNotifier extends StateNotifier<ExperienceState> {
 
     try {
       await supplierData.sendExperience(id, state.experience.value);
+      state = state.copyWith(isCompleted: true);
     } catch (e) {
       state = state.copyWith(isPosting: false);
     }
