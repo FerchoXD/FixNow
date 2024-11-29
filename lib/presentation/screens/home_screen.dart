@@ -20,8 +20,8 @@ class HomeScreen extends ConsumerWidget {
   final viewRoutesSupplier = <Widget>[
     const HomeView(),
     const CommunityScreen(),
-    const AssistantScreen(),
     const NotificationsScreen(),
+    const FinanceScreen(),
     const PrivateProfileSuplier()
   ];
 

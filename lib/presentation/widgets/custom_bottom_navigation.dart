@@ -43,21 +43,29 @@ class CustomBottomNavigation extends ConsumerWidget {
         iconSize: 24,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         tabs: [
-          GButton(
+          const GButton(
             icon: Icons.home,
             text: 'Inicio',
           ),
-          GButton(
+          const GButton(
             icon: Icons.comment,
             text: 'Comunidad',
           ),
           GButton(
-            icon: Icons.assistant,
-            text: 'Asistente',
+            icon: authState.user!.role == 'CUSTOMER'
+                ? Icons.assistant
+                : Icons.notifications,
+            text: authState.user!.role == 'CUSTOMER'
+                ? 'Asistente'
+                : 'Notificaciones',
           ),
           GButton(
-            icon: authState.user!.role == 'CUSTOMER' ? Icons.notifications : Icons.attach_money_rounded,
-            text: authState.user!.role == 'CUSTOMER' ? 'Notificaciones' : 'Finanzas',
+            icon: authState.user!.role == 'CUSTOMER'
+                ? Icons.notifications
+                : Icons.attach_money_rounded,
+            text: authState.user!.role == 'CUSTOMER'
+                ? 'Notificaciones'
+                : 'Finanzas',
           ),
           GButton(
             icon: Icons.person,
@@ -72,4 +80,3 @@ class CustomBottomNavigation extends ConsumerWidget {
     );
   }
 }
-
