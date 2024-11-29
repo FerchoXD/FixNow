@@ -10,7 +10,7 @@ class ProfileSupplierData {
   Future sendBasicInformation(String id, String name, String lastName,
       String email, String phoneNumber, String address) async {
     try {
-      final response = await dio.put('/profile/suplier', data: {
+      final response = await dio.put('/auth/profile/suplier', data: {
         "uuid": id,
         "profileData": {
           "firstname": name,
@@ -19,9 +19,8 @@ class ProfileSupplierData {
           "phone": phoneNumber
         }
       });
-
-      final supplier =
-          SupplierMapper.supplierJsonToEntity(response.data['data']);
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
       throw Error();
     }
@@ -29,45 +28,41 @@ class ProfileSupplierData {
 
   Future sendServicesData(String id, List<String> services) async {
     try {
-      final response = await dio.put('/profile/suplier', data: {
+      final response = await dio.put('/auth/profile/suplier', data: {
         "uuid": id,
         "profileData": {"selectedservices": services}
       });
-      final supplier =
-          SupplierMapper.supplierJsonToEntity(response.data['data']);
-      print(supplier);
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
 
   Future sendExperience(String id, String experience) async {
     try {
-      final response = await dio.put('/profile/suplier', data: {
+      final response = await dio.put('/auth/profile/suplier', data: {
         "uuid": id,
         "profileData": {"workexperience": experience}
       });
-
-      final supplier =
-          SupplierMapper.supplierJsonToEntity(response.data['data']);
-      print(supplier);
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
 
   Future sendPrices(String id, double standardPrice, double hourlyPrice) async {
     try {
-      final response = await dio.put('/profile/suplier', data: {
+      final response = await dio.put('/auth/profile/suplier', data: {
         "uuid": id,
         "profileData": {
           "standardprice": standardPrice,
           "hourlyrate": hourlyPrice
         }
       });
-      final supplier = SupplierMapper.supplierJsonToEntity(response.data['data']);
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
       throw Error();
     }
@@ -75,24 +70,21 @@ class ProfileSupplierData {
 
   Future sendCalendar(String id, List<Map<String, dynamic>> calendar) async {
     try {
-      final response = await dio
-          .put('/profile/suplier', data: {"uuid": id, "calendar": calendar});
-      final supplier =
-          SupplierMapper.supplierJsonToEntity(response.data['data']);
+      final response = await dio.put('/auth/profile/suplier',
+          data: {"uuid": id, "calendar": calendar});
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }
 
   Future sendImages(String id, List<String> images) async {
     try {
-      final response = await dio
-          .put('/profile/suplier', data: {"uuid": id, "images": images});
-      final supplier = SupplierMapper.supplierJsonToEntity(response.data['data']);
-      print(supplier);
+      final response = await dio.put('/auth/profile/suplier', data: {"uuid": id, "images": images});
+      final supplier = response.data['data'];
+      return supplier;
     } catch (e) {
-      print(e);
       throw Error();
     }
   }

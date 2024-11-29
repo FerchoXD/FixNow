@@ -15,14 +15,15 @@ class PricesState {
   final bool isValid;
   final StandarPrice standarPrice;
   final HourlyRate hourlyRate;
+  final bool isCompleted;
 
-  const PricesState({
-    this.standarPrice = const StandarPrice.pure(),
-    this.hourlyRate = const HourlyRate.pure(),
-    this.isPosting = false,
-    this.isFormPosted = false,
-    this.isValid = false,
-  });
+  const PricesState(
+      {this.standarPrice = const StandarPrice.pure(),
+      this.hourlyRate = const HourlyRate.pure(),
+      this.isPosting = false,
+      this.isFormPosted = false,
+      this.isValid = false,
+      this.isCompleted = false});
 
   PricesState copyWith({
     StandarPrice? standarPrice,
@@ -30,14 +31,15 @@ class PricesState {
     bool? isPosting,
     bool? isFormPosted,
     bool? isValid,
+    bool? isCompleted,
   }) =>
       PricesState(
-        standarPrice: standarPrice ?? this.standarPrice,
-        hourlyRate: hourlyRate ?? this.hourlyRate,
-        isPosting: isPosting ?? this.isPosting,
-        isFormPosted: isFormPosted ?? this.isFormPosted,
-        isValid: isValid ?? this.isValid,
-      );
+          standarPrice: standarPrice ?? this.standarPrice,
+          hourlyRate: hourlyRate ?? this.hourlyRate,
+          isPosting: isPosting ?? this.isPosting,
+          isFormPosted: isFormPosted ?? this.isFormPosted,
+          isValid: isValid ?? this.isValid,
+          isCompleted: isCompleted ?? this.isCompleted);
 }
 
 class PriceNotifier extends StateNotifier<PricesState> {
@@ -59,13 +61,15 @@ class PriceNotifier extends StateNotifier<PricesState> {
   onFormSubmit(String id) async {
     _touchEveryField();
     if (!state.isValid) return;
+    state = state.copyWith(isPosting: true);
+
     try {
       await supplierData.sendPrices(
           id, state.standarPrice.value, state.hourlyRate.value);
+      state = state.copyWith(isCompleted: true);
     } catch (e) {
       throw Error();
     }
-    state = state.copyWith(isPosting: true);
     state = state.copyWith(isPosting: false);
   }
 

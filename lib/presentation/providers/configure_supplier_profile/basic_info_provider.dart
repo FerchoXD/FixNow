@@ -21,6 +21,7 @@ class BasicInfoState {
   final bool isPosting;
   final bool isFormPosted;
   final bool isValid;
+  final bool isCompleted;
 
   const BasicInfoState({
     this.name = const Name.pure(),
@@ -31,6 +32,7 @@ class BasicInfoState {
     this.isPosting = false,
     this.isFormPosted = false,
     this.isValid = false,
+    this.isCompleted = false,
   });
 
   BasicInfoState copyWith({
@@ -42,6 +44,7 @@ class BasicInfoState {
     bool? isPosting,
     bool? isFormPosted,
     bool? isValid,
+    bool? isCompleted,
   }) =>
       BasicInfoState(
         name: name ?? this.name,
@@ -52,6 +55,7 @@ class BasicInfoState {
         isPosting: isPosting ?? this.isPosting,
         isFormPosted: isFormPosted ?? this.isFormPosted,
         isValid: isValid ?? this.isValid,
+        isCompleted: isCompleted ?? this.isCompleted,
       );
 }
 
@@ -127,13 +131,12 @@ class BasicInfoNotifier extends StateNotifier<BasicInfoState> {
   onFormSubmit(String userId) async {
     _touchEveryField();
     if (!state.isValid) return;
-
-
     state = state.copyWith(isPosting: true);
-
     try {
-      await supplierData.sendBasicInformation(userId, state.name.value, state.lastName.value, state.email.value, state.phoneNumber.value, state.location.value);
-      
+      final usersuplier = await supplierData.sendBasicInformation(userId, state.name.value, state.lastName.value, state.email.value, state.phoneNumber.value, state.location.value);
+      print(usersuplier);
+      print('hizo la peticion');
+      state = state.copyWith(isCompleted: true);
     } catch (e) {
       state = state.copyWith(isPosting: false);
     }

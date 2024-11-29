@@ -9,7 +9,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/configure/information',
+    initialLocation: '/splash',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -66,54 +66,56 @@ final goRouterProvider = Provider((ref) {
         path: '/configure/information',
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
-
     ],
     redirect: (context, state) {
-      // final isGoingTo = state.matchedLocation;
-      // final authStatus = goRouterNotifier.authStatus;
-      // final user = goRouterNotifier.user;
+      final isGoingTo = state.matchedLocation;
+      final authStatus = goRouterNotifier.authStatus;
+      final user = goRouterNotifier.user;
 
-      // if (isGoingTo == '/splash' && authStatus == AuthStatus.checking) {
-      //   return null;
-      // }
+      if (isGoingTo == '/splash' && authStatus == AuthStatus.checking) {
+        return null;
+      }
 
-      // if (authStatus == AuthStatus.notAuthenticated) {
-      //   if (isGoingTo == '/login' || isGoingTo == '/register' || isGoingTo == '/user/select') return null;
+      if (authStatus == AuthStatus.notAuthenticated) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/user/select') return null;
 
-      //   return '/login';
-      // }
+        return '/login';
+      }
 
-      // if (authStatus == AuthStatus.authenticated) {
-      //   if (isGoingTo == '/login' ||
-      //       isGoingTo == '/register' ||
-      //       isGoingTo == '/' || isGoingTo == '/splash') {
-      //     return '/home/0';
-      //   }
-      // }
+      if (authStatus == AuthStatus.authenticated) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/' ||
+            isGoingTo == '/splash') {
+          return '/home/0';
+        }
+      }
 
-      // if (authStatus == AuthStatus.newUserRegistred) {
-      //   if (isGoingTo == '/login' ||
-      //       isGoingTo == '/register' ||
-      //       isGoingTo == '/') {
-      //     return '/activate';
-      //   }
-      // }
+      if (authStatus == AuthStatus.newUserRegistred) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/') {
+          return '/activate';
+        }
+      }
 
-      // if (authStatus == AuthStatus.accountActivated) {
-      //   if (isGoingTo == '/login' ||
-      //       isGoingTo == '/register' ||
-      //       isGoingTo == '/' ||
-      //       isGoingTo == '/activate') {
+      if (authStatus == AuthStatus.accountActivated) {
+        if (isGoingTo == '/login' ||
+            isGoingTo == '/register' ||
+            isGoingTo == '/' ||
+            isGoingTo == '/activate') {
 
-      //         if(user != null && user.role == 'SUPPLIER' && isGoingTo == '/configure/information') {
-                
-      //         }
+          if (user != null && user.role == 'SUPPLIER') {
+            return '/configure/information';
+          }
 
-      //     // return '/home/0';
-      //   }
-      // }
+          return '/home/0';
+        }
+      }
 
-      // return null;
+      return null;
     },
   );
 });
