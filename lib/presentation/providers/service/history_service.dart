@@ -17,7 +17,8 @@ class HistoryService {
         '/get/history',
         data: {'userUuid': userUuid},
       );
-
+      print('Respuesta completa: ${response.data}');
+        
       if (response.statusCode == 200 && response.data != null) {
         return {
           'status': 200,

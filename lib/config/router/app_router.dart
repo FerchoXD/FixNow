@@ -1,4 +1,5 @@
 import 'package:fixnow/config/router/app_router_notifier.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
 import 'package:fixnow/presentation/screens/supplier/configure_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +36,11 @@ final goRouterProvider = Provider((ref) {
         path: '/home/:page',
         builder: (context, state) {
           final pageIndex = state.pathParameters['page'] ?? '0';
-          return HomeScreen(pageIndex: int.parse(pageIndex));
+          final suppliersFound = state.extra as List? ?? []; // Accede a los datos pasados
+          return HomeScreen(
+            pageIndex: int.parse(pageIndex),
+            suppliersFound: suppliersFound,
+          );
         },
       ),
       GoRoute(
@@ -68,6 +73,7 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
     ],
+    
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;

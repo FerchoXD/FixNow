@@ -50,4 +50,5 @@ class Supplier {
     required this.images,
     required this.calendar,
   });
+
 }
