@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
   final int pageIndex;
-  HomeScreen({super.key, required this.pageIndex});
+  final List suppliersFound;
 
   final viewRoutesCustomer = <Widget>[
     const HomeView(),
@@ -24,6 +24,12 @@ class HomeScreen extends ConsumerWidget {
     const FinanceScreen(),
     const PrivateProfileSuplier()
   ];
+
+   HomeScreen({
+    super.key,
+    required this.pageIndex,
+    this.suppliersFound = const [],
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
