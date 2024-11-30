@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:fixnow/config/config.dart';
 
 class ServiceSupplier {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'https://f1ee-2806-10ae-f-9d7-dde7-793b-64ef-d4a5.ngrok-free.app',
+      baseUrl: (Environment.apiUrl),
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
@@ -19,7 +20,7 @@ class ServiceSupplier {
     print("data${data}");
     try {
       final response = await _dio.post(
-        '/api/v1/auth/all/suppliers',
+        'auth/all/suppliers',
         data: {'data': data}, // Ajusta el body si el backend requiere cambios
       );
 
