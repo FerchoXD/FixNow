@@ -26,12 +26,13 @@ class UserMapper {
             : null,
         createdAt: DateTime.parse(json['createdAt']),
         updatedAt: DateTime.parse(json['updatedAt']),
-        profileImages: List<String>.from(
-          (json['images'] as List<dynamic>).map((image) => image['images']),
-        ),
-        calendar: List<CalendarSupplier>.from(
-          (json['calendar'] as List<dynamic>)
-              .map((c) => CalendarMapper.calendarJsonToEntity(c)),
-        ),
+        profileImages: (json['images'] as List<dynamic>?)
+                ?.map((image) => image['images'] as String)
+                .toList() ??
+            [],
+        calendar: (json['calendar'] as List<dynamic>?)
+                ?.map((c) => CalendarMapper.calendarJsonToEntity(c))
+                .toList() ??
+            [],
       );
 }

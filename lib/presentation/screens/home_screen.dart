@@ -85,7 +85,6 @@ class HomeView extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: RefreshIndicator(
         onRefresh: () async {
-          // Llamar al método para actualizar los datos
           await _refreshData(ref);
         },
         child: SingleChildScrollView(
@@ -150,6 +149,7 @@ class HomeView extends ConsumerWidget {
   }
 
   Future<void> _refreshData(WidgetRef ref) async {
+
     print("Datos actualizados");
   }
 }

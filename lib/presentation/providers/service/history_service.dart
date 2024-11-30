@@ -15,7 +15,7 @@ class HistoryService {
   Future<Map<String, dynamic>> fetchHistory(String userUuid) async {
     try {
       final response = await _dio.post(
-        'history/get/history',
+        '/history/get/history',
         data: {'userUuid': userUuid},
       );
       print('Respuesta completa: ${response.data}');

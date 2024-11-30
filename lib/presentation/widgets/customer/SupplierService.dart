@@ -20,7 +20,7 @@ class ServiceSupplier {
     print("data${data}");
     try {
       final response = await _dio.post(
-        'auth/all/suppliers',
+        '/auth/all/suppliers',
         data: {'data': data}, // Ajusta el body si el backend requiere cambios
       );
 
