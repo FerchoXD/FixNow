@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:fixnow/config/config.dart';
 
 class HistoryService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://69fa-2806-262-3404-9c-7910-4ceb-d179-5618.ngrok-free.app/api/v1/history',
+    baseUrl: (Environment.apiUrl),
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {'Content-Type': 'application/json'},
@@ -14,7 +15,7 @@ class HistoryService {
   Future<Map<String, dynamic>> fetchHistory(String userUuid) async {
     try {
       final response = await _dio.post(
-        '/get/history',
+        'history/get/history',
         data: {'userUuid': userUuid},
       );
       print('Respuesta completa: ${response.data}');
