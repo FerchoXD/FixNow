@@ -11,13 +11,13 @@ class Supplier {
   final String password;
   final String role;
   final String address;
-  final String workExperience;
-  final int standardPrice;
-  final int hourlyRate;
+  final String workexperience;
+  final double standardPrice;
+  final double hourlyRate;
   final List<String> selectedServices;
   final int quotation;
   final int relevance;
-  final String token;
+  final String? token;
   final String activationToken;
   final DateTime? verifiedAt;
   final DateTime createdAt;
@@ -36,13 +36,13 @@ class Supplier {
     required this.password,
     required this.role,
     required this.address,
-    required this.workExperience,
+    required this.workexperience,
     required this.standardPrice,
     required this.hourlyRate,
     required this.selectedServices,
     required this.quotation,
     required this.relevance,
-    required this.token,
+    this.token,
     required this.activationToken,
     this.verifiedAt,
     required this.createdAt,

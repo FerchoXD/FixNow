@@ -14,12 +14,16 @@ class SupplierMapper {
       password: json['password'],
       role: json['role'],
       address: json['address'],
-      workExperience: json['workexperience'],
-      standardPrice: json['standardprice'],
-      hourlyRate: json['hourlyrate'],
+      workexperience: json['workexperience'],
+      standardPrice:
+          (json['standardprice'] as num).toDouble(), 
+      hourlyRate:
+          (json['hourlyrate'] as num).toDouble(),
       selectedServices: List<String>.from(json['selectedservices']),
-      quotation: json['quotation'],
-      relevance: json['relevance'],
+      quotation: json[
+          'quotation'], 
+      relevance: json[
+          'relevance'], 
       token: json['token'],
       activationToken: json['activationToken'],
       verifiedAt: json['verifiedAt'] != null

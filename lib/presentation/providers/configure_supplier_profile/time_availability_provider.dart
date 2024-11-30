@@ -1,9 +1,12 @@
+import 'package:fixnow/domain/entities/supplier.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final timeProvider = StateNotifierProvider<TimeNotifier, TimeState>((ref) {
   final supplierData = ProfileSupplierData();
-  return TimeNotifier(supplierData: supplierData);
+
+  return TimeNotifier(supplierData: supplierData, ref: ref);
 });
 
 class TimeState {
@@ -18,7 +21,7 @@ class TimeState {
       this.isFormPosted = false,
       this.isValid = false,
       this.schedule = const [],
-      this.isCompleted = false});
+      this.isCompleted = false,});
 
   TimeState copyWith({
     bool? isPosting,
@@ -32,12 +35,13 @@ class TimeState {
           isFormPosted: isFormPosted ?? this.isFormPosted,
           isValid: isValid ?? this.isValid,
           schedule: schedule ?? this.schedule,
-          isCompleted: isCompleted ?? this.isCompleted);
+          isCompleted: isCompleted ?? this.isCompleted,);
 }
 
 class TimeNotifier extends StateNotifier<TimeState> {
   final ProfileSupplierData supplierData;
-  TimeNotifier({required this.supplierData}) : super(const TimeState());
+  final Ref ref;
+  TimeNotifier({required this.supplierData, required this.ref}) : super(const TimeState());
 
   onScheduleChanged(List<Map<String, dynamic>> schedule) {
     state = state.copyWith(schedule: schedule);
@@ -47,8 +51,9 @@ class TimeNotifier extends StateNotifier<TimeState> {
     state = state.copyWith(isPosting: true);
 
     try {
-      await supplierData.sendCalendar(id, state.schedule);
+      final supplier = await supplierData.sendCalendar(id, state.schedule);
       state = state.copyWith(isCompleted: true);
+      ref.read(authProvider.notifier).setUserCustomerOrSupplier(supplier);
     } catch (e) {
       throw Error();
     }

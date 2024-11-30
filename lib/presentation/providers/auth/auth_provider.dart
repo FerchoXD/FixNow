@@ -1,6 +1,10 @@
+import 'package:fixnow/domain/entities/supplier.dart';
 import 'package:fixnow/domain/entities/user.dart';
+import 'package:fixnow/domain/entities/user_temp.dart';
 import 'package:fixnow/infrastructure/datasources/auth_user.dart';
+import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
 import 'package:fixnow/infrastructure/services/key_value_storage.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/time_availability_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AuthStatus {
@@ -14,27 +18,34 @@ enum AuthStatus {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authUser = AuthUser();
   final keyValueStorage = KeyValueStorage();
+  final supplierData = ProfileSupplierData();
 
-  return AuthNotifier(authUser: authUser, keyValueStorage: keyValueStorage);
+  final authNotifier = AuthNotifier(
+      authUser: authUser,
+      keyValueStorage: keyValueStorage,
+      supplierData: supplierData);
+
+  return authNotifier;
 });
 
 class AuthState {
   final AuthStatus authStatus;
   final User? user;
   final String message;
-  final List userTemp;
+  final UserTemp? userTemp;
 
-  AuthState(
-      {this.authStatus = AuthStatus.checking,
-      this.user,
-      this.message = '',
-      this.userTemp = const []});
+  AuthState({
+    this.authStatus = AuthStatus.checking,
+    this.user,
+    this.message = '',
+    this.userTemp,
+  });
 
   AuthState copyWith({
     AuthStatus? authStatus,
     User? user,
     String? message,
-    List? userTemp,
+    UserTemp? userTemp,
   }) =>
       AuthState(
         authStatus: authStatus ?? this.authStatus,
@@ -46,9 +57,13 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthUser authUser;
+  final ProfileSupplierData supplierData;
   final KeyValueStorage keyValueStorage;
 
-  AuthNotifier({required this.authUser, required this.keyValueStorage})
+  AuthNotifier(
+      {required this.authUser,
+      required this.keyValueStorage,
+      required this.supplierData})
       : super(AuthState()) {
     checkAuthStatus();
   }
@@ -77,8 +92,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void activateAccount(String code) async {
     try {
       final user = await authUser.activateAccount(code);
-      state =
-          state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
+      state = state.copyWith(
+          authStatus: AuthStatus.accountActivated, userTemp: user);
     } catch (e) {
       throw Error();
     }
@@ -110,7 +125,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = await keyValueStorage.getValue('token');
       if (token == null) return logout();
       final user = await authUser.getUser(token);
-      print(user);
       return user;
     } catch (e) {
       logout();
@@ -126,4 +140,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // message: message);
     );
   }
+
+  void setUserCustomerOrSupplier(User user) {
+    state = state.copyWith(user: user);
+  }
+
+  // Future<void> getSupplierInfo() async {
+  //   try {
+  //     final token = await keyValueStorage.getValue('token');
+  //     if (token == null) return;
+  //     final supplier =
+  //         await supplierData.getSupplierInfo(state.user!.id, token);
+  //     setSupplier(supplier);
+  //   } catch (e) {
+  //     throw Error();
+  //   }
+  // }
 }

@@ -1,3 +1,5 @@
+import 'package:fixnow/domain/entities/calendar_supplier.dart';
+
 class User {
   final String id;
   final String name;
@@ -7,20 +9,20 @@ class User {
   final String email;
   final String password;
   final String role;
-  final String profileUrl;
-  final String profilefileNames;
   final String address;
-  final String workexperience;
-  final double standardprice;
+  final String workExperience;
+  final double standardPrice;
   final double quotation;
-  final double hourlyrate;
+  final double hourlyRate;
   final List<String> selectedServices;
   final double relevance;
   final String? token;
-  final String activateToken;
-  final String? verifiedAt;
-  final String createdAt;
-  final String updatedAt;
+  final String activationToken;
+  final DateTime? verifiedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final List<String> profileImages;
+  final List<CalendarSupplier> calendar;
 
   User({
     required this.id,
@@ -31,47 +33,19 @@ class User {
     required this.email,
     required this.password,
     required this.role,
-    required this.profileUrl,
-    required this.profilefileNames,
     required this.address,
-    required this.workexperience,
-    required this.standardprice,
+    required this.workExperience,
+    required this.standardPrice,
     required this.quotation,
-    required this.hourlyrate,
+    required this.hourlyRate,
     required this.selectedServices,
     required this.relevance,
     this.token,
-    required this.activateToken,
+    required this.activationToken,
     this.verifiedAt,
     required this.createdAt,
     required this.updatedAt,
+    required this.profileImages,
+    required this.calendar,
   });
-
-  @override
-  String toString() {
-    return '''
-User {
-  id: $id,
-  name: $name,
-  lastName: $lastName,
-  fullname: $fullname,
-  phoneNumber: $phoneNumber,
-  email: $email,
-  role: $role,
-  profileUrl: $profileUrl,
-  address: $address,
-  workexperience: $workexperience,
-  standardprice: $standardprice,
-  quotation: $quotation,
-  hourlyrate: $hourlyrate,
-  selectedServices: $selectedServices,
-  relevance: $relevance,
-  token: $token,
-  activateToken: $activateToken,
-  verifiedAt: $verifiedAt,
-  createdAt: $createdAt,
-  updatedAt: $updatedAt
-}
-''';
-  }
 }

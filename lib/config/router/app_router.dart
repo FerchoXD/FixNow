@@ -9,7 +9,7 @@ final goRouterProvider = Provider((ref) {
   final goRouterNotifier = ref.read(goRouterNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: goRouterNotifier,
     routes: [
       GoRoute(
@@ -77,7 +77,7 @@ final goRouterProvider = Provider((ref) {
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
-      final user = goRouterNotifier.user;
+      final userTemp = goRouterNotifier.userTemp;
 
       if (isGoingTo == '/splash' && authStatus == AuthStatus.checking) {
         return null;
@@ -88,7 +88,7 @@ final goRouterProvider = Provider((ref) {
             isGoingTo == '/register' ||
             isGoingTo == '/user/select') return null;
 
-        return '/login';
+        return '/';
       }
 
       if (authStatus == AuthStatus.authenticated) {
@@ -114,7 +114,7 @@ final goRouterProvider = Provider((ref) {
             isGoingTo == '/' ||
             isGoingTo == '/activate') {
 
-          if (user != null && user.role == 'SUPPLIER') {
+          if (userTemp != null && userTemp.role == 'SUPPLIER') {
             return '/configure/information';
           }
 

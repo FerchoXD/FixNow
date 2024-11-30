@@ -1,15 +1,16 @@
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
 import 'package:fixnow/infrastructure/inputs.dart';
 import 'package:fixnow/infrastructure/inputs/location.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 
-final basicInfoProvider = StateNotifierProvider<BasicInfoNotifier, BasicInfoState>(
-        (ref) {
+final basicInfoProvider =
+    StateNotifierProvider<BasicInfoNotifier, BasicInfoState>((ref) {
+  final supplierData = ProfileSupplierData();
+  final authData = ref.watch(authProvider);
 
-          final supplierData = ProfileSupplierData();
-
-  return BasicInfoNotifier(supplierData: supplierData);
+  return BasicInfoNotifier(supplierData: supplierData, authData: authData);
 });
 
 class BasicInfoState {
@@ -61,7 +62,13 @@ class BasicInfoState {
 
 class BasicInfoNotifier extends StateNotifier<BasicInfoState> {
   final ProfileSupplierData supplierData;
-  BasicInfoNotifier({required this.supplierData}) : super(const BasicInfoState());
+  final AuthState authData;
+  BasicInfoNotifier({required this.supplierData, required this.authData})
+      : super(BasicInfoState(
+            name: Name.dirty(authData.userTemp!.firstName),
+            lastName: LastName.dirty(authData.userTemp!.lastName),
+            email: Email.dirty(authData.userTemp!.email),
+            phoneNumber: PhoneNumber.dirty(authData.userTemp!.phone)));
 
   onNameChange(String value) {
     final newName = Name.dirty(value);
@@ -133,9 +140,13 @@ class BasicInfoNotifier extends StateNotifier<BasicInfoState> {
     if (!state.isValid) return;
     state = state.copyWith(isPosting: true);
     try {
-      final usersuplier = await supplierData.sendBasicInformation(userId, state.name.value, state.lastName.value, state.email.value, state.phoneNumber.value, state.location.value);
-      print(usersuplier);
-      print('hizo la peticion');
+      final usersuplier = await supplierData.sendBasicInformation(
+          userId,
+          state.name.value,
+          state.lastName.value,
+          state.email.value,
+          state.phoneNumber.value,
+          state.location.value);
       state = state.copyWith(isCompleted: true);
     } catch (e) {
       state = state.copyWith(isPosting: false);

@@ -19,6 +19,7 @@ class BasicInformation extends ConsumerWidget {
           errorMessage: basicInfoState.isFormPosted
               ? basicInfoState.name.errorMessage
               : null,
+              initialValue: authState.userTemp!.firstName,
         ),
         const SizedBox(
           height: 10,
@@ -29,6 +30,7 @@ class BasicInformation extends ConsumerWidget {
           errorMessage: basicInfoState.isFormPosted
               ? basicInfoState.lastName.errorMessage
               : null,
+              initialValue: authState.userTemp!.lastName,
         ),
         const SizedBox(
           height: 10,
@@ -39,6 +41,7 @@ class BasicInformation extends ConsumerWidget {
           errorMessage: basicInfoState.isFormPosted
               ? basicInfoState.email.errorMessage
               : null,
+          initialValue: authState.userTemp!.email,
         ),
         const SizedBox(
           height: 10,
@@ -50,6 +53,7 @@ class BasicInformation extends ConsumerWidget {
           errorMessage: basicInfoState.isFormPosted
               ? basicInfoState.phoneNumber.errorMessage
               : null,
+              initialValue: authState.userTemp!.phone,
         ),
         const SizedBox(
           height: 10,
@@ -73,7 +77,7 @@ class BasicInformation extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(15)),
               ),
               onPressed: basicInfoState.isPosting ? null : () {
-                ref.read(basicInfoProvider.notifier).onFormSubmit(authState.user!.id);
+                ref.read(basicInfoProvider.notifier).onFormSubmit(authState.userTemp!.uuid);
                 print(basicInfoState.isCompleted);
                 
               },
