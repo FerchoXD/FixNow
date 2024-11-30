@@ -1,15 +1,17 @@
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/widgets/history/Container_history_service.dart';
 import 'package:fixnow/presentation/providers/service/history_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HistoryView extends StatefulWidget {
+class HistoryView extends ConsumerStatefulWidget {
   const HistoryView({super.key});
 
   @override
   _HistoryViewState createState() => _HistoryViewState();
 }
 
-class _HistoryViewState extends State<HistoryView> {
+class _HistoryViewState extends ConsumerState<HistoryView> {
   final HistoryService _historyService = HistoryService();
   Map<String, dynamic>? _response;
   bool _isLoading = true;
@@ -21,9 +23,9 @@ class _HistoryViewState extends State<HistoryView> {
     _loadHistory();
   }
 
-  Future<void> _loadHistory() async {
-    const userUuid = '27181bbb-ed9b-4e79-b46c-a053128fc646'; // Ejemplo de UUID
 
+  Future<void> _loadHistory() async {
+    final userUuid = ref.read(authProvider).user!.id;
     final response = await _historyService.fetchHistory(userUuid);
 
     setState(() {
