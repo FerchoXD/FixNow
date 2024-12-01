@@ -19,7 +19,6 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
     "Limpieza general",
     "Jardinería",
     "Albañilería",
-    "Fontanería",
     "Cerrajería",
     "Electrodomésticos",
     "Climatización",

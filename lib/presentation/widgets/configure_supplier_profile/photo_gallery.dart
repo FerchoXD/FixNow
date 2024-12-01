@@ -94,6 +94,7 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final authState = ref.watch(authProvider);
     void showToast(String message) {
       Fluttertoast.showToast(
         msg: message,
@@ -149,7 +150,7 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
                       right: 5,
                       child: GestureDetector(
                         onTap: () => _removeImage(index),
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           backgroundColor: Color(0xFFE05454),
                           child: Icon(
                             Icons.close,
@@ -178,7 +179,7 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
                     return showToast('Ingresa al menos 2 imágenes para continuar');
                   }
 
-                  ref.read(imagesProvider.notifier).onFormSubmit("cd30d38c-1f80-4aa8-8870-6b45f3f3b774");
+                  ref.read(imagesProvider.notifier).onFormSubmit(authState.userTemp!.uuid);
 
                 },
                 child: const Text(

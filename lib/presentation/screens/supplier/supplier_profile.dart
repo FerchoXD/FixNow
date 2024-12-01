@@ -311,7 +311,7 @@ class _WorkSchedule extends ConsumerWidget {
     };
 
     final sortedCalendar = List.from(
-        supplierState.supplier != null ? supplierState.supplier!.calendar : [])
+        supplierState.supplier != null ? supplierState.supplier!.calendar! : [])
       ..sort((a, b) => (dayOrder[a.day] ?? 8).compareTo(dayOrder[b.day] ?? 8));
 
     return Column(

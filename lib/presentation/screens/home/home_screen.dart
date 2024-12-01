@@ -71,60 +71,57 @@ class HomeView extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: homeState.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-              ),
-            )
-          : SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Hola, ",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: colors.onSurface),
-                      ),
-                      Text(
-                        authState.user!.name,
-                        style: TextStyle(
-                            fontSize: 24, color: colors.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  const SearchSectionHome(),
-                  const SizedBox(height: 30),
-                  const ServicesSection(),
-                  const SizedBox(height: 30),
-                  Text(
-                    'Proveedores',
-                    style:
-                        TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 10),
-                  const SupplierSection()
-                ],
-              ),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  "Hola, ",
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: colors.onSurface),
+                ),
+                Text(
+                  authState.user != null ? authState.user!.name! : '',
+                  style:
+                      TextStyle(fontSize: 24, color: colors.onSurfaceVariant),
+                ),
+              ],
             ),
+            const SizedBox(height: 30),
+            const SearchSectionHome(),
+            const SizedBox(height: 30),
+            const ServicesSection(),
+            const SizedBox(height: 30),
+            Text(
+              'Proveedores',
+              style: TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 10),
+            homeState.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : const SupplierSection()
+          ],
+        ),
+      ),
     );
   }
 }
 
-class SearchSectionHome extends StatelessWidget {
+class SearchSectionHome extends ConsumerWidget {
   const SearchSectionHome({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -140,7 +137,11 @@ class SearchSectionHome extends StatelessWidget {
         color: colors.primaryContainer,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: TextField(
+      child: TextFormField(
+        onChanged: ref.read(homeProvider.notifier).onSearchValueChanged,
+        onFieldSubmitted: (value) {
+          ref.read(homeProvider.notifier).searchSuppliers();
+        },
         decoration: InputDecoration(
           hintText: "Buscar...",
           prefixIcon: const Icon(Icons.search),
@@ -156,12 +157,13 @@ class SearchSectionHome extends StatelessWidget {
   }
 }
 
-class ServicesSection extends StatelessWidget {
+class ServicesSection extends ConsumerWidget {
   const ServicesSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final selectedServices = ref.watch(selectedServiceProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -174,60 +176,170 @@ class ServicesSection extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              ServiceCard(
-                iconService: Icon(Icons.water_drop,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Plomería',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Plomería');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Plomería');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Plomería',
+                  iconService: Icons.water_drop,
+                  label: 'Plomería',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.electric_bolt_outlined,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Electricidad',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Electricidad');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Electricidad');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Electricidad',
+                  iconService: Icons.electric_bolt_outlined,
+                  label: 'Electricidad',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.handyman,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Carpintería',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Carpintería');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Carpintería');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Carpintería',
+                  iconService: Icons.handyman,
+                  label: 'Carpintería',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.format_paint,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Pintura',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Pintura');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Pintura');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Pintura',
+                  iconService: Icons.format_paint,
+                  label: 'Pintura',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.grass,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Jardinería',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Jardinería');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Jardinería');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Jardinería',
+                  iconService: Icons.grass,
+                  label: 'Jardinería',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.build,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Albañilería',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Albañilería');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Albañilería');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Albañilería',
+                  iconService: Icons.build,
+                  label: 'Albañilería',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.lock,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Cerrajería',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Cerrajería');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Cerrajería');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Cerrajería',
+                  iconService: Icons.lock,
+                  label: 'Cerrajería',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.cleaning_services,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Limpieza general',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Limpieza general');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Limpieza general');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Limpieza general',
+                  iconService: Icons.cleaning_services,
+                  label: 'Limpieza general',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.devices,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Electrodomésticos',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Electrodomésticos');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Electrodomésticos');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Electrodomésticos',
+                  iconService: Icons.devices,
+                  label: 'Electrodomésticos',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.ac_unit,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Climatización',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Climatización');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Climatización');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Climatización',
+                  iconService: Icons.ac_unit,
+                  label: 'Climatización',
+                ),
               ),
-              ServiceCard(
-                iconService: Icon(Icons.water_damage,
-                    size: 60, color: colors.primary.withOpacity(0.8)),
-                label: 'Impermeabilización',
+              GestureDetector(
+                onTap: () {
+                  ref
+                      .read(selectedServiceProvider.notifier)
+                      .update((state) => 'Impermeabilización');
+                  ref
+                      .read(homeProvider.notifier)
+                      .getServiceByCategory('Impermeabilización');
+                },
+                child: ServiceCard(
+                  isSelected: selectedServices == 'Impermeabilización',
+                  iconService: Icons.water_damage,
+                  label: 'Impermeabilización',
+                ),
               ),
             ],
           ),
@@ -243,24 +355,34 @@ class SupplierSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeProvider);
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: homeState.suppliers.length,
-      itemBuilder: (context, index) {
-        final supplier = homeState.suppliers[index];
-        return GestureDetector(
-          onTap: () => context.push('/supplier/${supplier.uuid}'),
-          child: SupplierCard(
-            name: supplier.firstname,
-            profession: supplier.selectedServices.first,
-            imageUrl: supplier.images.first,
-            rating: supplier.relevance,
-            price: supplier.standardPrice,
-          ),
-        );
-      },
-    );
+    return homeState.suppliers.isEmpty
+        ? const Padding(
+            padding: EdgeInsets.symmetric(vertical: 150),
+            child: Center(
+              child: Text('No se encontraron proveedores'),
+            ),
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: homeState.suppliers.length,
+            itemBuilder: (context, index) {
+              final supplier = homeState.suppliers[index];
+              return GestureDetector(
+                onTap: () => context.push('/supplier/${supplier.uuid}'),
+                child: SupplierCard(
+                  name: supplier.firstname,
+                  profession: supplier.selectedServices.first,
+                  imageUrl:
+                      supplier.images != null && supplier.images!.isNotEmpty
+                          ? supplier.images!.first
+                          : 'https://www.example.com',
+                  rating: supplier.relevance,
+                  price: supplier.standardPrice,
+                ),
+              );
+            },
+          );
   }
 }
 
@@ -300,7 +422,6 @@ class SupplierCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Imagen del proveedor
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(
@@ -315,8 +436,6 @@ class SupplierCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          
-          // Información principal del proveedor
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +452,6 @@ class SupplierCard extends StatelessWidget {
                   style: TextStyle(color: colors.onSurfaceVariant),
                 ),
                 const SizedBox(height: 4),
-                // Rating con íconos de estrellas
                 Row(
                   children: [
                     const Icon(
@@ -343,7 +461,8 @@ class SupplierCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      rating.toStringAsFixed(1),  // Mostrar rating con un decimal
+                      rating
+                          .toStringAsFixed(1), // Mostrar rating con un decimal
                       style: TextStyle(color: colors.onSurfaceVariant),
                     ),
                   ],
@@ -352,10 +471,8 @@ class SupplierCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-
-          // Precio alineado a la derecha
           Text(
-            '\$${price.toStringAsFixed(2)}',  // Mostrar precio con dos decimales
+            '\$${price.toStringAsFixed(2)}', // Mostrar precio con dos decimales
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 20,

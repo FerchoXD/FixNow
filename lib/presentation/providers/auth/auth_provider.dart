@@ -79,8 +79,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void registerUser(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      await authUser.register(
-          name, lastName, email, phoneNumber, password, role);
+      await authUser.register(name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
     } catch (error) {
       logout();
@@ -90,8 +89,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void activateAccount(String code) async {
     try {
       final user = await authUser.activateAccount(code);
-      state = state.copyWith(
-          authStatus: AuthStatus.accountActivated, userTemp: user);
+      state = state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
     } catch (e) {
       throw Error();
     }

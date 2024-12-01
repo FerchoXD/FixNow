@@ -59,7 +59,7 @@ class CreatePost extends ConsumerWidget {
                         : () {
                             ref
                                 .read(forumProvider.notifier)
-                                .createPost(authStatus.user!.fullname);
+                                .createPost(authStatus.user!.fullname!);
                             if (forumState.isFormPosted) {
                               Navigator.of(context).pop();
                             }

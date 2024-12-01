@@ -1,6 +1,4 @@
-import 'package:fixnow/domain/entities/supplier.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
-import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final timeProvider = StateNotifierProvider<TimeNotifier, TimeState>((ref) {
@@ -16,12 +14,13 @@ class TimeState {
   final List<Map<String, dynamic>> schedule;
   final bool isCompleted;
 
-  const TimeState(
-      {this.isPosting = false,
-      this.isFormPosted = false,
-      this.isValid = false,
-      this.schedule = const [],
-      this.isCompleted = false,});
+  const TimeState({
+    this.isPosting = false,
+    this.isFormPosted = false,
+    this.isValid = false,
+    this.schedule = const [],
+    this.isCompleted = false,
+  });
 
   TimeState copyWith({
     bool? isPosting,
@@ -31,17 +30,32 @@ class TimeState {
     bool? isCompleted,
   }) =>
       TimeState(
-          isPosting: isPosting ?? this.isPosting,
-          isFormPosted: isFormPosted ?? this.isFormPosted,
-          isValid: isValid ?? this.isValid,
-          schedule: schedule ?? this.schedule,
-          isCompleted: isCompleted ?? this.isCompleted,);
+        isPosting: isPosting ?? this.isPosting,
+        isFormPosted: isFormPosted ?? this.isFormPosted,
+        isValid: isValid ?? this.isValid,
+        schedule: schedule ?? this.schedule,
+        isCompleted: isCompleted ?? this.isCompleted,
+      );
 }
 
 class TimeNotifier extends StateNotifier<TimeState> {
   final SupplierData supplierData;
   final Ref ref;
-  TimeNotifier({required this.supplierData, required this.ref}) : super(const TimeState());
+  TimeNotifier({required this.supplierData, required this.ref})
+      : super(const TimeState(schedule: [
+          {"day": "Lunes", "activo": true, "inicio": "08:00", "fin": "17:00"},
+          {"day": "Martes", "activo": true, "inicio": "08:00", "fin": "17:00"},
+          {
+            "day": "Miercoles",
+            "activo": true,
+            "inicio": "08:00",
+            "fin": "17:00"
+          },
+          {"day": "Jueves", "activo": true, "inicio": "08:00", "fin": "17:00"},
+          {"day": "Viernes", "activo": true, "inicio": "08:00", "fin": "17:00"},
+          {"day": "Sabado", "activo": true, "inicio": "08:00", "fin": "17:00"},
+          {"day": "Domingo", "activo": true, "inicio": "08:00", "fin": "17:00"},
+        ]));
 
   onScheduleChanged(List<Map<String, dynamic>> schedule) {
     state = state.copyWith(schedule: schedule);
@@ -49,11 +63,9 @@ class TimeNotifier extends StateNotifier<TimeState> {
 
   onFormSubmit(String id) async {
     state = state.copyWith(isPosting: true);
-
     try {
-      final supplier = await supplierData.sendCalendar(id, state.schedule);
+      await supplierData.sendCalendar(id, state.schedule);
       state = state.copyWith(isCompleted: true);
-      ref.read(authProvider.notifier).setUserCustomerOrSupplier(supplier);
     } catch (e) {
       throw Error();
     }

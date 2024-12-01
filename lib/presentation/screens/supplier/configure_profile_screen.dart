@@ -75,9 +75,9 @@ class FormView extends ConsumerWidget {
       case 4:
         return const TimeAvailability();
       case 5:
+        return const PhotoGallery();
+      case 6:
         return const CompletedProfile();
-      // default:
-      //   return const FormCompletedFeedback();
     }
   }
 }
@@ -115,11 +115,11 @@ class InstructionsView extends ConsumerWidget {
         'instructions':
             'Selecciona los días y horas en los que estarás disponible para recibir solicitudes de servicio.',
       },
-      // 5: {
-      //   'title': 'Galería de fotos',
-      //   'instructions': 'Agrega algunas imágenes referentes a tus habilidades.',
-      // },
       5: {
+        'title': 'Galería de fotos',
+        'instructions': 'Agrega algunas imágenes referentes a tus habilidades.',
+      },
+      6: {
         'title': 'Perfil completado',
         'instructions': 'Has completado la configuración de tu perfil.',
       },

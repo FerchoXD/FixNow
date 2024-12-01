@@ -22,8 +22,8 @@ class Supplier {
   final DateTime? verifiedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<String> images;
-  final List<CalendarSupplier> calendar;
+  final List<String>? images;
+  final List<CalendarSupplier>? calendar;
 
   Supplier({
     required this.uuid,
@@ -47,8 +47,7 @@ class Supplier {
     this.verifiedAt,
     required this.createdAt,
     required this.updatedAt,
-    required this.images,
-    required this.calendar,
+    this.images,
+    this.calendar,
   });
-
 }

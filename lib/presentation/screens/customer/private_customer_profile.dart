@@ -34,7 +34,7 @@ class _ProfileView extends ConsumerWidget {
               height: 20,
             ),
             Text(
-              authState.user!.fullname,
+              authState.user!.fullname!,
               style: TextStyle(fontSize: 34, color: colors.onSurface),
             ),
             const SizedBox(
@@ -80,7 +80,7 @@ class _ProfileView extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      authState.user!.phoneNumber,
+                      authState.user!.phoneNumber!,
                       style: TextStyle(fontSize: 16, color: colors.onSurface),
                     ),
                   ],

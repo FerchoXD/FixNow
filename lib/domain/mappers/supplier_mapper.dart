@@ -4,37 +4,41 @@ import 'package:fixnow/domain/mappers/calendar_mapper.dart';
 class SupplierMapper {
   static Supplier supplierJsonToEntity(Map<String, dynamic> json) {
     return Supplier(
-      uuid: json['uuid'],
+      uuid: json['uuid'] as String,
       googleId: json['googleId'] as String?,
-      firstname: json['firstname'],
-      lastname: json['lastname'],
-      fullname: json['fullname'],
-      phone: json['phone'],
-      email: json['email'],
-      password: json['password'],
-      role: json['role'],
-      address: json['address'],
-      workexperience: json['workexperience'],
-      standardPrice: json['standardprice'] != null ? (json['standardprice'] as num).toDouble() : 0.0,
+      firstname: json['firstname'] as String,
+      lastname: json['lastname'] as String,
+      fullname: json['fullname'] as String,
+      phone: json['phone'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      role: json['role'] as String,
+      address: json['address'] as String,
+      workexperience: json['workexperience'] as String,
+      standardPrice: json['standardprice'] != null
+          ? (json['standardprice'] as num).toDouble()
+          : 0.0,
       hourlyRate: json['hourlyrate'] != null
           ? (json['hourlyrate'] as num).toDouble()
           : 0.0,
-      selectedServices: List<String>.from(json['selectedservices']),
+      selectedServices: List<String>.from(json['selectedservices'] ?? []),
       quotation: (json['quotation'] as num).toDouble(),
       relevance: (json['relevance'] as num).toDouble(),
-      token: json['token'],
-      activationToken: json['activationToken'],
+      token: json['token'] as String?,
+      activationToken: json['activationToken'] as String,
       verifiedAt: json['verifiedAt'] != null
-          ? DateTime.parse(json['verifiedAt'])
+          ? DateTime.parse(json['verifiedAt'] as String)
           : null,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      images: (json['images'] as List)
-          .map((imageItem) => imageItem['images'] as String)
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+       images: (json['images'] as List<dynamic>?)
+          ?.map((imageItem) => imageItem['images'] as String?)
+          .whereType<String>()
           .toList(),
-      calendar: (json['calendar'] as List)
-          .map((item) => CalendarMapper.calendarJsonToEntity(item))
+      calendar: (json['calendar'] as List<dynamic>?)
+          ?.map((c) => CalendarMapper.calendarJsonToEntity(c))
           .toList(),
     );
   }
 }
+

@@ -26,11 +26,11 @@ class AuthUser {
     }
   }
 
-  Future<UserTemp> activateAccount(String code) async {
+  Future<User> activateAccount(String code) async {
     try {
       final response = await dio.put('/auth/$code/activate');
-      final userTemp = UserMapperTemp.fromJson(response.data['response']);
-      return userTemp;
+      final user = UserMapper.contactJsonToEntity(response.data['response']);
+      return user;
     } catch (e) {
       throw Error();
     }

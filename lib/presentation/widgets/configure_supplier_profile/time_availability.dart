@@ -14,20 +14,20 @@ class _TimeAvailabilityState extends ConsumerState<TimeAvailability> {
     'Lunes': '08:00 - 17:00',
     'Martes': '08:00 - 17:00',
     'Miércoles': '08:00 - 17:00',
-    'Jueves': 'No laboral',
+    'Jueves': '08:00 - 17:00',
     'Viernes': '08:00 - 17:00',
     'Sábado': '08:00 - 17:00',
-    'Domingo': 'No laboral',
+    'Domingo': '08:00 - 17:00',
   };
 
   final Map<String, bool> _isNonWorkingDay = {
     'Lunes': false,
     'Martes': false,
     'Miércoles': false,
-    'Jueves': true,
+    'Jueves': false,
     'Viernes': false,
     'Sábado': false,
-    'Domingo': true,
+    'Domingo': false,
   };
 
   String? _selectedDay;

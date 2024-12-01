@@ -1,5 +1,6 @@
 import 'package:fixnow/presentation/providers/configure_supplier_profile/basic_info_provider.dart';
 import 'package:fixnow/presentation/providers/configure_supplier_profile/experience_provider.dart';
+import 'package:fixnow/presentation/providers/configure_supplier_profile/images_provider.dart';
 import 'package:fixnow/presentation/providers/configure_supplier_profile/prices_provider.dart';
 import 'package:fixnow/presentation/providers/configure_supplier_profile/services_provider.dart';
 import 'package:fixnow/presentation/providers/configure_supplier_profile/time_availability_provider.dart';
@@ -53,7 +54,7 @@ class InformationNotifier extends StateNotifier<InformationState> {
     final percentage = calcPercentage();
     state = state.copyWith(
         loadingBar: percentage / 100, percentageCompleted: percentage);
-        print(state.section);
+    print(state.section);
   }
 
   formCompleted() {
@@ -61,7 +62,6 @@ class InformationNotifier extends StateNotifier<InformationState> {
         formStatus: FormStatus.completed,
         loadingBar: 1,
         percentageCompleted: 100);
-
   }
 
   calcPercentage() {
@@ -71,18 +71,21 @@ class InformationNotifier extends StateNotifier<InformationState> {
       case 1:
         return 20;
       case 2:
-        return 40;
+        return 30;
       case 3:
         return 60;
       case 4:
         return 80;
       case 5:
+        return 90;
+      case 6:
         return 100;
     }
   }
 }
 
-final informationProvider = StateNotifierProvider<InformationNotifier, InformationState>((ref) {
+final informationProvider =
+    StateNotifierProvider<InformationNotifier, InformationState>((ref) {
   final informationNotifier = InformationNotifier();
 
   ref.listen(providerBasicInfo, (previous, next) {
@@ -115,6 +118,12 @@ final informationProvider = StateNotifierProvider<InformationNotifier, Informati
     }
   });
 
+  ref.listen(providerImageInfo, (previous, next) {
+    if(next) {
+      informationNotifier.changeSection();
+    }
+  });
+
   return informationNotifier;
 });
 
@@ -140,5 +149,10 @@ final providerPricesInfo = Provider<bool>((ref) {
 
 final providerTimeInfo = Provider<bool>((ref) {
   final infoData = ref.watch(timeProvider);
+  return infoData.isCompleted;
+});
+
+final providerImageInfo = Provider<bool>((ref) {
+  final infoData = ref.watch(imagesProvider);
   return infoData.isCompleted;
 });

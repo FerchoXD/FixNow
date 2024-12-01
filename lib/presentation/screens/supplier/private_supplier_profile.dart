@@ -23,7 +23,7 @@ class SupplierProfileView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final userState = ref.watch(authProvider);
-    final rating = userState.user!.relevance;
+    final rating = userState.user!.relevance!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
@@ -45,7 +45,7 @@ class SupplierProfileView extends ConsumerWidget {
               height: 20,
             ),
             Text(
-              userState.user != null ? userState.user!.fullname : '',
+              userState.user != null ? userState.user!.fullname! : '',
               style: TextStyle(fontSize: 34, color: colors.onSurface),
             ),
             const SizedBox(
@@ -78,7 +78,7 @@ class SupplierProfileView extends ConsumerWidget {
               runSpacing: 8.0,
               children: List.generate(
                 userState.user != null
-                    ? userState.user!.selectedServices.length
+                    ? userState.user!.selectedServices!.length
                     : 0,
                 (index) => Container(
                   decoration: BoxDecoration(
@@ -88,7 +88,7 @@ class SupplierProfileView extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     userState.user != null
-                        ? userState.user!.selectedServices[index]
+                        ? userState.user!.selectedServices![index]
                         : '', // Texto dinámico
                     style: TextStyle(
                       color: colors.onSecondaryContainer,
@@ -137,7 +137,7 @@ class SupplierProfileView extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      userState.user != null ? userState.user!.phoneNumber : '',
+                      userState.user != null ? userState.user!.phoneNumber! : '',
                       style: TextStyle(fontSize: 16, color: colors.onSurface),
                     ),
                   ],
@@ -158,7 +158,7 @@ class SupplierProfileView extends ConsumerWidget {
               height: 10,
             ),
             Text(
-              userState.user != null ? userState.user!.workExperience : '',
+              userState.user != null ? userState.user!.workExperience! : '',
               style: TextStyle(fontSize: 16, color: colors.onSurface),
             ),
             const SizedBox(
@@ -256,7 +256,7 @@ class WorkSchedule extends ConsumerWidget {
       'Domingo': 7,
     };
 
-    final sortedCalendar = List.from(userState.user!.calendar)
+    final sortedCalendar = List.from(userState.user!.calendar!)
       ..sort((a, b) => (dayOrder[a.day] ?? 8).compareTo(dayOrder[b.day] ?? 8));
 
     return Column(

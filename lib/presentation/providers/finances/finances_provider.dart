@@ -35,7 +35,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     try {
       state = state.copyWith(isLoading: true);
       final totalTransactions = await financesData.getTotalTransactions(
-          authData.user!.id, year, month);
+          authData.user!.id!, year, month);
       state = state.copyWith(totalTransactions: totalTransactions);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -50,7 +50,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     try {
       state = state.copyWith(isLoading: true);
       final totalTransactions = await financesData.getTotalTransactions(
-          authData.user!.id,
+          authData.user!.id!,
           currentMonth.year.toString(),
           currentMonth.month.toString());
 

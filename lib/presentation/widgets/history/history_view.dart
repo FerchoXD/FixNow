@@ -25,7 +25,7 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
 
 
   Future<void> _loadHistory() async {
-    final userUuid = ref.read(authProvider).user!.id;
+    final userUuid = ref.read(authProvider).user!.id!;
     final response = await _historyService.fetchHistory(userUuid);
 
     setState(() {
