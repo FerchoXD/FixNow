@@ -45,11 +45,7 @@ class SupplierProfileView extends ConsumerWidget {
               height: 20,
             ),
             Text(
-              userState.user != null ? userState.user!.name : '',
-              style: TextStyle(fontSize: 34, color: colors.onSurface),
-            ),
-            Text(
-              userState.user != null ? userState.user!.lastName : '',
+              userState.user != null ? userState.user!.fullname : '',
               style: TextStyle(fontSize: 34, color: colors.onSurface),
             ),
             const SizedBox(
@@ -223,7 +219,10 @@ class SupplierProfileView extends ConsumerWidget {
             const SizedBox(
               height: 10,
             ),
-            const WorkSchedule()
+            const WorkSchedule(),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),

@@ -7,7 +7,7 @@ import 'package:formz/formz.dart';
 
 final basicInfoProvider =
     StateNotifierProvider<BasicInfoNotifier, BasicInfoState>((ref) {
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
   final authData = ref.watch(authProvider);
 
   return BasicInfoNotifier(supplierData: supplierData, authData: authData);
@@ -61,7 +61,7 @@ class BasicInfoState {
 }
 
 class BasicInfoNotifier extends StateNotifier<BasicInfoState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   final AuthState authData;
   BasicInfoNotifier({required this.supplierData, required this.authData})
       : super(BasicInfoState(

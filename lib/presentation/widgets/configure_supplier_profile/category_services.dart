@@ -12,18 +12,18 @@ class ServiceCategories extends ConsumerStatefulWidget {
 
 class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
   final List<String> categories = [
-    'Plomería',
-    'Electricidad',
-    'Carpintería',
-    'Pintura',
-    'Limpieza general',
-    'Jardinería',
-    'Albañilería',
-    'Fontanería',
-    'Cerrajería',
-    'Electrodomésticos',
-    'Aires acondicionados',
-    'Techo y filtraciones',
+    "Plomería",
+    "Electricidad",
+    "Carpintería",
+    "Pintura",
+    "Limpieza general",
+    "Jardinería",
+    "Albañilería",
+    "Fontanería",
+    "Cerrajería",
+    "Electrodomésticos",
+    "Climatización",
+    "Impermeabilización",
   ];
 
   final Set<String> selectedCategories = {};
@@ -49,7 +49,9 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
                   }
                 });
 
-                ref.read(servicesProvider.notifier).onServicesSelected(selectedCategories.toList());
+                ref
+                    .read(servicesProvider.notifier)
+                    .onServicesSelected(selectedCategories.toList());
               },
               child: Container(
                 padding:
@@ -68,7 +70,9 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
             );
           }).toList(),
         ),
-        const SizedBox(height: 30,),
+        const SizedBox(
+          height: 30,
+        ),
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -77,8 +81,10 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
               ),
-              onPressed:  () {
-                ref.read(servicesProvider.notifier).onFormSubmit(authState.userTemp!.uuid);
+              onPressed: () {
+                ref
+                    .read(servicesProvider.notifier)
+                    .onFormSubmit(authState.userTemp!.uuid);
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 17),

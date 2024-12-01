@@ -26,10 +26,9 @@ class UserMapper {
             : null,
         createdAt: DateTime.parse(json['createdAt']),
         updatedAt: DateTime.parse(json['updatedAt']),
-        profileImages: (json['images'] as List<dynamic>?)
-                ?.map((image) => image['images'] as String)
-                .toList() ??
-            [],
+        profileImages: (json['images'] as List)
+            .map((imageItem) => imageItem['images'] as String)
+            .toList(),
         calendar: (json['calendar'] as List<dynamic>?)
                 ?.map((c) => CalendarMapper.calendarJsonToEntity(c))
                 .toList() ??

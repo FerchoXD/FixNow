@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:fixnow/config/config.dart';
 import 'package:fixnow/domain/entities/post.dart';
 import 'package:fixnow/domain/mappers/post_mapper.dart';
 
 class ForumData {
-  final dio = Dio(BaseOptions(baseUrl: 'http://192.168.0.145:3003/api/v1'));
+  final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
   Future<Post> createPost(
       String username, String title, String content, String time) async {

@@ -1,10 +1,8 @@
-import 'package:fixnow/domain/entities/supplier.dart';
 import 'package:fixnow/domain/entities/user.dart';
 import 'package:fixnow/domain/entities/user_temp.dart';
 import 'package:fixnow/infrastructure/datasources/auth_user.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
 import 'package:fixnow/infrastructure/services/key_value_storage.dart';
-import 'package:fixnow/presentation/providers/configure_supplier_profile/time_availability_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AuthStatus {
@@ -18,7 +16,7 @@ enum AuthStatus {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authUser = AuthUser();
   final keyValueStorage = KeyValueStorage();
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
 
   final authNotifier = AuthNotifier(
       authUser: authUser,
@@ -57,7 +55,7 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthUser authUser;
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   final KeyValueStorage keyValueStorage;
 
   AuthNotifier(

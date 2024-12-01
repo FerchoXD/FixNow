@@ -1,1 +1,1 @@
-export './errors/auth_errors.dart';
+export 'errors/custom_error.dart';

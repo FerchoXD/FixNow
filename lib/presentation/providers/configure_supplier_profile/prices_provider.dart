@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 
 final pricesProvider = StateNotifierProvider<PriceNotifier, PricesState>((ref) {
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
   return PriceNotifier(supplierData: supplierData);
 });
 
@@ -43,7 +43,7 @@ class PricesState {
 }
 
 class PriceNotifier extends StateNotifier<PricesState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   PriceNotifier({required this.supplierData}) : super(const PricesState());
 
   onStandarPriceChanged(double value) {

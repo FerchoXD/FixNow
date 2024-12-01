@@ -4,7 +4,7 @@ import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final timeProvider = StateNotifierProvider<TimeNotifier, TimeState>((ref) {
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
 
   return TimeNotifier(supplierData: supplierData, ref: ref);
 });
@@ -39,7 +39,7 @@ class TimeState {
 }
 
 class TimeNotifier extends StateNotifier<TimeState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   final Ref ref;
   TimeNotifier({required this.supplierData, required this.ref}) : super(const TimeState());
 

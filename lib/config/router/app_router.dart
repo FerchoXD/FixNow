@@ -35,12 +35,9 @@ final goRouterProvider = Provider((ref) {
       GoRoute(
         path: '/home/:page',
         builder: (context, state) {
-          final pageIndex = state.pathParameters['page'] ?? '0';
-          final suppliersFound = state.extra as List? ?? []; // Accede a los datos pasados
-          return HomeScreen(
-            pageIndex: int.parse(pageIndex),
-            suppliersFound: suppliersFound,
-          );
+          final pageIndex =
+              state.pathParameters['page'] ?? '0'; // Accede a los datos pasados
+          return HomeScreen(pageIndex: int.parse(pageIndex));
         },
       ),
       GoRoute(
@@ -59,21 +56,22 @@ final goRouterProvider = Provider((ref) {
           path: '/user/select',
           builder: (context, state) => const UserSelect()),
       GoRoute(
-        path: '/profile/supplier',
-        builder: (context, state) => const ProfileSuplier(),
+        path: '/supplier/:id',
+        builder: (context, state) =>  ProfileSuplier(
+          supplierId: state.pathParameters['id'] ?? 'no-id',
+        ),
       ),
       GoRoute(
         path: '/schedule/2',
-      builder: (context, state) => ScheduleServiceTwo(
-        selectedDateTime: state.extra as String,
-      ),
+        builder: (context, state) => ScheduleServiceTwo(
+          selectedDateTime: state.extra as String,
+        ),
       ),
       GoRoute(
         path: '/configure/information',
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
     ],
-    
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
@@ -113,7 +111,6 @@ final goRouterProvider = Provider((ref) {
             isGoingTo == '/register' ||
             isGoingTo == '/' ||
             isGoingTo == '/activate') {
-
           if (userTemp != null && userTemp.role == 'SUPPLIER') {
             return '/configure/information';
           }

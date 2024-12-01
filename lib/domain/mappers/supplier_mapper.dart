@@ -15,15 +15,13 @@ class SupplierMapper {
       role: json['role'],
       address: json['address'],
       workexperience: json['workexperience'],
-      standardPrice:
-          (json['standardprice'] as num).toDouble(), 
-      hourlyRate:
-          (json['hourlyrate'] as num).toDouble(),
+      standardPrice: json['standardprice'] != null ? (json['standardprice'] as num).toDouble() : 0.0,
+      hourlyRate: json['hourlyrate'] != null
+          ? (json['hourlyrate'] as num).toDouble()
+          : 0.0,
       selectedServices: List<String>.from(json['selectedservices']),
-      quotation: json[
-          'quotation'], 
-      relevance: json[
-          'relevance'], 
+      quotation: (json['quotation'] as num).toDouble(),
+      relevance: (json['relevance'] as num).toDouble(),
       token: json['token'],
       activationToken: json['activationToken'],
       verifiedAt: json['verifiedAt'] != null
@@ -31,7 +29,9 @@ class SupplierMapper {
           : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      images: List<String>.from(json['images']),
+      images: (json['images'] as List)
+          .map((imageItem) => imageItem['images'] as String)
+          .toList(),
       calendar: (json['calendar'] as List)
           .map((item) => CalendarMapper.calendarJsonToEntity(item))
           .toList(),

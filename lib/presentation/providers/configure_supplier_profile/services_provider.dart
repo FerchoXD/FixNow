@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final servicesProvider =
     StateNotifierProvider<ServicesNotifier, ServicesState>((ref) {
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
   return ServicesNotifier(supplierData: supplierData);
 });
 
@@ -38,7 +38,7 @@ class ServicesState {
 }
 
 class ServicesNotifier extends StateNotifier<ServicesState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   ServicesNotifier({required this.supplierData}) : super(const ServicesState());
 
   onServicesSelected(List<String> services) {

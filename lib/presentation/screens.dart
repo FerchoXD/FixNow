@@ -1,4 +1,4 @@
-export 'package:fixnow/presentation/screens/home_screen.dart';
+export 'package:fixnow/presentation/screens/home/home_screen.dart';
 export 'package:fixnow/presentation/screens/error_screen.dart';
 export 'package:fixnow/presentation/screens/auth/login_screen.dart';
 export 'package:fixnow/presentation/screens/welcome_screen.dart';
@@ -14,6 +14,6 @@ export './screens/supplier/supplier_profile.dart';
 export './screens/schedule_service_two.dart';
 export 'screens/forum/community_screen.dart';
 export 'screens/customer/assistan_screen.dart';
-export 'screens/supplier/finances_screen.dart';
+export 'screens/finances/finances_screen.dart';
 export 'screens/customer/notifications_screen.dart';
 export './screens/customer/private_customer_profile.dart';

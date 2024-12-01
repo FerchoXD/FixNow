@@ -15,8 +15,8 @@ class Supplier {
   final double standardPrice;
   final double hourlyRate;
   final List<String> selectedServices;
-  final int quotation;
-  final int relevance;
+  final double quotation;
+  final double relevance;
   final String? token;
   final String activationToken;
   final DateTime? verifiedAt;

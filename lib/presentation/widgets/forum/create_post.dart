@@ -1,5 +1,5 @@
 import 'package:fixnow/presentation/providers.dart';
-import 'package:fixnow/presentation/screens/home_screen.dart';
+import 'package:fixnow/presentation/screens/home/home_screen.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

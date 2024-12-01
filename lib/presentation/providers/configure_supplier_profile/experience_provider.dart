@@ -5,7 +5,7 @@ import 'package:formz/formz.dart';
 
 final experienceProvider =
     StateNotifierProvider<ExperienceNotifier, ExperienceState>((ref) {
-      final supplierData = ProfileSupplierData();
+      final supplierData = SupplierData();
   return ExperienceNotifier(supplierData: supplierData);
 });
 
@@ -41,7 +41,7 @@ class ExperienceState {
 }
 
 class ExperienceNotifier extends StateNotifier<ExperienceState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   ExperienceNotifier({required this.supplierData}) : super(const ExperienceState());
 
   onExperienceChanged(String value) {

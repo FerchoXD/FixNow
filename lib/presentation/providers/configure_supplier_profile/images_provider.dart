@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image/image.dart' as img;
 
 final imagesProvider = StateNotifierProvider((ref) {
-  final supplierData = ProfileSupplierData();
+  final supplierData = SupplierData();
   return ImagesNotifier(supplierData: supplierData);
 });
 
@@ -38,7 +38,7 @@ class ImagesState {
 }
 
 class ImagesNotifier extends StateNotifier<ImagesState> {
-  final ProfileSupplierData supplierData;
+  final SupplierData supplierData;
   ImagesNotifier({required this.supplierData}) : super(const ImagesState());
 
   onImagesChanged(List<File> images) async {
