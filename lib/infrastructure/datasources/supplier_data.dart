@@ -108,10 +108,12 @@ class SupplierData {
         }).toList(),
       });
 
-      final response = await dio.put('/auth/profile/suplier',
+      final response = await dio.put(
+        '/auth/profile/suplier',
         data: formData,
       );
-      final supplier = response.data['data']['data'];
+      final supplier =
+          UserMapper.contactJsonToEntity(response.data['data']['data']);
       return supplier;
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {

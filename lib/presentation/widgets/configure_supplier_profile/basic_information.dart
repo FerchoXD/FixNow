@@ -12,7 +12,7 @@ class BasicInformation extends ConsumerWidget {
     final basicInfoState = ref.watch(basicInfoProvider);
     final authState = ref.watch(authProvider);
     return authState.user == null
-        ? Center(
+        ? const Center(
             child: CircularProgressIndicator(),
           )
         : Column(

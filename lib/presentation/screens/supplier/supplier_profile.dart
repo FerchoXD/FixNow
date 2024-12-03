@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class ProfileSuplier extends StatelessWidget {
+class ProfileSuplier extends ConsumerWidget {
   final String supplierId;
   const ProfileSuplier({super.key, required this.supplierId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    ref.watch(supplierProfileProvider(supplierId));
     return Scaffold(
       appBar: AppBar(),
       backgroundColor: colors.surface,

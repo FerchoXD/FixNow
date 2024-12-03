@@ -93,9 +93,8 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
 
   @override
   Widget build(BuildContext context) {
-
-     showMessage(BuildContext context, String message) {
-     Fluttertoast.showToast(
+    showMessage(BuildContext context, String message) {
+      Fluttertoast.showToast(
         msg: message,
         fontSize: 16,
         backgroundColor: const Color.fromARGB(255, 255, 229, 227),
@@ -105,11 +104,10 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
       );
     }
 
-     ref.listen(imagesProvider, (previous, next) {
+    ref.listen(imagesProvider, (previous, next) {
       if (next.message.isEmpty) return;
       showMessage(context, next.message);
     });
-
 
     final colors = Theme.of(context).colorScheme;
     final authState = ref.watch(authProvider);
@@ -194,11 +192,13 @@ class _PhotoGalleryState extends ConsumerState<PhotoGallery> {
                 ),
                 onPressed: () {
                   if (_images.length < 2) {
-                    return showToast('Ingresa al menos 2 imágenes para continuar');
+                    return showToast(
+                        'Ingresa al menos 2 imágenes para continuar');
                   }
 
-                  ref.read(imagesProvider.notifier).onFormSubmit("c0875abd-f49d-4689-a36a-bc6c0f448b56");
-
+                  ref
+                      .read(imagesProvider.notifier)
+                      .onFormSubmit(authState.user!.id!);
                 },
                 child: const Text(
                   'Guardar',

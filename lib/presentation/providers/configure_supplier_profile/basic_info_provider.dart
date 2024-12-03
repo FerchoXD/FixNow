@@ -69,10 +69,10 @@ class BasicInfoNotifier extends StateNotifier<BasicInfoState> {
   final AuthState authData;
   BasicInfoNotifier({required this.supplierData, required this.authData})
       : super(BasicInfoState(
-            name: Name.dirty(authData.userTemp!.firstName),
-            lastName: LastName.dirty(authData.userTemp!.lastName),
-            email: Email.dirty(authData.userTemp!.email),
-            phoneNumber: PhoneNumber.dirty(authData.userTemp!.phone)));
+            name: Name.dirty(authData.user!.name!),
+            lastName: LastName.dirty(authData.user!.lastName!),
+            email: Email.dirty(authData.user!.email!),
+            phoneNumber: PhoneNumber.dirty(authData.user!.phoneNumber!)));
 
   onNameChange(String value) {
     final newName = Name.dirty(value);

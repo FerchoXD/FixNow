@@ -32,14 +32,12 @@ class AuthState {
   final User? user;
   final String message;
   final UserTemp? userTemp;
-  final bool isLoading;
 
   AuthState({
     this.authStatus = AuthStatus.checking,
     this.user,
     this.message = '',
     this.userTemp,
-    this.isLoading = false,
   });
 
   AuthState copyWith({
@@ -54,7 +52,6 @@ class AuthState {
         user: user ?? this.user,
         message: message ?? this.message,
         userTemp: userTemp ?? this.userTemp,
-        isLoading: isLoading ?? this.isLoading
       );
 }
 
@@ -94,14 +91,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void activateAccount(String code) async {
     try {
-      state = state.copyWith(isLoading: true);
       final user = await authUser.activateAccount(code);
-      print(user.activationToken);
-      // state = state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
+      state =  state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
     } on CustomError catch (e) {
       state = state.copyWith(message: e.message);
     }
-    state = state.copyWith(isLoading: false);
   }
 
   void checkAuthStatus() async {
