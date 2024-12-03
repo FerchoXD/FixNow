@@ -3,6 +3,7 @@ import 'package:fixnow/infrastructure/datasources/forum_data.dart';
 import 'package:fixnow/infrastructure/errors/custom_error.dart';
 import 'package:fixnow/infrastructure/inputs/forum/content.dart';
 import 'package:fixnow/infrastructure/inputs/forum/post_title.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 
@@ -13,7 +14,8 @@ enum ForumOption {
 
 final forumProvider = StateNotifierProvider<ForumNotifier, ForumState>((ref) {
   final forumData = ForumData();
-  return ForumNotifier(forumData: forumData);
+  final authState = AuthState();
+  return ForumNotifier(forumData: forumData, authState: authState);
 });
 
 class ForumState {
@@ -26,6 +28,7 @@ class ForumState {
   final List<Post> myListPost;
   final String message;
   final ForumOption forumOption;
+  final bool isLoading;
   const ForumState(
       {this.title = const TitlePost.pure(),
       this.content = const ContentPost.pure(),
@@ -35,7 +38,8 @@ class ForumState {
       this.listPost = const [],
       this.myListPost = const [],
       this.message = '',
-      this.forumOption = ForumOption.all});
+      this.forumOption = ForumOption.all,
+      this.isLoading = true});
 
   ForumState copyWith({
     TitlePost? title,
@@ -48,6 +52,7 @@ class ForumState {
     List<Post>? myListPost,
     String? message,
     ForumOption? forumOption,
+    bool? isLoading,
   }) =>
       ForumState(
           title: title ?? this.title,
@@ -58,12 +63,18 @@ class ForumState {
           listPost: listPost ?? this.listPost,
           myListPost: myListPost ?? this.myListPost,
           message: message ?? this.message,
-          forumOption: forumOption ?? this.forumOption);
+          forumOption: forumOption ?? this.forumOption,
+          isLoading: isLoading ?? this.isLoading);
 }
 
 class ForumNotifier extends StateNotifier<ForumState> {
   final ForumData forumData;
-  ForumNotifier({required this.forumData}) : super(const ForumState());
+  final AuthState authState;
+  ForumNotifier({required this.forumData, required this.authState})
+      : super(const ForumState()) {
+    getAllPost();
+    getMyPost();
+  }
 
   onChangedTitlePost(String value) {
     final newTitle = TitlePost.dirty(value);
@@ -77,6 +88,17 @@ class ForumNotifier extends StateNotifier<ForumState> {
         content: newContentPost, isValidPost: Formz.validate([state.title]));
   }
 
+  Future<void> getAllPost() async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final List<Post> allPost = await forumData.getAllPost();
+      state = state.copyWith(message: '', listPost: allPost, isLoading: false);
+    } on CustomError catch (e) {
+      state = state.copyWith(isLoading: false, message: e.message);
+    }
+    state = state.copyWith(isLoading: false);
+  }
+
   Future<void> createPost(String username) async {
     _touchEveryField();
     if (!state.isValidPost) return;
@@ -88,7 +110,20 @@ class ForumNotifier extends StateNotifier<ForumState> {
       state = state.copyWith(
           myListPost: [...state.myListPost, newPost], isFormPosted: true);
     } on CustomError catch (e) {
-      state = state.copyWith(isPosting: false, isFormPosted: false, message: e.message);
+      state = state.copyWith(
+          isPosting: false, isFormPosted: false, message: e.message);
+    }
+    state = state.copyWith(isPosting: false, isFormPosted: false);
+  }
+
+  Future<void> getMyPost() async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final List<Post> allPost = await forumData.getMyPost(authState.user!.id!);
+      state = state.copyWith(message: '', listPost: allPost, isLoading: false);
+    } on CustomError catch (e) {
+      state = state.copyWith(
+          isPosting: false, isFormPosted: false, message: e.message);
     }
     state = state.copyWith(isPosting: false, isFormPosted: false);
   }
@@ -96,7 +131,6 @@ class ForumNotifier extends StateNotifier<ForumState> {
   updateOption(ForumOption value) {
     state = state.copyWith(forumOption: value);
   }
-
 
   _touchEveryField() {
     final title = TitlePost.dirty(state.title.value);

@@ -1,4 +1,5 @@
 class Post {
+  final String uuid;
   final String id;
   final String username;
   final String title;
@@ -8,6 +9,7 @@ class Post {
   final String updatedAt;
 
   Post({
+    required this.uuid,
     required this.id,
     required this.username,
     required this.title,

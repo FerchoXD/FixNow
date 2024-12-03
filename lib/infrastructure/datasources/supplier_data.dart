@@ -193,7 +193,6 @@ class SupplierData {
 
       final List<Supplier> suppliers = [];
 
-      // Verificamos si la respuesta es exitosa
       if (response.statusCode == 200) {
         if (response.data is List) {
           for (final supplier in response.data) {

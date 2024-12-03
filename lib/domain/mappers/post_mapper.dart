@@ -2,7 +2,8 @@ import 'package:fixnow/domain/entities/post.dart';
 
 class PostMapper {
   static Post postJsonToEntity(Map<String, dynamic> json) => Post(
-      id: json['uuid'],
+      uuid: json['uuid'],
+      id: json['_id'],
       username: json['username'],
       title: json['title'],
       content: json['content'],

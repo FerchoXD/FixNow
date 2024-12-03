@@ -21,7 +21,7 @@ class CommunityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-
+    final forumState = ref.watch(forumProvider);
     ref.listen(forumProvider, (previous, next) {
       if (next.message.isEmpty) return;
       showMessage(context, next.message);
@@ -29,7 +29,11 @@ class CommunityScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      body: _CommunityView(),
+      body: forumState.isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : _CommunityView(),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -60,45 +64,89 @@ class _CommunityView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final forumState = ref.watch(forumProvider);
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: SegmentedButton(
-                segments: const [
-                  ButtonSegment(value: ForumOption.all, icon: Text('Publicaciones'),),
-                  ButtonSegment(value: ForumOption.myPost, icon: Text('Mis publicaciones')),
-                ],
-                selected:  <ForumOption>{forumState.forumOption},
-                onSelectionChanged: (value) {
-                  ref.read(forumProvider.notifier).updateOption(value.first);
-                },
+    return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: SegmentedButton(
+                  segments: const [
+                    ButtonSegment(
+                      value: ForumOption.all,
+                      icon: Text('Publicaciones'),
+                    ),
+                    ButtonSegment(
+                      value: ForumOption.myPost,
+                      icon: Text('Mis publicaciones'),
+                    ),
+                  ],
+                  selected: <ForumOption>{forumState.forumOption},
+                  onSelectionChanged: (value) {
+                    ref.read(forumProvider.notifier).updateOption(value.first);
+                  },
+                ),
               ),
-            )
-          ],
-        ));
+              forumState.forumOption == ForumOption.all
+                  ? ListPostView()
+                  : MyListPost()
+            ],
+          )),
+    );
   }
 }
 
-class MyWidget extends ConsumerWidget {
-  const MyWidget({super.key});
+class ListPostView extends ConsumerWidget {
+  const ListPostView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final forumState = ref.watch(forumProvider);
 
-    return ListView.builder(
-      itemCount: forumState.myListPost.length,
-      itemBuilder: (context, index) {
-        final post = forumState.myListPost[index];
-        return ForumPost(
-          username: post.username,
-          tittle: post.title,
-          content: post.content,
-        );
-      },
-    );
+    return forumState.listPost.isEmpty
+        ? Center(
+            child: Text('Aun no hay publicaciones'),
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: forumState.listPost.length,
+            itemBuilder: (context, index) {
+              final post = forumState.listPost[index];
+              return ForumPost(
+                username: post.username,
+                tittle: post.title,
+                content: post.content,
+              );
+            },
+          );
+  }
+}
+
+class MyListPost extends ConsumerWidget {
+  const MyListPost({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final forumState = ref.watch(forumProvider);
+    return forumState.myListPost.isEmpty
+        ? Center(
+            child: Text('Aun no hay publicaciones'),
+          )
+        : ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: forumState.myListPost.length,
+            itemBuilder: (context, index) {
+              final post = forumState.listPost[index];
+              return ForumPost(
+                username: post.username,
+                tittle: post.title,
+                content: post.content,
+              );
+            },
+          );
   }
 }
