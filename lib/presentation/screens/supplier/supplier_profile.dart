@@ -23,7 +23,7 @@ class ProfileSuplier extends StatelessWidget {
               heroTag: 'contratar',
               backgroundColor: colors.primary,
               onPressed: () {
-                context.push('/schedule');
+                context.push('/schedule/$supplierId');
               },
               label: const Text('Contratar'),
               icon: const Icon(Icons.person),
@@ -40,6 +40,19 @@ class ProfileSuplier extends StatelessWidget {
               },
               label: Text('Chat', style: TextStyle(color: colors.primary)),
               icon: Icon(Icons.chat, color: colors.primary),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 120,
+            child: FloatingActionButton.extended(
+              heroTag: 'reseñas',
+              backgroundColor: colors.secondary,
+              onPressed: () {
+                context.push('/reviews');
+              },
+              label: Text('Reseñas', style: TextStyle(color: colors.primary)),
+              icon: Icon(Icons.person, color: colors.primary),
             ),
           ),
         ],
@@ -149,31 +162,31 @@ class _SupplierProfileView extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: colors.onSurfaceVariant,
-                            size: 30,
-                          ),
-                          const SizedBox(width: 4),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Ninguna',
-                                style: TextStyle(
-                                    fontSize: 16, color: colors.onSurface),
-                              ),
-                              // Text(
-                              //   'a 3 Km de distancia',
-                              //   style:
-                              //       TextStyle(fontSize: 16, color: colors.onSurface),
-                              // ),
-                            ],
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     Icon(
+                      //       Icons.location_on,
+                      //       color: colors.onSurfaceVariant,
+                      //       size: 30,
+                      //     ),
+                      //     const SizedBox(width: 4),
+                      //     Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         Text(
+                      //           'Ninguna',
+                      //           style: TextStyle(
+                      //               fontSize: 16, color: colors.onSurface),
+                      //         ),
+                      //         // Text(
+                      //         //   'a 3 Km de distancia',
+                      //         //   style:
+                      //         //       TextStyle(fontSize: 16, color: colors.onSurface),
+                      //         // ),
+                      //       ],
+                      //     ),
+                      //   ],
+                      // ),
                       Row(
                         children: [
                           Icon(

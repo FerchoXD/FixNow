@@ -48,7 +48,7 @@ class SideMenu extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
         child: ElevatedButton(
           onPressed: () {
-            ref.read(authProvider.notifier).logout();
+            ref.read(authProvider.notifier).logout('');
           },
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(

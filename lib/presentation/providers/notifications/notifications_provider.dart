@@ -1,14 +1,18 @@
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fixnow/domain/entities/push_message.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final notificationsProvider = StateNotifierProvider<NotificationsNotifier, NotificationsState>((ref) {
+final notificationsProvider =
+    StateNotifierProvider<NotificationsNotifier, NotificationsState>((ref) {
   return NotificationsNotifier();
 });
 
 class NotificationsState {
   final AuthorizationStatus status;
-  final List<dynamic> notifications;
+  final List<PushMessage> notifications;
 
   const NotificationsState(
       {this.status = AuthorizationStatus.notDetermined,
@@ -16,7 +20,7 @@ class NotificationsState {
 
   NotificationsState copyWith({
     AuthorizationStatus? status,
-    List<dynamic>? notifications,
+    List<PushMessage>? notifications,
   }) =>
       NotificationsState(
         status: status ?? this.status,
@@ -26,14 +30,14 @@ class NotificationsState {
 
 class NotificationsNotifier extends StateNotifier<NotificationsState> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  NotificationsNotifier() : super(NotificationsState()) {
+  NotificationsNotifier() : super(const NotificationsState()) {
     requestPermission();
     getFirebaseMessaginToken();
-    onForegroundMessage();
+    _onForegroundMessage();
   }
 
   Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    // await Firebase.initializeApp();
+    await Firebase.initializeApp();
     print("Handling a background message: ${message.messageId}");
   }
 
@@ -58,13 +62,35 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
   }
 
   void handleRemoteMessage(RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
     if (message.notification == null) return;
-    print('Message also contained a notification: ${message.notification}');
+    final notification = PushMessage(
+        messageId:
+            message.messageId?.replaceAll(':', '').replaceAll('%', '') ?? '',
+        title: message.notification!.title ?? '',
+        body: message.notification!.body ?? '',
+        sentDate: message.sentTime ?? DateTime.now(),
+        data: message.data,
+        imageUrl: Platform.isAndroid
+            ? message.notification!.android?.imageUrl
+            : message.notification!.apple?.imageUrl);
+
+    state =
+        state.copyWith(notifications: [notification, ...state.notifications]);
   }
 
-  void onForegroundMessage() {
+  void _onForegroundMessage() {
     FirebaseMessaging.onMessage.listen(handleRemoteMessage);
   }
+
+ PushMessage? getMessageByServiceId(String serviceId) {
+  final exist = state.notifications.any(
+    (element) => element.data!['serviceId'] == serviceId,
+  );
+  if (!exist) return null;
+
+  return state.notifications.firstWhere(
+    (element) => element.data!['serviceId'] == serviceId,
+  );
+}
+
 }

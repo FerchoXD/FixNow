@@ -1,6 +1,7 @@
 import 'package:fixnow/presentation/providers.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +10,25 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    showMessage(BuildContext context, String message) {
+     Fluttertoast.showToast(
+        msg: message,
+        fontSize: 16,
+        backgroundColor: const Color.fromARGB(255, 255, 229, 227),
+        textColor: Colors.red.shade300,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
+
     final colors = Theme.of(context).colorScheme;
     final loginState = ref.watch(loginFormProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.message.isEmpty) return;
+      showMessage(context, next.message);
+    });
+
     return Scaffold(
       backgroundColor: colors.surface,
       body: Center(
@@ -49,7 +67,8 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 40),
                 CustomTextField(
                   label: 'Correo eletrónico',
-                  onChanged: ref.read(loginFormProvider.notifier).onEmailChanged,
+                  onChanged:
+                      ref.read(loginFormProvider.notifier).onEmailChanged,
                   errorMessage: loginState.isFormPosted
                       ? loginState.email.errorMessage
                       : null,

@@ -1,130 +1,121 @@
-import 'package:dio/dio.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
+import 'package:fixnow/presentation/providers/service/schedule_service_provider.dart';
+import 'package:fixnow/presentation/widgets/custom_text_fiel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-class ScheduleServiceTwo extends StatefulWidget {
-  final String selectedDateTime;
+class ScheduleServiceTwo extends ConsumerStatefulWidget {
+  final String supplierId;
 
-  const ScheduleServiceTwo({super.key, required this.selectedDateTime});
+  const ScheduleServiceTwo({super.key, required this.supplierId});
 
   @override
-  State<ScheduleServiceTwo> createState() => _ScheduleServiceTwoState();
+  ScheduleServiceTwoState createState() => ScheduleServiceTwoState();
 }
 
-class _ScheduleServiceTwoState extends State<ScheduleServiceTwo> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _priceController = TextEditingController();
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _priceController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submitData() async {
-    final dio = Dio();
-    const url = 'https://69fa-2806-262-3404-9c-7910-4ceb-d179-5618.ngrok-free.app/api/v1/history/create/service';
-
-    final title = _titleController.text;
-    final description = _descriptionController.text;
-    final price = double.tryParse(_priceController.text);
-    final agreedDate = widget.selectedDateTime;
-
-    print(widget.selectedDateTime);
-
-    if (title.isEmpty || description.isEmpty || price == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Completa todos los campos.')),
-      );
-      return;
-    }
-
-    final payload = {
-      "userUuid": "27181bbb-ed9b-4e79-b46c-a053128fc646",
-      "title": _titleController.text,
-      "description": _descriptionController.text,
-      "agreedPrice": double.tryParse(_priceController.text) ?? 0.0,
-      "agreedDate": DateTime.parse(widget.selectedDateTime).toUtc().toIso8601String(),
-    };
-
-    try {
-      final response = await dio.post(url, data: payload);
-      if (response.statusCode == 200) {
-        // Manejar la respuesta exitosa
-        GoRouter.of(context).go('/home');
-        print('Servicio agendado exitosamente');
-      } else {
-        // Manejar otros códigos de estado
-        print('Error al agendar el servicio: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (e is DioException) {
-        // Manejar errores específicos de Dio
-        print('Error de Dio: ${e.message}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al agendar el servicio: ${e.message}')),
-        );
-      } else {
-        // Manejar otros tipos de errores
-        print('Error inesperado: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error inesperado al agendar el servicio: $e')),
-        );
-      }
-    }
-  }
-
+class ScheduleServiceTwoState extends ConsumerState<ScheduleServiceTwo> {
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+   
 
+    void showToast(String message) {
+      Fluttertoast.showToast(
+        msg: message,
+        backgroundColor: const Color(0xFFE9FFE9),
+        textColor: Colors.green,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
+
+     ref.listen(scheduleServiceProvider, (previous, next) {
+      if (next.successMessage.isNotEmpty) {
+        showToast(next.successMessage);
+        context.go('/home/0');
+      }
+    });
+
+    final colors = Theme.of(context).colorScheme;
+    final authStatus = ref.watch(authProvider);
+    final scheduleState = ref.watch(scheduleServiceProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Completar detalles'),
+        title: Text(
+          'Agendar servicio',
+          style: TextStyle(color: colors.primary),
+        ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Título del servicio'),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Descripción'),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Precio acordado'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _submitData,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Completa los detalles del serivicio',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(
+              height: 40,
+            ),
+            CustomTextField(
+              label: 'Titulo de servicio',
+              onChanged:
+                  ref.read(scheduleServiceProvider.notifier).onTitleChanged,
+              errorMessage: scheduleState.isFormPosted
+                  ? scheduleState.title.errorMessage
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            CustomTextField(
+              label: 'Descripción',
+              onChanged: ref
+                  .read(scheduleServiceProvider.notifier)
+                  .onDescriptionChanged,
+              errorMessage: scheduleState.isFormPosted
+                  ? scheduleState.description.errorMessage
+                  : null,
+            ),
+            const SizedBox(height: 10),
+            CustomTextField(
+              label: 'Precio acordado',
+              keyboardType: TextInputType.number,
+              errorMessage: scheduleState.isFormPosted
+                  ? scheduleState.price.errorMessage
+                  : null,
+              onChanged: (value) {
+                final parsedValue = double.tryParse(value) ?? 0.0;
+                ref
+                    .read(scheduleServiceProvider.notifier)
+                    .onPriceChanged(parsedValue);
+              },
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                   ),
-                ),
-                child: const Text(
-                  'Enviar',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
+                  onPressed: () {
+                    ref
+                        .read(scheduleServiceProvider.notifier)
+                        .onFormSubmit(authStatus.user!.id!, widget.supplierId);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 17),
+                    child: Text(
+                      'Continuar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )),
+            ),
+          ],
         ),
       ),
     );

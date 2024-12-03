@@ -98,34 +98,43 @@ class SupplierData {
 
   Future sendImages(String id, List<File> images) async {
     try {
-      List<MultipartFile> multipartImages = await Future.wait(
-        images.map(
-          (file) async {
-            print("Processing file: ${file.path}"); // Verifica cada archivo
-            return MultipartFile.fromFile(file.path,
-                filename: file.path.split('/').last);
-          },
-        ),
-      );
-
-      FormData formData =
-          FormData.fromMap({"uuid": id, "files": multipartImages});
+      FormData formData = FormData.fromMap({
+        "uuid": id,
+        "File": images.map((image) {
+          return MultipartFile.fromFileSync(
+            image.path,
+            filename: image.path.split('/').last,
+          );
+        }).toList(),
+      });
 
       final response = await dio.put('/auth/profile/suplier',
-          data: formData,
-          options: Options(headers: {'Content-Type': 'multipart/form-data'}));
-
-      if (response.statusCode == 200) {
-        final supplier =
-            UserMapper.contactJsonToEntity(response.data['data']['data']);
-        return supplier;
-      } else {
-        print('Error: ${response.statusMessage}');
-        throw Error();
+        data: formData,
+      );
+      final supplier = response.data['data']['data'];
+      return supplier;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['error']);
       }
+      if (e.response?.statusCode == 401) {
+        throw CustomError(e.response?.data['error']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['error']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['error'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      print('Error occurred: $e');
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 
@@ -138,8 +147,25 @@ class SupplierData {
         suppliers.add(SupplierMapper.supplierJsonToEntity(supplier));
       }
       return suppliers;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 

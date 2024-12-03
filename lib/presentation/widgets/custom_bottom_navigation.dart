@@ -67,10 +67,11 @@ class CustomBottomNavigation extends ConsumerWidget {
                 ? 'Notificaciones'
                 : 'Finanzas',
           ),
-          GButton(
-            icon: Icons.person,
-            text: 'Perfil',
-          ),
+          if (authState.user!.role == 'SUPPLIER')
+            const GButton(
+              icon: Icons.person,
+              text: 'Perfil',
+            ),
         ],
         selectedIndex: currentIndex,
         onTabChange: (value) {

@@ -83,7 +83,7 @@ class ServiceCategoriesState extends ConsumerState<ServiceCategories> {
               onPressed: () {
                 ref
                     .read(servicesProvider.notifier)
-                    .onFormSubmit(authState.userTemp!.uuid);
+                    .onFormSubmit(authState.user!.id!);
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 17),

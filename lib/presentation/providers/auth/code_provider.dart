@@ -49,9 +49,7 @@ class CodeNotifier extends StateNotifier<CodeState> {
   onCodeSubmit() async {
     final code = Code.dirty(state.code.value);
     state = state.copyWith(isSent: true, code: code, isValid: Formz.validate([code]));
-    print(state.code.value);
     if (!state.isValid) return;
-
     state = state.copyWith(isPosting: true);
     try {
       await activateCallback(state.code.value);

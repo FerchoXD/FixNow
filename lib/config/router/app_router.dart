@@ -49,23 +49,33 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const HistoryScreen(),
       ),
       GoRoute(
-        path: '/schedule',
-        builder: (context, state) => const ScheduleService(),
+        path: '/reviews',
+        builder: (context, state) => const ReviewsScreen(),
       ),
+      GoRoute(
+        path: '/details-service/:id',
+        builder: (context, state) => DetailsServiceHistory(
+          serviceId: state.pathParameters['id'] ?? 'no-id',
+        ),
+      ),
+      GoRoute(
+          path: '/schedule/:id',
+          builder: (context, state) => ScheduleService(
+                supplierId: state.pathParameters['id'] ?? 'no-id',
+              )),
       GoRoute(
           path: '/user/select',
           builder: (context, state) => const UserSelect()),
       GoRoute(
         path: '/supplier/:id',
-        builder: (context, state) =>  ProfileSuplier(
+        builder: (context, state) => ProfileSuplier(
           supplierId: state.pathParameters['id'] ?? 'no-id',
         ),
       ),
       GoRoute(
-        path: '/schedule/2',
+        path: '/schedule/2/:id',
         builder: (context, state) => ScheduleServiceTwo(
-          selectedDateTime: state.extra as String,
-        ),
+            supplierId: state.pathParameters['id'] ?? 'no-id'),
       ),
       GoRoute(
         path: '/configure/information',
@@ -75,7 +85,7 @@ final goRouterProvider = Provider((ref) {
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
-      final userTemp = goRouterNotifier.userTemp;
+      final user = goRouterNotifier.user;
 
       if (isGoingTo == '/splash' && authStatus == AuthStatus.checking) {
         return null;
@@ -111,7 +121,7 @@ final goRouterProvider = Provider((ref) {
             isGoingTo == '/register' ||
             isGoingTo == '/' ||
             isGoingTo == '/activate') {
-          if (userTemp != null && userTemp.role == 'SUPPLIER') {
+          if (user != null && user.role == 'SUPPLIER') {
             return '/configure/information';
           }
 

@@ -2,6 +2,7 @@ import 'package:fixnow/domain/entities/user.dart';
 import 'package:fixnow/domain/entities/user_temp.dart';
 import 'package:fixnow/infrastructure/datasources/auth_user.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
+import 'package:fixnow/infrastructure/errors/custom_error.dart';
 import 'package:fixnow/infrastructure/services/key_value_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,12 +32,14 @@ class AuthState {
   final User? user;
   final String message;
   final UserTemp? userTemp;
+  final bool isLoading;
 
   AuthState({
     this.authStatus = AuthStatus.checking,
     this.user,
     this.message = '',
     this.userTemp,
+    this.isLoading = false,
   });
 
   AuthState copyWith({
@@ -44,12 +47,14 @@ class AuthState {
     User? user,
     String? message,
     UserTemp? userTemp,
+    bool? isLoading,
   }) =>
       AuthState(
         authStatus: authStatus ?? this.authStatus,
         user: user ?? this.user,
         message: message ?? this.message,
         userTemp: userTemp ?? this.userTemp,
+        isLoading: isLoading ?? this.isLoading
       );
 }
 
@@ -71,85 +76,78 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final userTemp = await authUser.login(email, password);
       final token = userTemp['token'];
       _setLoggedUser(token);
-    } catch (error) {
-      logout();
+    } on CustomError catch (error) {
+      logout(error.message);
     }
   }
 
   void registerUser(String name, String lastName, String email,
       String phoneNumber, String password, String role) async {
     try {
-      await authUser.register(name, lastName, email, phoneNumber, password, role);
+      await authUser.register(
+          name, lastName, email, phoneNumber, password, role);
       state = state.copyWith(authStatus: AuthStatus.newUserRegistred);
-    } catch (error) {
-      logout();
+    } on CustomError catch (error) {
+      logout(error.message);
     }
   }
 
   void activateAccount(String code) async {
     try {
+      state = state.copyWith(isLoading: true);
       final user = await authUser.activateAccount(code);
-      state = state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
-    } catch (e) {
-      throw Error();
+      print(user.activationToken);
+      // state = state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
+    } on CustomError catch (e) {
+      state = state.copyWith(message: e.message);
     }
+    state = state.copyWith(isLoading: false);
   }
 
   void checkAuthStatus() async {
     final token = await keyValueStorage.getValue('token');
-    if (token == null) return logout();
+    if (token == null) return logout('Error de autenticación');
     try {
       await _setLoggedUser(token);
-    } catch (error) {
-      logout();
+    } on CustomError catch (error) {
+      logout(error.message);
     }
   }
 
   _setLoggedUser(String token) async {
-    await keyValueStorage.setValueKey('token', token);
-    final user = await _getUserProfile();
-    state = state.copyWith(
-      user: user,
-      userTemp: null,
-      authStatus: AuthStatus.authenticated,
-      message: '',
-    );
+    try {
+      await keyValueStorage.setValueKey('token', token);
+      final user = await _getUserProfile();
+      state = state.copyWith(
+        user: user,
+        userTemp: null,
+        authStatus: AuthStatus.authenticated,
+        message: '',
+      );
+    } on CustomError catch (e) {
+      logout(e.message);
+    }
   }
 
   Future _getUserProfile() async {
     try {
       final token = await keyValueStorage.getValue('token');
-      if (token == null) return logout();
+      if (token == null) return logout('Error de autenticación');
       final user = await authUser.getUser(token);
       return user;
-    } catch (e) {
-      logout();
+    } on CustomError catch (e) {
+      logout(e.message);
       throw Error();
     }
   }
 
-  Future<void> logout() async {
+  Future<void> logout(String message) async {
     await keyValueStorage.removeKey('token');
     state = state.copyWith(
-      authStatus: AuthStatus.notAuthenticated,
-      user: null,
-      // message: message);
-    );
+        authStatus: AuthStatus.notAuthenticated, user: null, message: message);
   }
 
   void setUserCustomerOrSupplier(User user) {
     state = state.copyWith(user: user);
   }
-
-  // Future<void> getSupplierInfo() async {
-  //   try {
-  //     final token = await keyValueStorage.getValue('token');
-  //     if (token == null) return;
-  //     final supplier =
-  //         await supplierData.getSupplierInfo(state.user!.id, token);
-  //     setSupplier(supplier);
-  //   } catch (e) {
-  //     throw Error();
-  //   }
-  // }
 }

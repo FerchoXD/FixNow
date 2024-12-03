@@ -17,3 +17,5 @@ export 'screens/customer/assistan_screen.dart';
 export 'screens/finances/finances_screen.dart';
 export 'screens/customer/notifications_screen.dart';
 export './screens/customer/private_customer_profile.dart';
+export './screens/supplier/review.dart';
+export './screens/details_service_history.dart';

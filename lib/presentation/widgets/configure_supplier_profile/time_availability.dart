@@ -176,7 +176,7 @@ class _TimeAvailabilityState extends ConsumerState<TimeAvailability> {
                         borderRadius: BorderRadius.circular(15)),
                   ),
                   onPressed: timeState.isPosting ?  null : () {
-                    ref.read(timeProvider.notifier).onFormSubmit(authState.userTemp!.uuid);
+                    ref.read(timeProvider.notifier).onFormSubmit(authState.user!.id!);
                   },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 17),

@@ -19,7 +19,15 @@ class NotificationsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final notificationsState = ref.watch(notificationsProvider);
-    return Container();
+    final notificationsState = ref.watch(notificationsProvider);
+    return ListView.builder(itemCount: notificationsState.notifications.length,itemBuilder: (BuildContext context, int index) {
+      final notification = notificationsState.notifications[index];
+      return ListTile(
+        title: Text(notification.title),
+        subtitle: Text(notification.body),
+        leading: notification.imageUrl != null ? Image.network(notification.imageUrl!) : null,
+        
+      );
+    });
   }
 }

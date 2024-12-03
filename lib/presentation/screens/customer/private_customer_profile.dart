@@ -46,31 +46,31 @@ class _ProfileView extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: colors.onSurfaceVariant,
-                      size: 30,
-                    ),
-                    const SizedBox(width: 4),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ninguna',
-                          style:
-                              TextStyle(fontSize: 16, color: colors.onSurface),
-                        ),
-                        // Text(
-                        //   'a 3 Km de distancia',
-                        //   style:
-                        //       TextStyle(fontSize: 16, color: colors.onSurface),
-                        // ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Icon(
+                //       Icons.location_on,
+                //       color: colors.onSurfaceVariant,
+                //       size: 30,
+                //     ),
+                //     const SizedBox(width: 4),
+                //     Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         // Text(
+                //         //   'Ninguna',
+                //         //   style:
+                //         //       TextStyle(fontSize: 16, color: colors.onSurface),
+                //         // ),
+                //         // Text(
+                //         //   'a 3 Km de distancia',
+                //         //   style:
+                //         //       TextStyle(fontSize: 16, color: colors.onSurface),
+                //         // ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
                 Row(
                   children: [
                     Icon(
@@ -135,4 +135,3 @@ class _ProfileView extends ConsumerWidget {
     );
   }
 }
-

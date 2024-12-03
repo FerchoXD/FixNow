@@ -50,8 +50,8 @@ class HomeNotifier extends StateNotifier<HomeState> {
     try {
       final suppliers = await supplierData.getAllSuppliers();
       state = state.copyWith(suppliers: suppliers);
-    } catch (e) {
-      throw Error();
+    } on CustomError catch (e) {
+      state = state.copyWith(suppliers: []);
     }
 
     state = state.copyWith(isLoading: false);
@@ -92,6 +92,6 @@ class HomeNotifier extends StateNotifier<HomeState> {
   }
 }
 
-final selectedServiceProvider = StateProvider<String?>((ref) {
+final selectedServiceProvider = StateProvider.autoDispose<String?>((ref) {
   return 'All';
 });

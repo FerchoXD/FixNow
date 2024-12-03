@@ -23,6 +23,7 @@ class BasicInfoState {
   final bool isFormPosted;
   final bool isValid;
   final bool isCompleted;
+  final bool isLoading;
 
   const BasicInfoState({
     this.name = const Name.pure(),
@@ -34,6 +35,7 @@ class BasicInfoState {
     this.isFormPosted = false,
     this.isValid = false,
     this.isCompleted = false,
+    this.isLoading = false,
   });
 
   BasicInfoState copyWith({
@@ -46,6 +48,7 @@ class BasicInfoState {
     bool? isFormPosted,
     bool? isValid,
     bool? isCompleted,
+    bool? isLoading,
   }) =>
       BasicInfoState(
         name: name ?? this.name,
@@ -57,6 +60,7 @@ class BasicInfoState {
         isFormPosted: isFormPosted ?? this.isFormPosted,
         isValid: isValid ?? this.isValid,
         isCompleted: isCompleted ?? this.isCompleted,
+        isLoading: isLoading ?? this.isLoading,
       );
 }
 

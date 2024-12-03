@@ -103,31 +103,31 @@ class SupplierProfileView extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: colors.onSurfaceVariant,
-                      size: 30,
-                    ),
-                    const SizedBox(width: 4),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Ninguna',
-                          style:
-                              TextStyle(fontSize: 16, color: colors.onSurface),
-                        ),
-                        // Text(
-                        //   'a 3 Km de distancia',
-                        //   style:
-                        //       TextStyle(fontSize: 16, color: colors.onSurface),
-                        // ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Icon(
+                //       Icons.location_on,
+                //       color: colors.onSurfaceVariant,
+                //       size: 30,
+                //     ),
+                //     const SizedBox(width: 4),
+                //     Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text(
+                //           'Ninguna',
+                //           style:
+                //               TextStyle(fontSize: 16, color: colors.onSurface),
+                //         ),
+                //         // Text(
+                //         //   'a 3 Km de distancia',
+                //         //   style:
+                //         //       TextStyle(fontSize: 16, color: colors.onSurface),
+                //         // ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
                 Row(
                   children: [
                     Icon(
@@ -137,7 +137,9 @@ class SupplierProfileView extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      userState.user != null ? userState.user!.phoneNumber! : '',
+                      userState.user != null
+                          ? userState.user!.phoneNumber!
+                          : '',
                       style: TextStyle(fontSize: 16, color: colors.onSurface),
                     ),
                   ],
@@ -256,7 +258,8 @@ class WorkSchedule extends ConsumerWidget {
       'Domingo': 7,
     };
 
-    final sortedCalendar = List.from(userState.user!.calendar!)
+    final sortedCalendar = List.from(
+        userState.user!.calendar != null ? userState.user!.calendar! : [])
       ..sort((a, b) => (dayOrder[a.day] ?? 8).compareTo(dayOrder[b.day] ?? 8));
 
     return Column(

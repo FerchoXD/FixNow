@@ -4,6 +4,7 @@ import 'package:fixnow/domain/entities/user.dart';
 import 'package:fixnow/domain/entities/user_temp.dart';
 import 'package:fixnow/domain/mappers/contact_mapper.dart';
 import 'package:fixnow/domain/mappers/user_temp_mapper.dart';
+import 'package:fixnow/infrastructure/errors/custom_error.dart';
 
 class AuthUser {
   final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
@@ -21,8 +22,25 @@ class AuthUser {
       });
       final userTemp = UserMapperTemp.fromJson(response.data);
       return userTemp;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 
@@ -30,9 +48,27 @@ class AuthUser {
     try {
       final response = await dio.put('/auth/$code/activate');
       final user = UserMapper.contactJsonToEntity(response.data['response']);
+      print(user);
       return user;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 
@@ -43,8 +79,28 @@ class AuthUser {
         "password": password,
       });
       return response.data;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+      if (e.response?.statusCode == 401) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 
@@ -54,12 +110,29 @@ class AuthUser {
           options: Options(headers: {'Authorization': token}));
       final user = UserMapper.contactJsonToEntity(response.data['data']);
       return user;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      throw Error();
+      throw CustomError('Algo pasó');
     }
   }
 
-  Future logout(String email) async {
+  Future logout(String? email) async {
     try {
       final response =
           await dio.post('/users/auth/logout', data: {"email": email});
@@ -68,8 +141,25 @@ class AuthUser {
       } else {
         return false;
       }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      print(e);
+      throw CustomError('Algo pasó');
     }
   }
 }
