@@ -8,9 +8,10 @@ class ForumData {
   final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
   Future<Post> createPost(
-      String username, String title, String content, String time) async {
+      String username, String title, String content, String time, String uuid) async {
     try {
       final response = await dio.post('/forum/create/post', data: {
+        "userUuid": uuid,
         "username": username,
         "title": title,
         "content": content,

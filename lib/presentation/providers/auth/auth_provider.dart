@@ -2,6 +2,7 @@ import 'package:fixnow/domain/entities/user.dart';
 import 'package:fixnow/domain/entities/user_temp.dart';
 import 'package:fixnow/infrastructure/datasources/auth_user.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
+import 'package:fixnow/infrastructure/datasources/token_data.dart';
 import 'package:fixnow/infrastructure/errors/custom_error.dart';
 import 'package:fixnow/infrastructure/services/key_value_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,11 +19,13 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authUser = AuthUser();
   final keyValueStorage = KeyValueStorage();
   final supplierData = SupplierData();
+  final tokenData = TokenData();
 
   final authNotifier = AuthNotifier(
       authUser: authUser,
       keyValueStorage: keyValueStorage,
-      supplierData: supplierData);
+      supplierData: supplierData,
+      tokenData: tokenData);
 
   return authNotifier;
 });
@@ -59,11 +62,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthUser authUser;
   final SupplierData supplierData;
   final KeyValueStorage keyValueStorage;
+  final TokenData tokenData;
 
   AuthNotifier(
       {required this.authUser,
       required this.keyValueStorage,
-      required this.supplierData})
+      required this.supplierData,
+      required this.tokenData})
       : super(AuthState()) {
     checkAuthStatus();
   }
@@ -92,7 +97,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void activateAccount(String code) async {
     try {
       final user = await authUser.activateAccount(code);
-      state =  state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
+      state =
+          state.copyWith(authStatus: AuthStatus.accountActivated, user: user);
     } on CustomError catch (e) {
       state = state.copyWith(message: e.message);
     }
@@ -112,6 +118,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await keyValueStorage.setValueKey('token', token);
       final user = await _getUserProfile();
+      print(user.id);
       state = state.copyWith(
         user: user,
         userTemp: null,
@@ -120,6 +127,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
     } on CustomError catch (e) {
       logout(e.message);
+    }
+
+    sendTokenFCM();
+  }
+
+  Future sendTokenFCM() async {
+    final token = await keyValueStorage.getValue('fcm_token');
+    if (token == null) return;
+    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAASDASSSSSSSSSSSS');
+    try {
+      final response = await tokenData.sendTokenFCM(state.user!.id!, token);
+    } catch (e) {
+      
     }
   }
 

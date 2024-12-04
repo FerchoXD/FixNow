@@ -30,17 +30,31 @@ class SupplierProfileView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 250,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/carpinteria2.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            userState.user != null &&
+                    userState.user!.profileImages!.isNotEmpty
+                ? SizedBox(
+                    height: 250,
+                    child: PageView.builder(
+                      itemCount: userState.user!.profileImages!.length,
+                      controller: PageController(viewportFraction: 1),
+                      itemBuilder: (context, index) {
+                        final image = userState.user!.profileImages![index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              image, // URL de la imagen
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : const Center(
+                    child: Text('No images available'),
+                  ),
             const SizedBox(
               height: 20,
             ),

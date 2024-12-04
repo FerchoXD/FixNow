@@ -5,20 +5,90 @@ class ForumPost extends ConsumerWidget {
   final String username;
   final String tittle;
   final String content;
-  const ForumPost(
-      {super.key,
-      required this.username,
-      required this.tittle,
-      required this.content});
+
+  const ForumPost({
+    super.key,
+    required this.username,
+    required this.tittle,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+
+    void _showCommentsModal(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Comentarios',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(),
+                  Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount:
+                          10, // Número de comentarios (puedes reemplazar con tus datos)
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text('Comentario $index'),
+                          subtitle:
+                              const Text('Este es un comentario de ejemplo.'),
+                        );
+                      },
+                    ),
+                  ),
+                  const Divider(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'Escribe un comentario...',
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // Lógica para enviar el comentario
+                          Navigator.pop(context); // Cierra la ventana modal
+                        },
+                        icon: Icon(Icons.send, color: colors.primary),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-          color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(10)),
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -34,7 +104,7 @@ class ForumPost extends ConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  username, // Nombre del autor
+                  username,
                   style: const TextStyle(
                     fontWeight: FontWeight.normal,
                   ),
@@ -43,7 +113,7 @@ class ForumPost extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              tittle, // Título de la publicación
+              tittle,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -61,11 +131,15 @@ class ForumPost extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Lógica para publicar
+                  },
                   child: const Text('Post'),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _showCommentsModal(context);
+                  },
                   child: const Text('Comentarios'),
                 ),
               ],

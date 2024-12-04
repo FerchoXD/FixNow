@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
     final viewRoutesCustomer = <Widget>[
       const HomeView(),
       const CommunityScreen(),
-      const AssistantScreen(),
+      const AssistanScreen(),
       const NotificationsScreen(),
       const PrivateCustomerProfile(),
     ];
@@ -30,8 +30,8 @@ class HomeScreen extends ConsumerWidget {
     final viewRoutesSupplier = <Widget>[
       const HomeView(),
       const CommunityScreen(),
-      const AssistantScreen(),
       const NotificationsScreen(),
+      const FinanceScreen(),
       const PrivateProfileSuplier(),
     ];
 
@@ -368,11 +368,14 @@ class SupplierSection extends ConsumerWidget {
             itemCount: homeState.suppliers.length,
             itemBuilder: (context, index) {
               final supplier = homeState.suppliers[index];
+              final profession = supplier.selectedServices.isNotEmpty
+                  ? supplier.selectedServices.first
+                  : 'Sin profesión especificada'; // Valor por defecto
               return GestureDetector(
                 onTap: () => context.push('/supplier/${supplier.uuid}'),
                 child: SupplierCard(
                   name: supplier.firstname,
-                  profession: supplier.selectedServices.first,
+                  profession: profession,
                   imageUrl:
                       supplier.images != null && supplier.images!.isNotEmpty
                           ? supplier.images!.first

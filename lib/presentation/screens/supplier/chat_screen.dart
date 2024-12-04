@@ -1,92 +1,64 @@
+import 'package:fixnow/domain/entities/chat_message.dart';
+import 'package:fixnow/presentation/providers/chat/chat_provider.dart';
+import 'package:fixnow/presentation/widgets/chat/chat_message_field.dart';
+import 'package:fixnow/presentation/widgets/chat/loading_message.dart';
+import 'package:fixnow/presentation/widgets/chat/me_message.dart';
+import 'package:fixnow/presentation/widgets/chat/message_bubble.dart';
+import 'package:fixnow/presentation/widgets/chat/message_field.dart';
+import 'package:fixnow/presentation/widgets/chat/you_message_bubble.dart';
+import 'package:fixnow/presentation/widgets/custom_text_fiel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+  final String name;
+  const ChatScreen({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
-          'Chat',
-          style: TextStyle(color: colors.primary),
-        )),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
-        ],
+        title: Text(name),
       ),
       body: ChatView(),
     );
   }
 }
 
-class ChatView extends StatelessWidget {
+class ChatView extends ConsumerWidget {
   const ChatView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount:
-                1, // Aquí puedes hacer que el número de mensajes sea dinámico
-            itemBuilder: (context, index) {
-              // Aquí puedes personalizar el diseño de los mensajes
-              return const ListTile(
-                // title: Text('Message $index'),
-                subtitle: Text(
-                    'Puedes contactar directamente al proveedor a través de este chat.'),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Escribe aquí...',
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: colors.primary,
-                      ),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(15.5)),
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(113, 48, 48, 48),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(15.5)),
-                    ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatState = ref.watch(chatProvider);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Column(
+        children: [
+          Expanded(
+            child: !chatState.isConnected
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    controller:
+                        ref.read(chatProvider.notifier).chatScrollController,
+                    itemCount: chatState.messages.length +
+                        (chatState.isWritingYou ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (chatState.isWritingYou &&
+                          index == chatState.message.length) {
+                        return const LoadingMessage();
+                      }
+
+                      final message = chatState.messages[index];
+                      return (message.userChat == UserChat.userYou)
+                          ? YouMessageBubble(message: message)
+                          : MeMessage(message: message);
+                    },
                   ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(15),
-                  backgroundColor: colors.primary,
-                ),
-                child: const Icon(Icons.send, color: Colors.white),
-              ),
-            ],
           ),
-        ),
-      ],
+          const ChatMessasgeField(),
+        ],
+      ),
     );
   }
 }

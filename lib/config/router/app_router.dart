@@ -41,8 +41,10 @@ final goRouterProvider = Provider((ref) {
         },
       ),
       GoRoute(
-        path: '/chat',
-        builder: (context, state) => const ChatScreen(),
+        path: '/chat/:name',
+        builder: (context, state) => ChatScreen(
+          name: state.pathParameters['name'] ?? 'no-name',
+        ),
       ),
       GoRoute(
         path: '/history',

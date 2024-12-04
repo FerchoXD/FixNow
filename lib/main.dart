@@ -8,7 +8,6 @@ import 'package:fixnow/infrastructure/services/firebase_messaging.dart';
 import 'package:fixnow/presentation/providers/notifications/notifications_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -71,11 +70,11 @@ class HandleNotificationInteractionsState
     // if(message.data['type'] == 'service') {
     //   final serviceId = message.data['serviceId'];
     //   ref.read(goRouterProvider).push('/details-service/$serviceId');
-    // }
+    // // }
 
-    if(message.data['type'] == 'chat') {
-      ref.read(goRouterProvider).push('/chat');
-    }
+    // if(message.data['type'] == 'chat') {
+    //   ref.read(goRouterProvider).push('/chat');
+    // }
 
   }
 

@@ -14,3 +14,7 @@ export './widgets/configure_supplier_profile/rates_prices.dart';
 export './widgets/configure_supplier_profile/time_availability.dart';
 export './widgets/configure_supplier_profile/photo_gallery.dart';
 export './widgets/configure_supplier_profile/completed_profile.dart';
+export './widgets/chat/gemini_message_bubble.dart';
+export './widgets/chat/loading_message.dart';
+export './widgets/chat/message_bubble.dart';
+export './widgets/chat/message_field.dart';

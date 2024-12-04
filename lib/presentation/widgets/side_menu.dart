@@ -1,4 +1,5 @@
 import 'package:fixnow/presentation/providers.dart';
+import 'package:fixnow/presentation/providers/home/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
@@ -42,6 +43,26 @@ class SideMenu extends ConsumerWidget {
             //       fontSize: 16, color: Color(colors.onSurface.value)),
             // ),
           ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+        child: ElevatedButton(
+          onPressed: () {
+            ref.read(homeProvider.notifier).createSuscription(userState.user!.id!);
+          },
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              backgroundColor: Color(colors.primary.value),
+              foregroundColor: Color(colors.onPrimary.value)),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              'Adquirir premium',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
         ),
       ),
       Padding(

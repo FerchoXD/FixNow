@@ -2,35 +2,54 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fixnow/domain/entities/push_message.dart';
+import 'package:fixnow/infrastructure/datasources/token_data.dart';
+import 'package:fixnow/infrastructure/services/key_value_storage.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final notificationsProvider =
     StateNotifierProvider<NotificationsNotifier, NotificationsState>((ref) {
-  return NotificationsNotifier();
+  final tokenData = TokenData();
+  final authState = AuthState();
+  final KeyValueStorage keyValueStorage = KeyValueStorage();
+  return NotificationsNotifier(
+      tokenData: tokenData,
+      authState: authState,
+      keyValueStorage: keyValueStorage);
 });
 
 class NotificationsState {
   final AuthorizationStatus status;
   final List<PushMessage> notifications;
+  final String token;
 
   const NotificationsState(
       {this.status = AuthorizationStatus.notDetermined,
-      this.notifications = const []});
+      this.notifications = const [],
+      this.token = ''});
 
   NotificationsState copyWith({
     AuthorizationStatus? status,
     List<PushMessage>? notifications,
+    String? token,
   }) =>
       NotificationsState(
-        status: status ?? this.status,
-        notifications: notifications ?? this.notifications,
-      );
+          status: status ?? this.status,
+          notifications: notifications ?? this.notifications,
+          token: token ?? this.token);
 }
 
 class NotificationsNotifier extends StateNotifier<NotificationsState> {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  NotificationsNotifier() : super(const NotificationsState()) {
+  final TokenData tokenData;
+  final AuthState authState;
+  final KeyValueStorage keyValueStorage;
+  NotificationsNotifier(
+      {required this.tokenData,
+      required this.authState,
+      required this.keyValueStorage})
+      : super(const NotificationsState()) {
     requestPermission();
     getFirebaseMessaginToken();
     _onForegroundMessage();
@@ -58,6 +77,8 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     final settings = await messaging.getNotificationSettings();
     if (settings.authorizationStatus != AuthorizationStatus.authorized) return;
     final token = await messaging.getToken();
+    await keyValueStorage.setValueKey('fcm_token', token ?? '');
+    state = state.copyWith(token: token);
     print(token);
   }
 
@@ -82,15 +103,16 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
     FirebaseMessaging.onMessage.listen(handleRemoteMessage);
   }
 
- PushMessage? getMessageByServiceId(String serviceId) {
-  final exist = state.notifications.any(
-    (element) => element.data!['serviceId'] == serviceId,
-  );
-  if (!exist) return null;
+  PushMessage? getMessageByServiceId(String serviceId) {
+    final exist = state.notifications.any(
+      (element) => element.data!['serviceId'] == serviceId,
+    );
+    if (!exist) return null;
 
-  return state.notifications.firstWhere(
-    (element) => element.data!['serviceId'] == serviceId,
-  );
+    return state.notifications.firstWhere(
+      (element) => element.data!['serviceId'] == serviceId,
+    );
+  }
 }
 
-}
+// 

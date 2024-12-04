@@ -99,21 +99,20 @@ class ForumNotifier extends StateNotifier<ForumState> {
     state = state.copyWith(isLoading: false);
   }
 
-  Future<void> createPost(String username) async {
+  Future<void> createPost(String username, String userId) async {
     _touchEveryField();
     if (!state.isValidPost) return;
     state = state.copyWith(isPosting: true);
     try {
       final String time = DateTime.now().toIso8601String();
       final newPost = await forumData.createPost(
-          username, state.title.value, state.content.value, time);
+          username, state.title.value, state.content.value, time, userId);
       state = state.copyWith(
           myListPost: [...state.myListPost, newPost], isFormPosted: true);
     } on CustomError catch (e) {
-      state = state.copyWith(
-          isPosting: false, isFormPosted: false, message: e.message);
+      state = state.copyWith(isPosting: false, isFormPosted: false, message: e.message);
     }
-    state = state.copyWith(isPosting: false, isFormPosted: false);
+    state = state.copyWith(isPosting: false, isFormPosted: false, message: '');
   }
 
   Future<void> getMyPost() async {

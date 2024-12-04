@@ -162,4 +162,16 @@ class AuthUser {
       throw CustomError('Algo pasó');
     }
   }
+
+  Future sendTokenByApp(String token) async {
+    try {
+      final response = await dio.post('');
+    } catch (e) {
+      
+    }
+  }
+
+
 }
+
+

@@ -11,7 +11,7 @@ class ProfileSuplier extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-    ref.watch(supplierProfileProvider(supplierId));
+    final supplierState = ref.watch(supplierProfileProvider(supplierId));
     return Scaffold(
       appBar: AppBar(),
       backgroundColor: colors.surface,
@@ -37,7 +37,7 @@ class ProfileSuplier extends ConsumerWidget {
               heroTag: 'chat',
               backgroundColor: colors.secondary,
               onPressed: () {
-                context.push('/chat');
+                context.push('/chat/${supplierState.supplier!.firstname}');
               },
               label: Text('Chat', style: TextStyle(color: colors.primary)),
               icon: Icon(Icons.chat, color: colors.primary),
