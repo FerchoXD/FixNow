@@ -1,6 +1,8 @@
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
+import 'package:fixnow/presentation/screens/supplier/review.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class PrivateProfileSuplier extends StatelessWidget {
@@ -12,6 +14,23 @@ class PrivateProfileSuplier extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.surface,
       body: const SupplierProfileView(),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: 120,
+            child: FloatingActionButton.extended(
+              heroTag: 'Editar',
+              backgroundColor: colors.primary,
+              onPressed: () {
+                context.push('/edit/profile');
+              },
+              label: const Text('Editar'),
+              icon: const Icon(Icons.person),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -30,8 +49,7 @@ class SupplierProfileView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            userState.user != null &&
-                    userState.user!.profileImages!.isNotEmpty
+            userState.user != null && userState.user!.profileImages!.isNotEmpty
                 ? SizedBox(
                     height: 250,
                     child: PageView.builder(
@@ -79,7 +97,7 @@ class SupplierProfileView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '$rating',
+                  '${rating.toStringAsFixed(1)}', 
                   style: const TextStyle(fontSize: 24),
                 ),
               ],
@@ -239,6 +257,17 @@ class SupplierProfileView extends ConsumerWidget {
             const SizedBox(
               height: 20,
             ),
+            Text(
+              'Reseñas',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: colors.onSurface),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ReviewsView(supplierId: userState.user!.id!)
           ],
         ),
       ),

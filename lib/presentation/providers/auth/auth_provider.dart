@@ -118,7 +118,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await keyValueStorage.setValueKey('token', token);
       final user = await _getUserProfile();
-      print(user.id);
       state = state.copyWith(
         user: user,
         userTemp: null,
@@ -135,7 +134,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future sendTokenFCM() async {
     final token = await keyValueStorage.getValue('fcm_token');
     if (token == null) return;
-    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAASDASSSSSSSSSSSS');
     try {
       final response = await tokenData.sendTokenFCM(state.user!.id!, token);
     } catch (e) {

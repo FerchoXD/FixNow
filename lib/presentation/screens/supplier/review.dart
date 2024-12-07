@@ -1,37 +1,31 @@
+import 'package:fixnow/presentation/providers/raiting/raiting_provider.dart';
+import 'package:fixnow/presentation/providers/supplier/supplier_profile_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ReviewsScreen extends StatelessWidget {
-  const ReviewsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: ReviewsView(),
-      ),
-    );
-  }
-}
-
-class ReviewsView extends StatelessWidget {
-  const ReviewsView({super.key});
+class ReviewsView extends ConsumerWidget {
+  final String supplierId;
+  const ReviewsView({super.key, required this.supplierId});
 
   @override
-  Widget build(BuildContext context) {
-    final reviews = ['1', '2', '3', '4', '5'];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final supplierState = ref.watch(supplierProfileProvider(supplierId));
 
     return ListView.builder(
-      itemCount: reviews.length,
+      shrinkWrap: true, // Ajusta el tamaño al contenido
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: supplierState.reviews.length,
       itemBuilder: (context, index) {
-        final post = reviews[index];
-        return ReviewCard(
-          userName: 'Prueba',
-          rating: 5,
-          comment: 'Este es un ejemplo de reseña',
-          date: '24/02/2024',
-        );
+        final review = supplierState.reviews[index];
+        return supplierState.reviews.isEmpty
+            ? Center(
+                child: Text('Aún no hay reseñas'),
+              )
+            : ReviewCard(
+                userName: review['fullname'],
+                rating: review['polarity'],
+                comment: review['content'],
+              );
       },
     );
   }
@@ -41,19 +35,21 @@ class ReviewCard extends StatelessWidget {
   final String userName;
   final double rating;
   final String comment;
-  final String date;
 
   const ReviewCard({
     Key? key,
     required this.userName,
     required this.rating,
     required this.comment,
-    required this.date,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+
+    // Determinar si es una reseña de 0 estrellas
+    bool isZeroRating = rating == 0.0;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       padding: const EdgeInsets.all(20),
@@ -67,7 +63,6 @@ class ReviewCard extends StatelessWidget {
             offset: const Offset(4, 4),
             spreadRadius: 1,
           ),
-          
         ],
       ),
       child: Column(
@@ -78,19 +73,10 @@ class ReviewCard extends StatelessWidget {
             children: [
               Text(
                 userName,
-                style: TextStyle(
+                style:  TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Text(
-                  date,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
+                  fontWeight: isZeroRating ? FontWeight.normal : FontWeight.w500,
+                  color: isZeroRating ? Colors.black26 : Colors.black
                 ),
               ),
             ],
@@ -98,11 +84,16 @@ class ReviewCard extends StatelessWidget {
           Row(
             children: List.generate(
               5,
-              (index) => Icon(
-                Icons.star,
-                color: index < rating ? Colors.amber : Colors.grey,
-                size: 20,
-              ),
+              (index) {
+                // Si la calificación es 0, usa un color transparente
+                return Icon(
+                  Icons.star,
+                  color: isZeroRating
+                      ? Colors.black26 // Hacer las estrellas transparentes
+                      : (index < rating ? Colors.amber : Colors.black12),
+                  size: 20,
+                );
+              },
             ),
           ),
           SizedBox(height: 10),
@@ -110,7 +101,7 @@ class ReviewCard extends StatelessWidget {
             comment,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[700],
+              color: isZeroRating ? Colors.black26 :  Colors.grey[700],
             ),
           ),
           SizedBox(height: 10),

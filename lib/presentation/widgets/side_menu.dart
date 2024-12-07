@@ -1,4 +1,5 @@
 import 'package:fixnow/presentation/providers.dart';
+import 'package:fixnow/presentation/providers/finances/finances_provider.dart';
 import 'package:fixnow/presentation/providers/home/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ class SideMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(authProvider);
     final colors = Theme.of(context).colorScheme;
+    final paymentsState = ref.watch(homeProvider);
     return NavigationDrawer(children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 300, 10, 10),
@@ -18,7 +20,8 @@ class SideMenu extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () => {_copyTutorInfoToClipboard(userState.user?.id, context)},
+              onTap: () =>
+                  {_copyTutorInfoToClipboard(userState.user?.id, context)},
               child: Row(
                 children: [
                   // Text(
@@ -48,9 +51,13 @@ class SideMenu extends ConsumerWidget {
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
         child: ElevatedButton(
-          onPressed: () {
-            ref.read(homeProvider.notifier).createSuscription(userState.user!.id!);
-          },
+          onPressed: paymentsState.isLoadingPayment
+              ? null
+              : () {
+                  ref
+                      .read(homeProvider.notifier)
+                      .createSuscription(userState.user!.id!);
+                },
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -87,6 +94,7 @@ class SideMenu extends ConsumerWidget {
       ),
     ]);
   }
+
   void _copyTutorInfoToClipboard(String? code, BuildContext context) {
     String clipboardText = "$code";
     Clipboard.setData(ClipboardData(text: clipboardText));

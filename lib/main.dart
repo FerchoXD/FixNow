@@ -64,18 +64,15 @@ class HandleNotificationInteractionsState
 
   void _handleMessage(RemoteMessage message) {
     ref.read(notificationsProvider.notifier).handleRemoteMessage(message);
+    print(message);
+    if (message.data['type'] == 'service') {
+      final serviceId = message.data['serviceId'];
+      ref.read(goRouterProvider).push('/details-service/$serviceId');
+    }
 
-    
-
-    // if(message.data['type'] == 'service') {
-    //   final serviceId = message.data['serviceId'];
-    //   ref.read(goRouterProvider).push('/details-service/$serviceId');
-    // // }
-
-    // if(message.data['type'] == 'chat') {
-    //   ref.read(goRouterProvider).push('/chat');
-    // }
-
+    if (message.data['type'] == 'chat') {
+      ref.read(goRouterProvider).push('/chat');
+    }
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:fixnow/domain/entities/supplier.dart';
-import 'package:fixnow/infrastructure/datasources/auth_user.dart';
 import 'package:fixnow/infrastructure/datasources/finances_data.dart';
+import 'package:fixnow/infrastructure/datasources/payments_data.dart';
 import 'package:fixnow/infrastructure/datasources/supplier_data.dart';
 import 'package:fixnow/infrastructure/datasources/token_data.dart';
 import 'package:fixnow/infrastructure/errors/custom_error.dart';
@@ -14,13 +14,15 @@ final homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
   final token = TokenData();
   final supplierData = SupplierData();
   final financesData = FinancesData();
-  final authState = AuthState();
+  final payments = PaymentsData();
+  final authState = ref.watch(authProvider);
 
   return HomeNotifier(
       supplierData: supplierData,
       keyValueStorage: keyValueStorage,
       financesData: financesData,
-      authState: authState);
+      authState: authState,
+      paymentsData: payments);
 });
 
 class HomeState {
@@ -29,13 +31,15 @@ class HomeState {
   final String message;
   final String searchValue;
   final String sandBoxInitPoint;
+  final bool isLoadingPayment;
 
   const HomeState(
       {this.suppliers = const [],
       this.isLoading = true,
       this.message = '',
       this.searchValue = '',
-      this.sandBoxInitPoint = ''});
+      this.sandBoxInitPoint = '',
+      this.isLoadingPayment = false});
 
   HomeState copyWith({
     List<Supplier>? suppliers,
@@ -43,13 +47,15 @@ class HomeState {
     String? message,
     String? searchValue,
     String? sandBoxInitPoint,
+    bool? isLoadingPayment,
   }) =>
       HomeState(
           suppliers: suppliers ?? this.suppliers,
           isLoading: isLoading ?? this.isLoading,
           message: message ?? this.message,
           searchValue: searchValue ?? this.searchValue,
-          sandBoxInitPoint: sandBoxInitPoint ?? this.sandBoxInitPoint);
+          sandBoxInitPoint: sandBoxInitPoint ?? this.sandBoxInitPoint,
+          isLoadingPayment: isLoadingPayment ?? this.isLoadingPayment);
 }
 
 class HomeNotifier extends StateNotifier<HomeState> {
@@ -57,12 +63,14 @@ class HomeNotifier extends StateNotifier<HomeState> {
   final KeyValueStorage keyValueStorage;
   final FinancesData financesData;
   final AuthState authState;
+  final PaymentsData paymentsData;
 
   HomeNotifier(
       {required this.supplierData,
       required this.keyValueStorage,
       required this.financesData,
-      required this.authState})
+      required this.authState,
+      required this.paymentsData})
       : super(const HomeState()) {
     getAllSuppliers();
   }
@@ -113,24 +121,27 @@ class HomeNotifier extends StateNotifier<HomeState> {
   }
 
   Future<void> _launchInBrowserView(Uri url) async {
-    if (!await launchUrl(url, mode: LaunchMode.inAppBrowserView)) {
-      throw Exception('Could not launch $url');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'No se pudo abrir la URL: ${url.toString()}';
     }
   }
 
   Future createSuscription(String userId) async {
     try {
-      if (authState.user == null || authState.user!.id == null) {
-        throw Exception('Usuario no autenticado o ID no disponible.');
-      }
-
-      final String newSuscription = await financesData.createSuscription(userId);
+      state = state.copyWith(isLoadingPayment: true);
+      final String newSuscription =
+          await paymentsData.createSuscription(userId);
       state = state.copyWith(sandBoxInitPoint: newSuscription);
       Uri uri = Uri.parse(newSuscription);
       await _launchInBrowserView(uri);
     } on CustomError catch (e) {
+      state = state.copyWith(isLoadingPayment: false);
+
       state = state.copyWith(message: e.message);
     }
+    state = state.copyWith(isLoadingPayment: false);
   }
 }
 

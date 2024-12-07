@@ -1,3 +1,5 @@
+import 'package:fixnow/presentation/providers/forum/forum_provider.dart';
+import 'package:fixnow/presentation/widgets/custom_text_fiel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,16 +7,19 @@ class ForumPost extends ConsumerWidget {
   final String username;
   final String tittle;
   final String content;
+  final String postId;
 
   const ForumPost({
     super.key,
     required this.username,
     required this.tittle,
     required this.content,
+    required this.postId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final forumState = ref.watch(forumProvider);
     final colors = Theme.of(context).colorScheme;
 
     void _showCommentsModal(BuildContext context) {
@@ -25,60 +30,70 @@ class ForumPost extends ConsumerWidget {
             top: Radius.circular(20),
           ),
         ),
-        isScrollControlled: true,
+        isScrollControlled: true, // Esto permite controlar el tamaño del modal
         builder: (BuildContext context) {
-          return Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Comentarios',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+          return forumState.isLoadingComments
+              ? SizedBox(
+                  height: MediaQuery.of(context).size.height / 2,
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  const Divider(),
-                  Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount:
-                          10, // Número de comentarios (puedes reemplazar con tus datos)
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text('Comentario $index'),
-                          subtitle:
-                              const Text('Este es un comentario de ejemplo.'),
-                        );
-                      },
-                    ),
-                  ),
-                  const Divider(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            hintText: 'Escribe un comentario...',
+                )
+              : forumState.listComments.isEmpty
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: Center(
+                        child: Text('Aún no hay comentarios'),
+                      ),
+                    )
+                  : Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Comentarios',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: colors.primary),
                           ),
-                        ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: forumState.listComments.length,
+                              itemBuilder: (context, index) {
+                                final comment = forumState.listComments[index];
+
+                                return ListTile(
+                                  title:
+                                      Text('${comment['username']}'),
+                                  subtitle: Text('${comment['content']}'),
+                                );
+                              },
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: CustomTextField(
+                                hint: 'Escribe un comentario',
+                              )),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: Icon(Icons.send, color: colors.primary),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {
-                          // Lógica para enviar el comentario
-                          Navigator.pop(context); // Cierra la ventana modal
-                        },
-                        icon: Icon(Icons.send, color: colors.primary),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
+                    );
         },
       );
     }
@@ -131,13 +146,13 @@ class ForumPost extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () {
-                    // Lógica para publicar
-                  },
+                  onPressed: () {},
                   child: const Text('Post'),
                 ),
                 TextButton(
                   onPressed: () {
+                    print(postId);
+                    ref.read(forumProvider.notifier).getComments(postId);
                     _showCommentsModal(context);
                   },
                   child: const Text('Comentarios'),

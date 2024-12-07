@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 final chatProvider = StateNotifierProvider<ChatNotifier, ChatState>((ref) {
-  final authState = AuthState();
+  final authState = ref.watch(authProvider);
   return ChatNotifier(authState: authState);
 });
 
@@ -14,24 +14,31 @@ class ChatState {
   final bool isConnected;
   final String message;
   final bool isWritingYou;
+  final String customerId;
+  final String supplierId;
 
   ChatState(
       {required this.messages,
-      required this.isConnected,
+      this.isConnected = false,
       this.message = '',
-      this.isWritingYou = false});
+      this.isWritingYou = false,
+      this.customerId = '',
+      this.supplierId = ''});
 
-  ChatState copyWith({
-    List<ChatMessage>? messages,
-    bool? isConnected,
-    String? message,
-    bool? isWritingYou,
-  }) =>
+  ChatState copyWith(
+          {List<ChatMessage>? messages,
+          bool? isConnected,
+          String? message,
+          bool? isWritingYou,
+          String? customerId,
+          String? supplierId}) =>
       ChatState(
           messages: messages ?? this.messages,
           isConnected: isConnected ?? this.isConnected,
           message: message ?? this.message,
-          isWritingYou: isWritingYou ?? this.isWritingYou);
+          isWritingYou: isWritingYou ?? this.isWritingYou,
+          customerId: customerId ?? this.customerId,
+          supplierId: supplierId ?? this.supplierId);
 }
 
 class ChatNotifier extends StateNotifier<ChatState> {
@@ -45,31 +52,33 @@ class ChatNotifier extends StateNotifier<ChatState> {
   }
 
   void _initializeSocket() {
-    socket = IO.io('ws://192.168.1.167:4000',
+    socket = IO.io('ws://192.168.1.129:4000',
         IO.OptionBuilder().setTransports(['websocket']).build());
 
-    // Conectarse
     socket.on('connect', (_) {
       print('Conectado al servidor');
-      // Registrar el usuario con su ID único
       state = state.copyWith(isConnected: true);
-      socket.emit('register', authState.user?.id);
+      socket.emit('register', authState.user!.id);
     });
 
-    // Escuchar mensajes recibidos
     socket.on('receive-message', (data) {
       print('Mensaje recibido de ${data['senderId']}: ${data['message']}');
     });
 
-    // Manejar desconexión
     socket.on('disconnect', (_) {
       print('Desconectado del servidor');
     });
   }
 
-  sendMessage(String message) {
+  sendMessage(String message, String senderUuid, String receivedUuid) {
     if (message.isEmpty) return;
-    socket.emit('send-message', message);
+    final messageData = {
+      'senderUuid': authState.user!.id!,
+      'receiverUuid': receivedUuid, 
+      'message': message 
+    };
+    print('${senderUuid}, ${receivedUuid}');
+    socket.emit('send-message', messageData);
     _addMessage(message);
   }
 

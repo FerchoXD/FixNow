@@ -41,9 +41,9 @@ final goRouterProvider = Provider((ref) {
         },
       ),
       GoRoute(
-        path: '/chat/:name',
+        path: '/chat/:id',
         builder: (context, state) => ChatScreen(
-          name: state.pathParameters['name'] ?? 'no-name',
+          supplierId: state.pathParameters['id'] ?? 'no-id',
         ),
       ),
       GoRoute(
@@ -51,12 +51,8 @@ final goRouterProvider = Provider((ref) {
         builder: (context, state) => const HistoryScreen(),
       ),
       GoRoute(
-        path: '/reviews',
-        builder: (context, state) => const ReviewsScreen(),
-      ),
-      GoRoute(
         path: '/details-service/:id',
-        builder: (context, state) => DetailsServiceHistory(
+        builder: (context, state) => DetailsNotifications(
           serviceId: state.pathParameters['id'] ?? 'no-id',
         ),
       ),
@@ -83,6 +79,9 @@ final goRouterProvider = Provider((ref) {
         path: '/configure/information',
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
+      GoRoute(path: '/edit/profile',
+      builder: (context, state ) => const EditProfileScreen()),
+    
     ],
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;

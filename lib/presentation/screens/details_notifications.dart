@@ -3,10 +3,10 @@ import 'package:fixnow/presentation/providers/notifications/notifications_provid
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DetailsServiceHistory extends ConsumerWidget {
+class DetailsNotifications extends ConsumerWidget {
   final String serviceId;
 
-  const DetailsServiceHistory({super.key, required this.serviceId});
+  const DetailsNotifications({super.key, required this.serviceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

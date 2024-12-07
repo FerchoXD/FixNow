@@ -1,21 +1,26 @@
 import 'package:dio/dio.dart';
 import 'package:fixnow/config/config.dart';
-import 'package:fixnow/domain/entities/total_transactions.dart';
-import 'package:fixnow/domain/mappers/total_transactions_mapper.dart';
-import 'package:fixnow/infrastructure/errors.dart';
+import 'package:fixnow/infrastructure/errors/custom_error.dart';
 
-class FinancesData {
-  final dio = Dio(BaseOptions(baseUrl: "http://192.168.1.163:3005/api/v1"));
+class RaitingData {
+  final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
-  Future<TotalTransactions> getTotalTransactions(
-      String userId, String year, String month) async {
+  Future createReview(String userId, String review) async {
     try {
-      final response = await dio.post('/finances/transactions/user',
-          data: {"userId": userId, "year": year, "month": month});
+      final response = await dio.post('/raiting/create/comment', data: {
+        "userUuid": userId,
+        "content": review,
+      });
 
-      final totalTransaction =
-          TotalTransactionsMapper.totalTransactionsToEntity(response.data);
-      return totalTransaction;
+      if (response.statusCode == 200) {
+        final data = {'message': response.data['message'], 'status': '200'};
+        return data;
+      }
+
+      if (response.statusCode == 201) {
+        final data = {'message': response.data['message'], 'status': '201'};
+        return data;
+      }
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw CustomError(e.response?.data['message']);
@@ -38,23 +43,15 @@ class FinancesData {
     }
   }
 
-  Future<List<TotalTransactions>> getTotalTransactionsByUser(
-      String userId) async {
+  Future getReviews(String userId) async {
     try {
-      final response = await dio.get(
-        '/finances/transactions/user/$userId',
-      );
+      final response = await dio.post('/raiting/comments', data: {"userUuid": userId});
 
-      final List<TotalTransactions> listTotalTransactions = [];
-      for (final totalTransaction in response.data ?? []) {
-        listTotalTransactions.add(
-            TotalTransactionsMapper.totalTransactionsToEntity(
-                totalTransaction));
+      final List<Map<String, dynamic>> reviews = [];
+      for (final review in response.data['comentarios'] ?? []) {
+        reviews.add(review);
       }
-
-      return listTotalTransactions;
-      // final totalTransaction = TotalTransactionsMapper.totalTransactionsToEntity(response.data);
-      // return totalTransaction;
+      return reviews;
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw CustomError(e.response?.data['message']);

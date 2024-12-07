@@ -191,7 +191,7 @@ class _ScheduleServiceViewState extends ConsumerState<ScheduleServiceView> {
                     showToast(
                         'Por favor selecciona una fecha y hora para continuar.');
                   } else {
-                    context.push('/schedule/2/${widget.supplierId}}');
+                    context.push('/schedule/2/${widget.supplierId}');
                   }
                 },
                 child: const Padding(

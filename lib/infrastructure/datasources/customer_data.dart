@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:fixnow/config/config.dart';
 import 'package:fixnow/infrastructure/errors/custom_error.dart';
-import 'package:intl/intl.dart';
 
 class CustomerData {
   final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
   Future<String> createSercie(String userId, String supplierId, String title, String description,
       double agreedPrice, String agreedDate) async {
+        print('Customer id: $userId Supplier ID: $supplierId');
     try {
       final response = await dio.post('/history/create/service', data: {
         "customerUuid": userId,

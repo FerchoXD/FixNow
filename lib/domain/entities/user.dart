@@ -50,4 +50,12 @@ class User {
     this.profileImages,
     this.calendar,
   });
+  @override
+  String toString() {
+    return '''
+User(
+  profileImages: $profileImages,
+)
+''';
+  }
 }

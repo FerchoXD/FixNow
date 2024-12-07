@@ -1,6 +1,10 @@
+import 'package:fixnow/presentation/providers.dart';
 import 'package:fixnow/presentation/providers/supplier/supplier_profile_provider.dart';
+import 'package:fixnow/presentation/screens/supplier/review.dart';
+import 'package:fixnow/presentation/widgets/review_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -10,8 +14,50 @@ class ProfileSuplier extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    showMessage(BuildContext context, String message, String status) {
+      Fluttertoast.showToast(
+        msg: message,
+        fontSize: 16,
+        backgroundColor: status == '201'
+            ? const Color.fromARGB(255, 241, 255, 243)
+            : const Color.fromARGB(255, 255, 237, 237),
+        textColor:
+            status == '201' ? Colors.green.shade300 : Colors.red.shade300,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
+
+    ref.listen(raitingProvider, (previous, next) {
+      if (next.message.isEmpty) return;
+      showMessage(context, next.message, next.status);
+    });
+
     final colors = Theme.of(context).colorScheme;
     final supplierState = ref.watch(supplierProfileProvider(supplierId));
+
+    void _showReviewModal(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true, // Permite que el modal se ajuste al teclado
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context)
+                  .viewInsets
+                  .bottom, // Espacio dinámico según el teclado
+            ),
+            child: const ReviewModal(),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(),
       backgroundColor: colors.surface,
@@ -37,7 +83,7 @@ class ProfileSuplier extends ConsumerWidget {
               heroTag: 'chat',
               backgroundColor: colors.secondary,
               onPressed: () {
-                context.push('/chat/${supplierState.supplier!.firstname}');
+                context.push('/chat/${supplierState.supplier!.uuid}');
               },
               label: Text('Chat', style: TextStyle(color: colors.primary)),
               icon: Icon(Icons.chat, color: colors.primary),
@@ -50,16 +96,25 @@ class ProfileSuplier extends ConsumerWidget {
               heroTag: 'reseñas',
               backgroundColor: colors.secondary,
               onPressed: () {
-                context.push('/reviews');
+                _showReviewModal(context);
               },
-              label: Text('Reseñas', style: TextStyle(color: colors.primary)),
-              icon: Icon(Icons.person, color: colors.primary),
+              label: Text('Reseña', style: TextStyle(color: colors.primary)),
+              icon: Icon(Icons.add, color: colors.primary),
             ),
           ),
         ],
       ),
-      body: _SupplierProfileView(
-        supplierId: supplierId,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 3));
+          ref
+              .read(supplierProfileProvider(supplierId).notifier)
+              .getProfileData();
+          ref.read(supplierProfileProvider(supplierId).notifier).getReviews();
+        },
+        child: _SupplierProfileView(
+          supplierId: supplierId,
+        ),
       ),
     );
   }
@@ -91,11 +146,10 @@ class _SupplierProfileView extends ConsumerWidget {
                   supplierState.supplier != null &&
                           supplierState.supplier!.images!.isNotEmpty
                       ? SizedBox(
-                          height: 250, 
+                          height: 250,
                           child: PageView.builder(
                             itemCount: supplierState.supplier!.images!.length,
-                            controller: PageController(
-                                viewportFraction: 1), 
+                            controller: PageController(viewportFraction: 1),
                             itemBuilder: (context, index) {
                               final image =
                                   supplierState.supplier!.images![index];
@@ -142,7 +196,7 @@ class _SupplierProfileView extends ConsumerWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '$rating',
+                        '${rating.toStringAsFixed(1)}',
                         style: const TextStyle(fontSize: 24),
                       ),
                     ],
@@ -180,31 +234,6 @@ class _SupplierProfileView extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Row(
-                      //   children: [
-                      //     Icon(
-                      //       Icons.location_on,
-                      //       color: colors.onSurfaceVariant,
-                      //       size: 30,
-                      //     ),
-                      //     const SizedBox(width: 4),
-                      //     Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.start,
-                      //       children: [
-                      //         Text(
-                      //           'Ninguna',
-                      //           style: TextStyle(
-                      //               fontSize: 16, color: colors.onSurface),
-                      //         ),
-                      //         // Text(
-                      //         //   'a 3 Km de distancia',
-                      //         //   style:
-                      //         //       TextStyle(fontSize: 16, color: colors.onSurface),
-                      //         // ),
-                      //       ],
-                      //     ),
-                      //   ],
-                      // ),
                       Row(
                         children: [
                           Icon(
@@ -305,7 +334,20 @@ class _SupplierProfileView extends ConsumerWidget {
                   ),
                   _WorkSchedule(supplierId: supplierId),
                   const SizedBox(
-                    height: 20,
+                    height: 40,
+                  ),
+                  Text(
+                    'Reseñas',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: colors.onSurface),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ReviewsView(
+                    supplierId: supplierId,
                   ),
                 ],
               ),

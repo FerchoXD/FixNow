@@ -119,6 +119,7 @@ class ListPostView extends ConsumerWidget {
                 username: post.username,
                 tittle: post.title,
                 content: post.content,
+                postId: post.uuid,
               );
             },
           );
@@ -132,7 +133,7 @@ class MyListPost extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final forumState = ref.watch(forumProvider);
     return forumState.myListPost.isEmpty
-        ? Center(
+        ? const Center(
             child: Text('Aun no hay publicaciones'),
           )
         : ListView.builder(
@@ -145,6 +146,7 @@ class MyListPost extends ConsumerWidget {
                 username: post.username,
                 tittle: post.title,
                 content: post.content,
+                postId: post.id,
               );
             },
           );

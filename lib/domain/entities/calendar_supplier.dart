@@ -18,4 +18,20 @@ class CalendarSupplier {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  @override
+  String toString() {
+    return '''
+CalendarSupplier(
+  uuid: $uuid,
+  userUuid: $userUuid,
+  day: $day,
+  active: $active,
+  start: $start,
+  end: $end,
+  createdAt: $createdAt,
+  updatedAt: $updatedAt,
+)
+''';
+  }
 }

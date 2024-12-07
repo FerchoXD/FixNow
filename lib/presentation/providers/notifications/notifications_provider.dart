@@ -57,7 +57,7 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
 
   Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await Firebase.initializeApp();
-    print("Handling a background message: ${message.messageId}");
+    print("Handling a background message: ${message.notification!.title}");
   }
 
   void requestPermission() async {

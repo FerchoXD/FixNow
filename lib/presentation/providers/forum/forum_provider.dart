@@ -12,7 +12,8 @@ enum ForumOption {
   myPost,
 }
 
-final forumProvider = StateNotifierProvider<ForumNotifier, ForumState>((ref) {
+final forumProvider =
+    StateNotifierProvider.autoDispose<ForumNotifier, ForumState>((ref) {
   final forumData = ForumData();
   final authState = AuthState();
   return ForumNotifier(forumData: forumData, authState: authState);
@@ -29,6 +30,8 @@ class ForumState {
   final String message;
   final ForumOption forumOption;
   final bool isLoading;
+  final List<Map<String, dynamic>> listComments;
+  final bool isLoadingComments;
   const ForumState(
       {this.title = const TitlePost.pure(),
       this.content = const ContentPost.pure(),
@@ -39,21 +42,24 @@ class ForumState {
       this.myListPost = const [],
       this.message = '',
       this.forumOption = ForumOption.all,
-      this.isLoading = true});
+      this.isLoading = true,
+      this.listComments = const [],
+      this.isLoadingComments = false});
 
-  ForumState copyWith({
-    TitlePost? title,
-    String? username,
-    ContentPost? content,
-    bool? isValidPost,
-    bool? isPosting,
-    bool? isFormPosted,
-    List<Post>? listPost,
-    List<Post>? myListPost,
-    String? message,
-    ForumOption? forumOption,
-    bool? isLoading,
-  }) =>
+  ForumState copyWith(
+          {TitlePost? title,
+          String? username,
+          ContentPost? content,
+          bool? isValidPost,
+          bool? isPosting,
+          bool? isFormPosted,
+          List<Post>? listPost,
+          List<Post>? myListPost,
+          String? message,
+          ForumOption? forumOption,
+          bool? isLoading,
+          List<Map<String, dynamic>>? listComments,
+          bool? isLoadingComments}) =>
       ForumState(
           title: title ?? this.title,
           content: content ?? this.content,
@@ -64,7 +70,9 @@ class ForumState {
           myListPost: myListPost ?? this.myListPost,
           message: message ?? this.message,
           forumOption: forumOption ?? this.forumOption,
-          isLoading: isLoading ?? this.isLoading);
+          isLoading: isLoading ?? this.isLoading,
+          listComments: listComments ?? this.listComments,
+          isLoadingComments: isLoadingComments ?? this.isLoadingComments);
 }
 
 class ForumNotifier extends StateNotifier<ForumState> {
@@ -110,7 +118,8 @@ class ForumNotifier extends StateNotifier<ForumState> {
       state = state.copyWith(
           myListPost: [...state.myListPost, newPost], isFormPosted: true);
     } on CustomError catch (e) {
-      state = state.copyWith(isPosting: false, isFormPosted: false, message: e.message);
+      state = state.copyWith(
+          isPosting: false, isFormPosted: false, message: e.message);
     }
     state = state.copyWith(isPosting: false, isFormPosted: false, message: '');
   }
@@ -129,6 +138,19 @@ class ForumNotifier extends StateNotifier<ForumState> {
 
   updateOption(ForumOption value) {
     state = state.copyWith(forumOption: value);
+  }
+
+  Future getComments(String postId) async {
+    state = state.copyWith(isLoadingComments: true);
+
+    try {
+      final comments = await forumData.getComments(postId);
+      state = state.copyWith(listComments: comments, isLoadingComments: false);
+    } on CustomError catch (e) {
+      state = state.copyWith(
+          message: e.message, listComments: [], isLoadingComments: false);
+    }
+    state = state.copyWith(isLoadingComments: false);
   }
 
   _touchEveryField() {

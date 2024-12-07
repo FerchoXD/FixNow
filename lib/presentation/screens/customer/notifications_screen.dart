@@ -1,6 +1,8 @@
 import 'package:fixnow/presentation/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -30,6 +32,9 @@ class NotificationsView extends ConsumerWidget {
             leading: notification.imageUrl != null
                 ? Image.network(notification.imageUrl!)
                 : null,
+                onTap: () {
+                  context.push('/details-service/${notification.messageId}');
+                },
           );
         });
   }

@@ -1,23 +1,31 @@
 import 'package:dio/dio.dart';
 import 'package:fixnow/config/config.dart';
-import 'package:fixnow/domain/entities/total_transactions.dart';
-import 'package:fixnow/domain/mappers/total_transactions_mapper.dart';
-import 'package:fixnow/infrastructure/errors.dart';
+import 'package:fixnow/infrastructure/errors/custom_error.dart';
 
-class FinancesData {
-  final dio = Dio(BaseOptions(baseUrl: "http://192.168.1.163:3005/api/v1"));
+class HistoryData {
+  final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
-  Future<TotalTransactions> getTotalTransactions(
-      String userId, String year, String month) async {
+  Future<Map<String, dynamic>> getHistory(String userUuid, String role) async {
+    final String url;
+    final Map data;
+    if (role == 'CUSTOMER') {
+      url = '/history/get/history/customer';
+      data = {'customerUuid': userUuid};
+    } else {
+      url = '/history/get/history/supplier';
+      data = {'supplierUuid': userUuid};
+    }
     try {
-      final response = await dio.post('/finances/transactions/user',
-          data: {"userId": userId, "year": year, "month": month});
-
-      final totalTransaction =
-          TotalTransactionsMapper.totalTransactionsToEntity(response.data);
-      return totalTransaction;
+      final response = await dio.post(
+        url,
+        data: data,
+      );
+      return response.data;
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+      if (e.response?.statusCode == 401) {
         throw CustomError(e.response?.data['message']);
       }
 
@@ -38,25 +46,18 @@ class FinancesData {
     }
   }
 
-  Future<List<TotalTransactions>> getTotalTransactionsByUser(
-      String userId) async {
+  Future changeStatusService() async {
     try {
-      final response = await dio.get(
-        '/finances/transactions/user/$userId',
-      );
 
-      final List<TotalTransactions> listTotalTransactions = [];
-      for (final totalTransaction in response.data ?? []) {
-        listTotalTransactions.add(
-            TotalTransactionsMapper.totalTransactionsToEntity(
-                totalTransaction));
-      }
+      final response = await dio.post('/history/status', data: {
 
-      return listTotalTransactions;
-      // final totalTransaction = TotalTransactionsMapper.totalTransactionsToEntity(response.data);
-      // return totalTransaction;
+      }); 
+
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+      if (e.response?.statusCode == 401) {
         throw CustomError(e.response?.data['message']);
       }
 

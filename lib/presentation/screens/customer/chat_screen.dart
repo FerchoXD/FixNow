@@ -1,36 +1,40 @@
 import 'package:fixnow/domain/entities/chat_message.dart';
+import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/providers/chat/chat_provider.dart';
+import 'package:fixnow/presentation/providers/supplier/supplier_profile_provider.dart';
 import 'package:fixnow/presentation/widgets/chat/chat_message_field.dart';
 import 'package:fixnow/presentation/widgets/chat/loading_message.dart';
 import 'package:fixnow/presentation/widgets/chat/me_message.dart';
-import 'package:fixnow/presentation/widgets/chat/message_bubble.dart';
-import 'package:fixnow/presentation/widgets/chat/message_field.dart';
 import 'package:fixnow/presentation/widgets/chat/you_message_bubble.dart';
-import 'package:fixnow/presentation/widgets/custom_text_fiel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChatScreen extends StatelessWidget {
-  final String name;
-  const ChatScreen({super.key, required this.name});
+class ChatScreen extends ConsumerWidget {
+  final String supplierId;
+  const ChatScreen({super.key, required this.supplierId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final supplierState = ref.watch(supplierProfileProvider(supplierId));
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: Text(supplierState.supplier!.firstname),
       ),
-      body: ChatView(),
+      body: ChatView(
+        supplierId: supplierId,
+      ),
     );
   }
 }
 
 class ChatView extends ConsumerWidget {
-  const ChatView({super.key});
+  final String supplierId;
+  const ChatView({super.key, required this.supplierId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatState = ref.watch(chatProvider);
+    final userState = ref.watch(authProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Column(
@@ -56,7 +60,8 @@ class ChatView extends ConsumerWidget {
                     },
                   ),
           ),
-          const ChatMessasgeField(),
+          ChatMessasgeField(
+              supplierId: supplierId, customerId: userState.user!.id!, whoIsSendMessage: userState.user!.role!,),
         ],
       ),
     );
