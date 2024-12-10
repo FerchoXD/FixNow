@@ -142,8 +142,7 @@ class SupplierData {
 
   Future<List<Supplier>> getAllSuppliers() async {
     try {
-      final response =
-          await dio.post('/auth/all/suppliers', data: {"data": "All"});
+      final response =  await dio.post('/auth/all/suppliers', data: {"data": "All"});
       final List<Supplier> suppliers = [];
       for (final supplier in response.data ?? []) {
         suppliers.add(SupplierMapper.supplierJsonToEntity(supplier));

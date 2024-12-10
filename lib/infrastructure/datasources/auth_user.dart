@@ -163,15 +163,30 @@ class AuthUser {
     }
   }
 
-  Future sendTokenByApp(String token) async {
+  Future getUserById(String userId) async {
     try {
-      final response = await dio.post('');
+      final response = await dio.get('/users/auth/get/data/customer/$userId');
+      final user = UserMapper.contactJsonToEntity(response.data);
+      return user;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.response?.statusCode == 404) {
+        throw CustomError(e.response?.data['message']);
+      }
+
+      if (e.type == DioExceptionType.connectionError) {
+        throw CustomError('Revisa tu conexión a internet');
+      }
+      if (e.response?.statusCode == 500) {
+        throw CustomError(
+            e.response?.data['message'] ?? 'Error al obtener datos');
+      }
+      throw CustomError('Algo salió mal');
     } catch (e) {
-      
+      throw CustomError('Algo pasó');
     }
   }
-
-
 }
-
-

@@ -14,26 +14,30 @@ class YouMessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            backgroundColor: Colors.transparent,
-            child: Icon(
-              Icons.assistant,
-              color: colors.primary,
-              size: 40,
-            ),
+            backgroundColor: colors.primary.withOpacity(0.2),
             radius: 20,
+            child: Icon(Icons.person, color: colors.primary.withOpacity(0.6)),
           ),
           const SizedBox(width: 10),
           Flexible(
             child: Container(
               decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      blurRadius: 6,
+                      offset: const Offset(4, 4),
+                      spreadRadius: 1,
+                    ),
+                  ]),
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
                   message.text,
-                  style: TextStyle(color: colors.primary),
+                  style: TextStyle(color: colors.onSurface),
                 ),
               ),
             ),

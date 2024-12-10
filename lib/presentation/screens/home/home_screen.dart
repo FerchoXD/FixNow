@@ -1,6 +1,7 @@
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/providers/home/home_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
+import 'package:fixnow/presentation/screens/supplier/supplier_chat_screen.dart';
 import 'package:fixnow/presentation/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,11 +29,11 @@ class HomeScreen extends ConsumerWidget {
     ];
 
     final viewRoutesSupplier = <Widget>[
-      const HomeView(),
+      const PrivateProfileSuplier(),
       const CommunityScreen(),
       const NotificationsScreen(),
       const FinanceScreen(),
-      const PrivateProfileSuplier(),
+      const SupplierChatScreen(),
     ];
 
     return Scaffold(
@@ -355,7 +356,13 @@ class SupplierSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeState = ref.watch(homeProvider);
-    return homeState.suppliers.isEmpty
+
+    // Filtrar los usuarios que tienen el rol de "supplier"
+    final suppliers = homeState.suppliers
+        .where((supplier) => supplier.role == 'SUPPLIER') // Filtrar por rol
+        .toList();
+
+    return suppliers.isEmpty
         ? const Padding(
             padding: EdgeInsets.symmetric(vertical: 150),
             child: Center(
@@ -365,9 +372,9 @@ class SupplierSection extends ConsumerWidget {
         : ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: homeState.suppliers.length,
+            itemCount: suppliers.length,
             itemBuilder: (context, index) {
-              final supplier = homeState.suppliers[index];
+              final supplier = suppliers[index];
               final profession = supplier.selectedServices.isNotEmpty
                   ? supplier.selectedServices.first
                   : 'Sin profesión especificada'; // Valor por defecto
@@ -458,14 +465,13 @@ class SupplierCard extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(
-                      Icons.star,
+                      Icons.star_rounded,
                       size: 16,
                       color: Colors.amber,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      rating
-                          .toStringAsFixed(1), // Mostrar rating con un decimal
+                      rating.toStringAsFixed(1),
                       style: TextStyle(color: colors.onSurfaceVariant),
                     ),
                   ],
@@ -475,7 +481,7 @@ class SupplierCard extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            '\$${price.toStringAsFixed(2)}', // Mostrar precio con dos decimales
+            '\$${price.toStringAsFixed(2)}',
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 20,

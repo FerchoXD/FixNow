@@ -117,6 +117,26 @@ class EditProfileView extends ConsumerWidget {
             const SizedBox(
               height: 30,
             ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
+                  onPressed: () {},
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 17),
+                    child: Text(
+                      'Guardar',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
           ],
         ),
       ),

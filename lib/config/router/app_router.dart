@@ -1,6 +1,7 @@
 import 'package:fixnow/config/router/app_router_notifier.dart';
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:fixnow/presentation/screens.dart';
+import 'package:fixnow/presentation/screens/supplier/chat_supplier.dart';
 import 'package:fixnow/presentation/screens/supplier/configure_profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +37,7 @@ final goRouterProvider = Provider((ref) {
         path: '/home/:page',
         builder: (context, state) {
           final pageIndex =
-              state.pathParameters['page'] ?? '0'; // Accede a los datos pasados
+              state.pathParameters['page'] ?? '0'; 
           return HomeScreen(pageIndex: int.parse(pageIndex));
         },
       ),
@@ -44,6 +45,13 @@ final goRouterProvider = Provider((ref) {
         path: '/chat/:id',
         builder: (context, state) => ChatScreen(
           supplierId: state.pathParameters['id'] ?? 'no-id',
+        ),
+      ),
+      GoRoute(
+        path: '/chat/customer/:id/:name',
+        builder: (context, state) => ChatSupplier(
+          customerId: state.pathParameters['id'] ?? 'no-id',
+          name: state.pathParameters['name'] ?? 'no-name',
         ),
       ),
       GoRoute(
@@ -79,9 +87,9 @@ final goRouterProvider = Provider((ref) {
         path: '/configure/information',
         builder: (context, state) => const ConfigureProfileScreen(),
       ),
-      GoRoute(path: '/edit/profile',
-      builder: (context, state ) => const EditProfileScreen()),
-    
+      GoRoute(
+          path: '/edit/profile',
+          builder: (context, state) => const EditProfileScreen()),
     ],
     redirect: (context, state) {
       final isGoingTo = state.matchedLocation;

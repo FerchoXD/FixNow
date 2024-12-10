@@ -1,8 +1,10 @@
 import 'package:fixnow/domain/entities/total_transactions.dart';
 import 'package:fixnow/presentation/providers/finances/finances_provider.dart';
+import 'package:fixnow/presentation/widgets/create_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FinanceScreen extends ConsumerWidget {
   const FinanceScreen({super.key});
@@ -10,27 +12,124 @@ class FinanceScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final financesState = ref.watch(financeProvider);
-    return financesState.isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                BalanceSection(
-                  lisTotalTransactions:
-                      financesState.listTotalTransactions ?? [],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                ExpenseEvolutionChart(
-                  sortedTransactions: financesState.listTotalTransactions ?? [],
-                )
-              ],
+    final colors = Theme.of(context).colorScheme;
+
+    Future<void> _refreshData() async {
+      await ref.read(financeProvider.notifier).getTotalTransactionsByUser();
+    }
+
+    showMessage(BuildContext context, String message) {
+      Fluttertoast.showToast(
+        msg: message,
+        fontSize: 16,
+        backgroundColor: const Color.fromARGB(255, 241, 255, 243),
+        textColor: Colors.green.shade300,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+    }
+
+    ref.listen(financeProvider, (previous, next) {
+      if (!next.isTransactionCreated) return;
+      showMessage(context, 'Transacción creada');
+    });
+
+    void _showReviewModal(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true, // Permite que el modal se ajuste al teclado
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context)
+                  .viewInsets
+                  .bottom, // Espacio dinámico según el teclado
             ),
+            child: const CreateTransactionModal(),
           );
+        },
+      );
+    }
+
+    return Scaffold(
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'add',
+            backgroundColor: colors.primary,
+            onPressed: () {
+              _showReviewModal(context);
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+      body: financesState.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: _refreshData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    BalanceSection(
+                      lisTotalTransactions:
+                          financesState.listTotalTransactions ?? [],
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Text(
+                      'La siguiente gráfica muestra la evolución de tus gastos a lo largo de los meses.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colors.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    const Text('Evolución de gastos'),
+                    ExpensesChart(
+                      listTotalTransactions:
+                          financesState.listTotalTransactions ?? [],
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Text(
+                      'La siguiente gráfica muestra la evolución de tus ingresos a lo largo de los meses.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: colors.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    const Text('Evolución de ingresos'),
+                    IncomeChart(
+                      listTotalTransactions:
+                          financesState.listTotalTransactions ?? [],
+                    )
+                  ],
+                ),
+              ),
+            ),
+    );
   }
 }
 
@@ -124,7 +223,7 @@ class BalanceSectionState extends ConsumerState<BalanceSection> {
               Text(
                 "${meses[currentTransaction.month - 1]} ${currentTransaction.year}",
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -145,7 +244,8 @@ class BalanceSectionState extends ConsumerState<BalanceSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceInfo("Inicial", "\$0.00", false),
+              _buildBalanceInfo(
+                  "Ingresos", "\$${currentTransaction.totalIncome}", false),
               _buildBalanceInfo(
                 "Balance",
                 "\$${currentTransaction.balance.toStringAsFixed(2)}",
@@ -169,9 +269,7 @@ class BalanceSectionState extends ConsumerState<BalanceSection> {
         Text(
           title,
           style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
+              color: Colors.white, fontWeight: FontWeight.w400, fontSize: 16),
         ),
         const SizedBox(height: 5),
         Text(
@@ -179,7 +277,7 @@ class BalanceSectionState extends ConsumerState<BalanceSection> {
           style: TextStyle(
             color: Colors.white,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
-            fontSize: 16,
+            fontSize: 24,
           ),
         ),
       ],
@@ -229,172 +327,219 @@ extension StringExtension on String {
   }
 }
 
-class ExpenseEvolutionChart extends StatelessWidget {
-  final List<TotalTransactions> sortedTransactions;
+class ExpensesChart extends StatelessWidget {
+  final List<TotalTransactions> listTotalTransactions;
 
-  const ExpenseEvolutionChart({super.key, required this.sortedTransactions});
+  const ExpensesChart({super.key, required this.listTotalTransactions});
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final sortedData = listTotalTransactions
+      ..sort((a, b) => a.month.compareTo(b.month));
 
-    // Convertir los datos en FlSpot
-    final spots = sortedTransactions.asMap().entries.map((entry) {
-      final index = entry.key;
-      final transaction = entry.value;
-      return FlSpot(index.toDouble(), transaction.totalExpenses.toDouble());
-    }).toList();
+    final List<FlSpot> spots = sortedData
+        .map((entry) {
+          final month = entry.month.toDouble();
+          final totalExpenses = entry.totalExpenses.toDouble();
 
-    // Calcular el cambio en gastos
-    String changeText = "Sin datos suficientes para comparar";
-    if (spots.length >= 2) {
-      final lastExpense = spots[spots.length - 1].y;
-      final previousExpense = spots[spots.length - 2].y;
-      final difference = lastExpense - previousExpense;
-      changeText = difference > 0
-          ? "Usted gastó \$${difference.toStringAsFixed(2)} más que en el período anterior"
-          : "Usted gastó \$${difference.abs().toStringAsFixed(2)} menos que en el período anterior";
-    }
+          if (month.isFinite && totalExpenses.isFinite) {
+            return FlSpot(month, totalExpenses);
+          } else {
+            return null; // Si los valores no son válidos, no incluirlos
+          }
+        })
+        .whereType<FlSpot>() // Esta línea elimina los valores nulos de la lista
+        .toList();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 6,
-            offset: const Offset(4, 4),
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Evolución de los gastos",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: false),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true, interval: 1000),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                      show: true, border: Border.all(color: Colors.grey)),
-                  lineBarsData: [
-                    LineChartBarData(
-                      color: colors.primary,
-                      spots: spots,
-                      isCurved: true,
-                      barWidth: 3,
-                      dotData: FlDotData(show: false),
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        height: 300,
+        child: LineChart(
+          LineChartData(
+            gridData: FlGridData(show: true),
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 50,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toInt().toString(),
+                      style: const TextStyle(fontSize: 12),
+                    );
+                  },
+                ),
+              ),
+              rightTitles:
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    // Asegúrate de que el valor es válido antes de generar la etiqueta
+                    if (value.isFinite) {
+                      // Mostrar todos los meses en el eje X
+                      switch (value.toInt()) {
+                        case 1:
+                          return Text('Ene');
+                        case 2:
+                          return Text('Feb');
+                        case 3:
+                          return Text('Mar');
+                        case 4:
+                          return Text('Abr');
+                        case 5:
+                          return Text('May');
+                        case 6:
+                          return Text('Jun');
+                        case 7:
+                          return Text('Jul');
+                        case 8:
+                          return Text('Ago');
+                        case 9:
+                          return Text('Sep');
+                        case 10:
+                          return Text('Oct');
+                        case 11:
+                          return Text('Nov');
+                        case 12:
+                          return Text('Dic');
+                        default:
+                          return Text('');
+                      }
+                    }
+                    return const Text(
+                        ''); // Retorna texto vacío si el valor no es válido
+                  },
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              changeText,
-              style: TextStyle(color: colors.primary, fontSize: 16),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Text(
-                "Ver",
-                style: TextStyle(color: colors.primary),
+            borderData: FlBorderData(show: true),
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                color: const Color(0xFFEF6258),
+                barWidth: 4,
+                isStrokeCapRound: true,
+                belowBarData: BarAreaData(
+                    show: true,
+                    color: const Color(0xFFEF6258).withOpacity(0.1)),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class CashFlowChart extends StatelessWidget {
-  const CashFlowChart({super.key});
+class IncomeChart extends StatelessWidget {
+  final List<TotalTransactions> listTotalTransactions;
+
+  const IncomeChart({super.key, required this.listTotalTransactions});
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Flujo de caja",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  gridData: FlGridData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(
-                      show: true, border: Border.all(color: Colors.grey)),
-                  barGroups: [
-                    BarChartGroupData(
-                      x: 0,
-                      barsSpace: 4,
-                      barRods: [
-                        BarChartRodData(
-                            toY: 6002,
-                            color: colors.primary.withOpacity(0.6),
-                            width: 50,
-                            borderRadius: BorderRadius.zero),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 1,
-                      barsSpace: 4,
-                      barRods: [
-                        BarChartRodData(
-                            toY: 3020,
-                            color: Colors.red.withOpacity(0.6),
-                            width: 50,
-                            borderRadius: BorderRadius.zero),
-                      ],
-                    ),
-                    BarChartGroupData(
-                      x: 2,
-                      barsSpace: 4,
-                      barRods: [
-                        BarChartRodData(
-                            toY: 2982,
-                            color: Colors.green.withOpacity(0.6),
-                            width: 50,
-                            borderRadius: BorderRadius.zero),
-                      ],
-                    ),
-                  ],
+    final sortedData = listTotalTransactions
+      ..sort((a, b) => a.month.compareTo(b.month));
+
+    final List<FlSpot> spots = sortedData
+        .map((entry) {
+          final month = entry.month.toDouble();
+          final totalIncome = entry.totalIncome.toDouble();
+
+          if (month.isFinite && totalIncome.isFinite) {
+            return FlSpot(month, totalIncome);
+          } else {
+            return null; // Si los valores no son válidos, no incluirlos
+          }
+        })
+        .whereType<FlSpot>() // Esta línea elimina los valores nulos de la lista
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        height: 300,
+        child: LineChart(
+          LineChartData(
+            gridData: FlGridData(show: true),
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 50,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toInt().toString(),
+                      style: const TextStyle(fontSize: 12),
+                    );
+                  },
+                ),
+              ),
+              rightTitles:
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    // Asegúrate de que el valor es válido antes de generar la etiqueta
+                    if (value.isFinite) {
+                      // Mostrar todos los meses en el eje X
+                      switch (value.toInt()) {
+                        case 1:
+                          return Text('Ene');
+                        case 2:
+                          return Text('Feb');
+                        case 3:
+                          return Text('Mar');
+                        case 4:
+                          return Text('Abr');
+                        case 5:
+                          return Text('May');
+                        case 6:
+                          return Text('Jun');
+                        case 7:
+                          return Text('Jul');
+                        case 8:
+                          return Text('Ago');
+                        case 9:
+                          return Text('Sep');
+                        case 10:
+                          return Text('Oct');
+                        case 11:
+                          return Text('Nov');
+                        case 12:
+                          return Text('Dic');
+                        default:
+                          return Text('');
+                      }
+                    }
+                    return const Text(
+                        ''); // Retorna texto vacío si el valor no es válido
+                  },
                 ),
               ),
             ),
-          ],
+            borderData: FlBorderData(show: true),
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                color: Colors.green,
+                barWidth: 4,
+                isStrokeCapRound: true,
+                belowBarData: BarAreaData(
+                    show: true, color: Colors.green.withOpacity(0.1)),
+              ),
+            ],
+          ),
         ),
       ),
     );

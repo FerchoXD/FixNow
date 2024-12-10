@@ -49,12 +49,12 @@ class RaitingNotifier extends StateNotifier<RaitingState> {
     state = state.copyWith(review: value);
   }
 
-  sendReview() async {
+  sendReview(String supplierId) async {
     if (state.review.isEmpty) return;
     try {
       state = state.copyWith(isSendinReview: true);
       final data =
-          await raitingData.createReview(authState.user!.id!, state.review);
+          await raitingData.createReview(supplierId, state.review);
       state = state.copyWith(
           isSendinReview: false,
           message: data['message'],

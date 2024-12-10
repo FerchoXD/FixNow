@@ -17,34 +17,32 @@ class SideMenu extends ConsumerWidget {
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 300, 10, 10),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
               onTap: () =>
                   {_copyTutorInfoToClipboard(userState.user?.id, context)},
               child: Row(
-                children: [
-                  // Text(
-                  //   '${userState.user?.id}',
-                  //   style: TextStyle(
-                  //       color: Color(colors.secondary.value),
-                  //       fontSize: 24,
-                  //       fontWeight: FontWeight.bold),
-                  // ),
-                  // Icon(Icons.copy, color: Color(colors.secondary.value),size: 16,)
-                ],
+
+                children: [],
               ),
             ),
-            // Text(
-            //   '${userState.user?.name} ${userState.user?.lastName}',
-            //   style: TextStyle(
-            //       fontSize: 16, color: Color(colors.onSurface.value)),
-            // ),
-            // Text(
-            //   '${userState.user?.email}',
-            //   style: TextStyle(
-            //       fontSize: 16, color: Color(colors.onSurface.value)),
-            // ),
+            Center(child: Icon(Icons.person, size: 120, color: colors.primary,)),
+            Center(
+              child: Text(
+                '${userState.user?.fullname}',
+                style:
+                    TextStyle(fontSize: 16, color: Color(colors.onSurface.value)),
+              ),
+            ),
+            Center(
+              child: Text(
+                '${userState.user?.email}',
+                style:
+                    TextStyle(fontSize: 16, color: Color(colors.onSurface.value)),
+              ),
+            ),
           ],
         ),
       ),

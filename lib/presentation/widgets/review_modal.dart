@@ -1,13 +1,12 @@
-import 'package:fixnow/config/router/app_router.dart';
 import 'package:fixnow/presentation/providers/raiting/raiting_provider.dart';
 import 'package:fixnow/presentation/widgets/custom_text_fiel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
 class ReviewModal extends ConsumerWidget {
-  const ReviewModal({super.key});
+  final String supplierId;
+  const ReviewModal({super.key, required this.supplierId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +52,7 @@ class ReviewModal extends ConsumerWidget {
                 onPressed: raitingState.isSendinReview
                     ? null
                     : () {
-                        ref.read(raitingProvider.notifier).sendReview();
+                        ref.read(raitingProvider.notifier).sendReview(supplierId);
                       },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 17),

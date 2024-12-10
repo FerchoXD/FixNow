@@ -2,7 +2,6 @@ import 'package:fixnow/presentation/providers/service/history_provider.dart';
 import 'package:fixnow/presentation/widgets/history/history_modal_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ContainerHistoryService extends ConsumerWidget {
   final List<dynamic> services;
@@ -20,7 +19,6 @@ class ContainerHistoryService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
 
-    // Filtrar servicios según la opción seleccionada.
     final filteredServices = _filterServices(services, selectedOption);
 
     if (filteredServices.isEmpty) {
@@ -32,7 +30,6 @@ class ContainerHistoryService extends ConsumerWidget {
       );
     }
 
-    // Ordenar los servicios por `createdAt` (de más reciente a más antiguo).
     final sortedServices = [...filteredServices];
     sortedServices.sort((a, b) {
       final DateTime dateA = DateTime.parse(a['createdAt']);
@@ -40,11 +37,16 @@ class ContainerHistoryService extends ConsumerWidget {
       return dateB.compareTo(dateA);
     });
 
-    void _showReviewModal(BuildContext context, String title,
-        String description, String createdAt) {
+    void _showReviewModal(
+        BuildContext context,
+        String title,
+        String description,
+        String createdAt,
+        String serviceUuid,
+        String status) {
       showModalBottomSheet(
         context: context,
-        isScrollControlled: true, // Permite que el modal se ajuste al teclado
+        isScrollControlled: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(20),
@@ -61,6 +63,8 @@ class ContainerHistoryService extends ConsumerWidget {
               title: title,
               description: description,
               createdAt: createdAt,
+              serviceUuid: serviceUuid,
+              status: status,
             ),
           );
         },
@@ -71,17 +75,20 @@ class ContainerHistoryService extends ConsumerWidget {
       itemCount: sortedServices.length,
       itemBuilder: (context, index) {
         final service = sortedServices[index];
+
         final number = index + 1;
         final title = service['title'] ?? 'Sin título';
         final description = service['description'] ?? 'Sin descripción';
         final status = service['status'] ?? 'Desconocido';
         final createdAt = service['createdAt'] ?? 'Fecha inválida';
+        final serviceUuid = service['uuid'] ?? 'no-id';
 
         final timeAgo = _formatTimeAgo(createdAt);
 
         return GestureDetector(
           onTap: () {
-            _showReviewModal(context, title, description, createdAt);
+            _showReviewModal(
+                context, title, description, createdAt, serviceUuid, status);
           },
           child: Stack(
             children: [
@@ -89,8 +96,16 @@ class ContainerHistoryService extends ConsumerWidget {
                 margin: const EdgeInsets.only(bottom: 10),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color:
-                      _getColorBasedOnStatus(status, colors).withOpacity(0.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      blurRadius: 6,
+                      offset: const Offset(4, 4),
+                      spreadRadius: 1,
+                    ),
+                  ],
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  // color: _getColorBasedOnStatus(status, colors).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Padding(
@@ -114,7 +129,7 @@ class ContainerHistoryService extends ConsumerWidget {
                       Text(
                         'Solicitado $timeAgo',
                         style: TextStyle(
-                            color: colors.onSurfaceVariant, fontSize: 14),
+                            color: colors.onSurfaceVariant, fontSize: 16),
                       ),
                     ],
                   ),
@@ -150,8 +165,9 @@ class ContainerHistoryService extends ConsumerWidget {
     // Mapeo de opciones a claves de estado.
     final statusMapping = {
       HistoryOption.pending: 'PENDING',
-      HistoryOption.progress: 'IN_PROGRESS',
-      HistoryOption.canceled: 'CANCELLED',
+      HistoryOption.confirmed: 'CONFIRMED',
+      HistoryOption.done: 'DONE',
+      HistoryOption.cancelled: 'CANCELLED',
     };
 
     return services.where((service) {
@@ -163,10 +179,10 @@ class ContainerHistoryService extends ConsumerWidget {
     switch (status) {
       case 'PENDING':
         return 'Pendiente';
-      case 'PROGRESS':
-        return 'En progreso';
-      case 'C':
-        return 'Cancelado';
+      case 'CONFIRMED':
+        return 'Confirmado';
+      case 'DONE':
+        return 'Realizado';
       case 'CANCELLED':
         return 'Cancelado';
       default:
@@ -177,9 +193,11 @@ class ContainerHistoryService extends ConsumerWidget {
   Color _getColorBasedOnStatus(String status, ColorScheme colors) {
     switch (status) {
       case 'PENDING':
-        return colors.surfaceContainer;
-      case 'IN_PROGRESS':
         return colors.secondary;
+      case 'CONFIRMED':
+        return colors.secondary;
+      case 'DONE':
+        return colors.surfaceContainerHigh;
       case 'CANCELLED':
         return colors.errorContainer;
       default:

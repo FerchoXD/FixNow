@@ -32,18 +32,18 @@ class ForumPost extends ConsumerWidget {
         ),
         isScrollControlled: true, // Esto permite controlar el tamaño del modal
         builder: (BuildContext context) {
-          return forumState.isLoadingComments
-              ? SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : forumState.listComments.isEmpty
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context)
+                    .viewInsets
+                    .bottom, // Ajusta por el teclado
+              ),
+              child: forumState.isLoadingComments
                   ? SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       child: Center(
-                        child: Text('Aún no hay comentarios'),
+                        child: CircularProgressIndicator(),
                       ),
                     )
                   : Container(
@@ -63,19 +63,27 @@ class ForumPost extends ConsumerWidget {
                             height: 20,
                           ),
                           Expanded(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: forumState.listComments.length,
-                              itemBuilder: (context, index) {
-                                final comment = forumState.listComments[index];
+                            child: forumState.listComments.isEmpty
+                                ? SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height / 2,
+                                    child: Center(
+                                      child: Text('Aún no hay comentarios'),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: forumState.listComments.length,
+                                    itemBuilder: (context, index) {
+                                      final comment =
+                                          forumState.listComments[index];
 
-                                return ListTile(
-                                  title:
-                                      Text('${comment['username']}'),
-                                  subtitle: Text('${comment['content']}'),
-                                );
-                              },
-                            ),
+                                      return ListTile(
+                                        title: Text('${comment['username']}'),
+                                        subtitle: Text('${comment['content']}'),
+                                      );
+                                    },
+                                  ),
                           ),
                           Row(
                             children: [
@@ -93,7 +101,9 @@ class ForumPost extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    );
+                    ),
+            ),
+          );
         },
       );
     }

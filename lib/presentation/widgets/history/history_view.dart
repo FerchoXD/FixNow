@@ -16,9 +16,9 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      ref.read(historyProvider.notifier).getHistory(widget.userId, widget.role);
-    });
+    // Future.microtask(() {
+    //   ref.read(historyProvider.notifier).getHistory(widget.userId, widget.role);
+    // });
   }
 
   @override
@@ -47,21 +47,21 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
                               value: HistoryOption.all,
                               icon: Text(
                                 'Todos',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                             ),
                             ButtonSegment(
                               value: HistoryOption.pending,
                               icon: Text(
                                 'Pendientes',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                             ),
                             ButtonSegment(
-                              value: HistoryOption.progress,
+                              value: HistoryOption.confirmed,
                               icon: Text(
-                                'En progreso',
-                                style: TextStyle(fontSize: 12),
+                                'Confirmados',
+                                style: TextStyle(fontSize: 11),
                               ),
                             ),
                           ],
@@ -81,17 +81,17 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
                         SegmentedButton(
                           segments: const [
                             ButtonSegment(
-                              value: HistoryOption.confirmed,
+                              value: HistoryOption.done,
                               icon: Text(
                                 'Realizado',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                             ),
                             ButtonSegment(
-                              value: HistoryOption.canceled,
+                              value: HistoryOption.cancelled,
                               icon: Text(
                                 'Cancelados',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 11),
                               ),
                             ),
                           ],
@@ -108,14 +108,25 @@ class _HistoryViewState extends ConsumerState<HistoryView> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ContainerHistoryService(
-                    userId: widget.userId,
-                    role: widget.role,
-                    services: historyState.history != null
-                        ? historyState.history!['data']['history']
-                        : [],
-                    selectedOption: historyState.historyOption,
-                  ),
+                  child: historyState.history != null &&
+                          historyState.history!.containsKey('data') &&
+                          historyState.history!['data']
+                              .containsKey('history') &&
+                          (historyState.history!['data']['history'] as List)
+                              .isNotEmpty
+                      ? ContainerHistoryService(
+                          userId: widget.userId,
+                          role: widget.role,
+                          services: historyState.history!['data']['history'],
+                          selectedOption: historyState.historyOption,
+                        )
+                      : Center(
+                          child: Text(
+                            historyState.history?['message'] ??
+                                "No se encontraron citas.",
+                            style: const TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ),
                 ),
               ],
             ),

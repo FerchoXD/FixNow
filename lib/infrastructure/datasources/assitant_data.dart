@@ -2,30 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:fixnow/config/config.dart';
 import 'package:fixnow/infrastructure/errors/custom_error.dart';
 
-class HistoryData {
+class AssitantData {
   final dio = Dio(BaseOptions(baseUrl: Environment.apiUrl));
 
-  Future<Map<String, dynamic>> getHistory(String userUuid, String role) async {
-    final String url;
-    final Map data;
-    if (role == 'CUSTOMER') {
-      url = '/history/get/history/customer';
-      data = {'customerUuid': userUuid};
-    } else {
-      url = '/history/get/history/supplier';
-      data = {'supplierUuid': userUuid};
-    }
+  Future loadConversation(String userUuid) async {
     try {
-      final response = await dio.post(
-        url,
-        data: data,
-      );
-      return response.data;
+      final response = await dio
+          .get('/virtualassistant/get/chat', data: {"userUuid": userUuid});
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
-        throw CustomError(e.response?.data['message']);
-      }
-      if (e.response?.statusCode == 401) {
         throw CustomError(e.response?.data['message']);
       }
 
@@ -46,22 +31,18 @@ class HistoryData {
     }
   }
 
-  Future changeStatusService(String serviceUuid, String status) async {
+  Future getRecomendation(String userUuid, String content) async {
     try {
-
-      final response = await dio.post('/history/status', data: {
-          "serviceUuid": serviceUuid, 
-          "status": status
-      }); 
+      final response = await dio.post('/virtualassistant/recomendation',
+          data: {"userUuid": userUuid, "content": content});
 
       final message = response.data['message'];
       return message;
 
+
+
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
-        throw CustomError(e.response?.data['message']);
-      }
-      if (e.response?.statusCode == 401) {
         throw CustomError(e.response?.data['message']);
       }
 

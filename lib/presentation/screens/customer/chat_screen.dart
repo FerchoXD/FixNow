@@ -1,6 +1,6 @@
 import 'package:fixnow/domain/entities/chat_message.dart';
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
-import 'package:fixnow/presentation/providers/chat/chat_provider.dart';
+import 'package:fixnow/presentation/providers/chat/chat_provider_customer.dart';
 import 'package:fixnow/presentation/providers/supplier/supplier_profile_provider.dart';
 import 'package:fixnow/presentation/widgets/chat/chat_message_field.dart';
 import 'package:fixnow/presentation/widgets/chat/loading_message.dart';
@@ -33,18 +33,16 @@ class ChatView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatState = ref.watch(chatProvider);
+    final chatState = ref.watch(chatProvider(supplierId));
     final userState = ref.watch(authProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Column(
         children: [
           Expanded(
-            child: !chatState.isConnected
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
+            child: ListView.builder(
                     controller:
-                        ref.read(chatProvider.notifier).chatScrollController,
+                        ref.read(chatProvider(supplierId).notifier).chatScrollController,
                     itemCount: chatState.messages.length +
                         (chatState.isWritingYou ? 1 : 0),
                     itemBuilder: (context, index) {
@@ -52,7 +50,6 @@ class ChatView extends ConsumerWidget {
                           index == chatState.message.length) {
                         return const LoadingMessage();
                       }
-
                       final message = chatState.messages[index];
                       return (message.userChat == UserChat.userYou)
                           ? YouMessageBubble(message: message)
@@ -61,7 +58,10 @@ class ChatView extends ConsumerWidget {
                   ),
           ),
           ChatMessasgeField(
-              supplierId: supplierId, customerId: userState.user!.id!, whoIsSendMessage: userState.user!.role!,),
+            supplierId: supplierId,
+            customerId: userState.user!.id!,
+            whoIsSendMessage: userState.user!.role!,
+          ),
         ],
       ),
     );

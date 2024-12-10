@@ -7,8 +7,7 @@ class PaymentsData {
 
   Future<String> createSuscription(String id) async {
     try {
-      final response =
-          await dio.post('/payment/create/suscription', data: {"userUuid": id});
+      final response = await dio.post('/payment/create/suscription', data: {"userUuid": id});
 
       final orderPayment = response.data['sandbox_init_point'];
       return orderPayment;

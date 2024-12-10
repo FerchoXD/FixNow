@@ -11,7 +11,7 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     showMessage(BuildContext context, String message) {
-     Fluttertoast.showToast(
+      Fluttertoast.showToast(
         msg: message,
         fontSize: 16,
         backgroundColor: const Color.fromARGB(255, 255, 229, 227),
@@ -108,62 +108,6 @@ class LoginScreen extends ConsumerWidget {
                       )),
                 ),
                 const SizedBox(height: 30),
-                Text(
-                  'O conéctate con',
-                  style: TextStyle(color: colors.onSurface, fontSize: 16),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/google.png',
-                            width: 30,
-                            height: 30,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Google',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/facebook.png',
-                            width: 30,
-                            height: 30,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Facebook',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 90),
                 TextButton(
                   onPressed: () {
                     context.push('/user/select');

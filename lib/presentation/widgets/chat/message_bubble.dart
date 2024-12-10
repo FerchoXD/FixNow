@@ -16,14 +16,22 @@ class MessageBubble extends StatelessWidget {
             Flexible(
               child: Container(
                 decoration: BoxDecoration(
-                    color: colors.primary.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(20)),
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade200,
+                        blurRadius: 6,
+                        offset: const Offset(4, 4),
+                        spreadRadius: 1,
+                      ),
+                    ]),
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     message.text,
-                    style: const TextStyle(color: Colors.white),
+                    style:  const TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -32,14 +40,14 @@ class MessageBubble extends StatelessWidget {
               width: 10,
             ),
             CircleAvatar(
-              backgroundColor: colors.primary.withOpacity(0.2),
+              backgroundColor: colors.primary,
               radius: 20,
-              child: Icon(Icons.person, color: colors.primary.withOpacity(0.6)),
+              child: const Icon(Icons.person, color: Colors.white),
             ),
           ],
         ),
         const SizedBox(
-          height: 10,
+          height: 20,
         )
       ],
     );

@@ -52,7 +52,9 @@ class ProfileSuplier extends ConsumerWidget {
                   .viewInsets
                   .bottom, // Espacio dinámico según el teclado
             ),
-            child: const ReviewModal(),
+            child: ReviewModal(
+              supplierId: supplierId,
+            ),
           );
         },
       );

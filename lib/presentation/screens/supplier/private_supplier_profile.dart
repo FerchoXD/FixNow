@@ -267,7 +267,8 @@ class SupplierProfileView extends ConsumerWidget {
             const SizedBox(
               height: 10,
             ),
-            ReviewsView(supplierId: userState.user!.id!)
+            ReviewsView(supplierId: userState.user!.id!),
+            SizedBox(height: 20,),
           ],
         ),
       ),

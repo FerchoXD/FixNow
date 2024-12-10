@@ -1,6 +1,5 @@
-import 'package:fixnow/presentation/providers.dart';
 import 'package:fixnow/presentation/providers/chat/chat_provider.dart';
-import 'package:fixnow/presentation/providers/supplier/supplier_profile_provider.dart';
+import 'package:fixnow/presentation/providers/chat/chat_provider_customer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +16,6 @@ class ChatMessasgeField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-    final chatState = ref.watch(assistantProvider);
     final textController = TextEditingController();
     final focusNode = FocusNode();
 
@@ -50,11 +48,10 @@ class ChatMessasgeField extends ConsumerWidget {
             onPressed: () {
               whoIsSendMessage == 'CUSTOMER'
                   ? ref
-                      .read(chatProvider.notifier)
+                      .read(chatProvider(supplierId).notifier)
                       .sendMessage(textController.text, customerId, supplierId)
                   : ref
-                      .read(chatProvider.notifier)
-                      .sendMessage(textController.text, supplierId, customerId);
+                      .read(chatSupplierProvider.notifier).sendMessage(textController.text, customerId, supplierId);
             },
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),

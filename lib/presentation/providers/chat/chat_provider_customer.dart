@@ -1,77 +1,62 @@
-import 'package:fixnow/config/config.dart';
 import 'package:fixnow/domain/entities/chat_message.dart';
-import 'package:fixnow/domain/entities/user.dart';
-import 'package:fixnow/infrastructure/datasources/auth_user.dart';
-import 'package:fixnow/infrastructure/errors/custom_error.dart';
 import 'package:fixnow/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-final chatSupplierProvider =
-    StateNotifierProvider<ChatProNotifier, ChatProState>((ref) {
+final chatProvider =
+    StateNotifierProvider.family<ChatNotifier, ChatState, String>(
+        (ref, supplierId) {
   final authState = ref.watch(authProvider);
-  final userData = AuthUser();
-  return ChatProNotifier(authState: authState, authUser: userData);
+  return ChatNotifier(authState: authState, supplierId: supplierId);
 });
 
-class ChatProState {
-  final List<String> customersNames;
+class ChatState {
   final List<ChatMessage> messages;
   final bool isConnected;
   final String message;
   final bool isWritingYou;
   final String customerId;
   final String supplierId;
-  final List<Map<String, dynamic>> listCustomers;
 
-  ChatProState({
-    this.customersNames = const [],
-    required this.messages,
-    this.isConnected = false,
-    this.message = '',
-    this.isWritingYou = false,
-    this.customerId = '',
-    this.supplierId = '',
-    this.listCustomers = const [],
-  });
+  ChatState(
+      {required this.messages,
+      this.isConnected = false,
+      this.message = '',
+      this.isWritingYou = false,
+      this.customerId = '',
+      this.supplierId = ''});
 
-  ChatProState copyWith(
-          {List<String>? customersNames,
-          List<ChatMessage>? messages,
+  ChatState copyWith(
+          {List<ChatMessage>? messages,
           bool? isConnected,
           String? message,
           bool? isWritingYou,
           String? customerId,
-          String? supplierId,
-          List<Map<String, dynamic>>? listCustomers}) =>
-      ChatProState(
-          customersNames: customersNames ?? this.customersNames,
+          String? supplierId}) =>
+      ChatState(
           messages: messages ?? this.messages,
           isConnected: isConnected ?? this.isConnected,
           message: message ?? this.message,
           isWritingYou: isWritingYou ?? this.isWritingYou,
           customerId: customerId ?? this.customerId,
-          supplierId: supplierId ?? this.supplierId,
-          listCustomers: listCustomers ?? this.listCustomers);
+          supplierId: supplierId ?? this.supplierId);
 }
 
-class ChatProNotifier extends StateNotifier<ChatProState> {
+class ChatNotifier extends StateNotifier<ChatState> {
   late IO.Socket socket;
   final AuthState authState;
-  final AuthUser authUser;
   final ScrollController chatScrollController = ScrollController();
+  final String supplierId;
 
-  ChatProNotifier({required this.authState, required this.authUser})
-      : super(ChatProState(messages: [], isConnected: false)) {
+  ChatNotifier({required this.authState, required this.supplierId})
+      : super(ChatState(messages: [], isConnected: false)) {
     _initializeSocket();
   }
 
   void _initializeSocket() {
-    socket = IO.io(
-      'ws://192.168.172.168:5001',
-      IO.OptionBuilder().setTransports(['websocket']).build(),
-    );
+    socket = IO.io('ws://192.168.172.168:5001',
+        IO.OptionBuilder().setTransports(['websocket']).build());
 
     socket.on('connect', (_) {
       print('Conectado al servidor');
@@ -79,9 +64,8 @@ class ChatProNotifier extends StateNotifier<ChatProState> {
       socket.emit('register', authState.user!.id);
     });
 
-    socket.on('new_message', (data) async {
-      print('Nuevo mensaje de ${data['sender']}: ${data['message']}: ${data['name']}');
-      _addCustomerIfNotExists(data['sender'], data['name']);
+    socket.on('new_message', (data) {
+      print('Nuevo mensaje de ${data['sender']}: ${data['message']}');
       _addMessageOther(data['message']);
     });
 
@@ -94,21 +78,11 @@ class ChatProNotifier extends StateNotifier<ChatProState> {
     });
   }
 
-  void _addCustomerIfNotExists(String customerId, String customerName) {
-    bool exists = state.listCustomers.any((customer) => customer['id'] == customerId);
-    if (!exists) {
-      final newCustomer = {'id': customerId, 'name': customerName};
-      state = state.copyWith(
-        listCustomers: [...state.listCustomers, newCustomer],
-      );
-    }
-  }
-
   sendMessage(String message, String clientId, String supplierId) {
     if (message.isEmpty) return;
     final messageData = {
-      "sender": supplierId,
-      "receiver": clientId,
+      "sender": clientId,
+      "receiver": supplierId,
       "message": message,
       "name": authState.user!.fullname
     };

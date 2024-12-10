@@ -48,7 +48,7 @@ class CustomBottomNavigation extends ConsumerWidget {
             text: 'Inicio',
           ),
           const GButton(
-            icon: Icons.comment,
+            icon: Icons.people,
             text: 'Comunidad',
           ),
           GButton(
@@ -69,8 +69,8 @@ class CustomBottomNavigation extends ConsumerWidget {
           ),
           if (authState.user!.role == 'SUPPLIER')
             const GButton(
-              icon: Icons.person,
-              text: 'Perfil',
+              icon: Icons.chat_bubble,
+              text: 'Chat',
             ),
         ],
         selectedIndex: currentIndex,
